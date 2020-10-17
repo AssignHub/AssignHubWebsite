@@ -15,26 +15,14 @@
           width="40"
         />
 
-        <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-          width="100"
-        />
+        <span class="text-h4">AssignHub</span>
       </div>
 
       <v-spacer></v-spacer>
 
-      <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-        text
-      >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>mdi-open-in-new</v-icon>
-      </v-btn>
+      <v-avatar>
+        <img src="https://lh3.googleusercontent.com/ogw/ADGmqu-Zu6BCGm76JhjQpuTITJZAU458l7wy3YUPsBq2=s83-c-mo">
+      </v-avatar>
     </v-app-bar>
 
     <v-main>
@@ -43,14 +31,17 @@
   </v-app>
 </template>
 
-<script>
-import HelloWorld from './components/HelloWorld';
+<style>
+html {
+  overflow-y: auto !important;
+}
+</style>
 
+<script>
 export default {
   name: 'App',
 
   components: {
-    HelloWorld,
   },
 
   data: () => ({
