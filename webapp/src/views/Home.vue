@@ -1,10 +1,17 @@
 <template>
-  <v-container>
+  <v-container fluid>
     <CheckIn :firstName="firstName" :emojis="emojis" />
 
     <v-container fluid class="fill-height">
-      <ClassesList :classes="classes" />
-      <FriendsList :friends="friends" :emojis="emojis" />
+      <v-row>
+        <v-col cols="2">
+          <ClassesList :classes="classes" class="mb-4" />
+          <FriendsList :friends="friends" :emojis="emojis" />
+        </v-col>
+        <v-col>
+          <Calendar :assignments="assignments" :curDate="curDate" />
+        </v-col>
+      </v-row>
     </v-container>
   </v-container>
 </template>
@@ -13,6 +20,7 @@
 import CheckIn from '@/components/CheckIn'
 import ClassesList from '@/components/ClassesList'
 import FriendsList from '@/components/FriendsList'
+import Calendar from '@/components/Calendar'
 
 export default {
   name: 'Home',
@@ -21,6 +29,7 @@ export default {
     CheckIn,
     ClassesList,
     FriendsList,
+    Calendar,
   },
 
   data() {
@@ -47,9 +56,14 @@ export default {
         {firstName: 'Jacob', lastName: 'Chen', emojiIndex: 2},
         {firstName: 'Kevin', lastName: 'Hunter', emojiIndex: 4},
       ],
+      curDate: new Date(),
+      assignments: [
+        {name: 'Thomas Green Case Study', dueDate: new Date().getTime() + 3*(24 * 60 * 60 * 1000)}
+      ],
     }
   },
 
-
+  computed: {
+  },
 }
 </script>
