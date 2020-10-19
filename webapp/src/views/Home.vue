@@ -10,6 +10,19 @@
         </v-col>
         <v-col>
           <Calendar :assignments="assignments" :curDate="curDate" />
+          <v-row>
+            <v-col>
+              <InputAssignments :classes="classes" />
+            </v-col>
+            <v-col>
+              <v-card>
+                <v-card-title>Add Crowdsourced Assignment</v-card-title>
+                <v-card-text>
+
+                </v-card-text>
+              </v-card>
+            </v-col>
+          </v-row>
         </v-col>
       </v-row>
     </v-container>
@@ -21,6 +34,7 @@ import CheckIn from '@/components/CheckIn'
 import ClassesList from '@/components/ClassesList'
 import FriendsList from '@/components/FriendsList'
 import Calendar from '@/components/Calendar'
+import InputAssignments from '@/components/InputAssignments'
 
 export default {
   name: 'Home',
@@ -30,6 +44,7 @@ export default {
     ClassesList,
     FriendsList,
     Calendar,
+    InputAssignments,
   },
 
   data() {
@@ -37,17 +52,17 @@ export default {
       firstName: 'John',
       lastName: 'Doe',
       classes: [
-        {name: 'BUAD 304', color: 'green lighten-2'},
-        {name: 'CSCI 103', color: 'orange lighten-2'},
-        {name: 'MATH 225', color: 'blue lighten-2'},
-        {name: 'ENGR 102', color: 'pink lighten-2'},
+        {text: 'BUAD 304', color: 'green lighten-2'},
+        {text: 'CSCI 103', color: 'orange lighten-2'},
+        {text: 'MATH 225', color: 'blue lighten-2'},
+        {text: 'ENGR 102', color: 'pink lighten-2'},
       ],
       emojis: [
+        require('@/assets/crying.png'),
+        require('@/assets/sad.png'),
+        require('@/assets/tired.png'),
         require('@/assets/smiling.png'),
         require('@/assets/sunglasses.png'),
-        require('@/assets/tired.png'),
-        require('@/assets/sad.png'),
-        require('@/assets/crying.png'),
       ],
       friends: [
         {firstName: 'Jill', lastName: 'Smith', emojiIndex: 1},

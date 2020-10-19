@@ -8,7 +8,7 @@
       >
         <v-list-item-content class="pa-0">
           <v-col cols="auto" class="pa-0">
-            <v-chip :color="c.color">{{ c.name }}</v-chip>
+            <v-chip :color="c.color">{{ c.text }}</v-chip>
           </v-col>
         </v-list-item-content>
       </v-list-item>
