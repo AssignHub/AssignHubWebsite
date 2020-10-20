@@ -16,10 +16,10 @@
   </v-container>
 </template>
 
-<style>
+<style scoped>
 .emoji-container {
   position: absolute;
-  top: 10%;
+  top: 8%;
 }
 
 .emoji {

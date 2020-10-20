@@ -9,18 +9,13 @@
           <FriendsList :friends="friends" :emojis="emojis" />
         </v-col>
         <v-col>
-          <Calendar :assignments="assignments" :curDate="curDate" />
+          <Calendar :assignments="assignments" :classes="classes" :curDate="curDate" />
           <v-row>
             <v-col>
-              <InputAssignments :classes="classes" />
+              <InputAssignment :classes="classes" />
             </v-col>
             <v-col>
-              <v-card>
-                <v-card-title>Add Crowdsourced Assignment</v-card-title>
-                <v-card-text>
-
-                </v-card-text>
-              </v-card>
+              <AddAssignment :assignmentsToAdd="assignmentsToAdd" :classes="classes" />
             </v-col>
           </v-row>
         </v-col>
@@ -34,7 +29,8 @@ import CheckIn from '@/components/CheckIn'
 import ClassesList from '@/components/ClassesList'
 import FriendsList from '@/components/FriendsList'
 import Calendar from '@/components/Calendar'
-import InputAssignments from '@/components/InputAssignments'
+import InputAssignment from '@/components/InputAssignment'
+import AddAssignment from '@/components/AddAssignment'
 
 export default {
   name: 'Home',
@@ -44,7 +40,8 @@ export default {
     ClassesList,
     FriendsList,
     Calendar,
-    InputAssignments,
+    InputAssignment,
+    AddAssignment,
   },
 
   data() {
@@ -52,10 +49,10 @@ export default {
       firstName: 'John',
       lastName: 'Doe',
       classes: [
-        {text: 'BUAD 304', color: 'green lighten-2'},
-        {text: 'CSCI 103', color: 'orange lighten-2'},
-        {text: 'MATH 225', color: 'blue lighten-2'},
-        {text: 'ENGR 102', color: 'pink lighten-2'},
+        {uid: 'BUAD-304', text: 'BUAD 304', color: 'green lighten-2'},
+        {uid: 'CSCI-103', text: 'CSCI 103', color: 'orange lighten-2'},
+        {uid: 'MATH-225', text: 'MATH 225', color: 'blue lighten-2'},
+        {uid: 'ENGR-102', text: 'ENGR 102', color: 'pink lighten-2'},
       ],
       emojis: [
         require('@/assets/crying.png'),
@@ -73,7 +70,14 @@ export default {
       ],
       curDate: new Date(),
       assignments: [
-        {name: 'Thomas Green Case Study', dueDate: new Date().getTime() + 3*(24 * 60 * 60 * 1000)}
+        {classUid: 'MATH-225', name: 'Homework 5', dueDate: new Date().getTime() + 3*(24 * 60 * 60 * 1000)+200000},
+        {classUid: 'BUAD-304', name: 'Thomas Green Case Study', dueDate: new Date().getTime() + 3*(24 * 60 * 60 * 1000)},
+      ],
+      assignmentsToAdd: [
+        {classUid: 'MATH-225', name: 'Homework 6', dueDate: new Date().getTime() + 2*(24 * 60 * 60 * 1000)},
+        {classUid: 'ENGR-102', name: 'Pitch Presentation', dueDate: new Date().getTime() + 1*(24 * 60 * 60 * 1000)},
+        {classUid: 'CSCI-103', name: 'Recursion Lab', dueDate: new Date().getTime() + 4*(24 * 60 * 60 * 1000)},
+        {classUid: 'CSCI-103', name: 'Algorithm Lab', dueDate: new Date().getTime() + 3*(24 * 60 * 60 * 1000)},
       ],
     }
   },

@@ -9,28 +9,43 @@
     </v-card-title>
     <v-card-text>
       <v-row>
-        <v-col v-for="(day, i) in daysOfWeek" :key="i" style="height: 200px;" :style="i !== 0 && 'border-left: solid; border-width: 1px;'">
+        <div class="col-day" v-for="(day, i) in daysOfWeek" :key="i" style="height: 200px;" :style="i !== 0 && 'border-left: solid; border-width: 1px;'">
           <div class="text-center text-h5 mb-n2">{{ day.name }}</div>
           <div class="text-center text-h7">{{ day.date.getDate() }}</div>
-          <v-list>
-            <v-list-item v-for="(a, i) in getAssignmentsForDate(day.date)" :key="i">
-              <v-list-item-title>{{ a.name }}</v-list-item-title>
-              <v-list-item-subtitle>{{ new Date(a.dueDate).toLocaleTimeString() }}</v-list-item-subtitle>
-            </v-list-item>
-          </v-list>
-        </v-col>
+          <AssignmentCard
+            v-for="(a, i) in getAssignmentsForDate(day.date)" 
+            :key="i"
+            class="mb-2 mx-2"
+            :assignment="a"
+            :classes="classes"
+            @click="test"
+          />
+        </div>
       </v-row>
     </v-card-text>
   </v-card>
 </template>
 
+<style scoped>
+.col-day {
+  width: 14.28% !important;
+}
+</style>
+
 <script>
+import AssignmentCard from '@/components/AssignmentCard'
+
 export default {
   name: 'Calendar',
 
   props: {
     assignments: {type: Array, required: true},
+    classes: {type: Array, required: true},
     curDate: {type: Date, required: true},
+  },
+
+  components: {
+    AssignmentCard,
   },
 
   data() {
@@ -71,8 +86,11 @@ export default {
     getAssignmentsForDate(date) {
       return this.assignments.filter(a => {
         return new Date(a.dueDate).getDate() === date.getDate()
-      })
-    }
+      }).sort((a, b) => a.dueDate - b.dueDate)
+    },
+    test() {
+      console.log('wow!')
+    }, 
   },
 }
 </script>
