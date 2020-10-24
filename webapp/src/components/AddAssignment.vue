@@ -5,16 +5,16 @@
       <ClassSelect
         label="Sort by class"
         :classes="classes" 
-        v-model="curClass" 
+        v-model="curClasses" 
         clearable
         multiple
       />
 
       <v-card class="grey lighten-5 inner-shadow">
-        <v-card-text class="py-2">
+        <v-card-text v-if="filteredAssignments.length > 0" class="py-2">
           <v-row>
             <v-col 
-              v-for="(a, i) in assignmentsToAdd" 
+              v-for="(a, i) in filteredAssignments" 
               :key="i"
               cols="4"
               class="pa-0"
@@ -23,11 +23,15 @@
                 :assignment="a"
                 :classes="classes"
                 class="mx-1 mb-2"
-                @add="add(i)"
+                @add="add(a.uid)"
                 toAdd
+                showDate
               />
             </v-col>
           </v-row>
+        </v-card-text>
+        <v-card-text class="text-center" v-else>
+          No assignments to show!
         </v-card-text>
       </v-card>
     </v-card-text>
@@ -59,13 +63,26 @@ export default {
 
   data() {
     return {
-      curClass: '',
+      curClasses: '',
     }
   },
 
+  computed: {
+    filteredAssignments() {
+      if (this.curClasses.length === 0)
+        return this.assignmentsToAdd.sort((a, b) => a.dueDate - b.dueDate)
+
+      let filteredAssignments = this.curClasses.map(classText => {
+        let classUid = this.classes.find(c => c.text === classText).uid
+        return this.assignmentsToAdd.filter(a => a.classUid === classUid)
+      }).flat().sort((a, b) => a.dueDate - b.dueDate)
+      return filteredAssignments
+    },
+  },
+
   methods: {
-    add(i) {
-      console.log(i)
+    add(uid) {
+      this.$emit('addAssignment', uid)
     },
   },
 }
