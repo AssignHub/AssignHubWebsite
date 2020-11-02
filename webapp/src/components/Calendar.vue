@@ -53,6 +53,7 @@
 
 <script>
 import AssignmentCard from '@/components/AssignmentCard'
+import { compareDateDay } from '@/util.js'
 
 export default {
   name: 'Calendar',
@@ -107,9 +108,10 @@ export default {
       return new Date(this.curDate.getTime() + offset*this.dayLength)
     },
     getAssignmentsForDate(date) {
-      return this.assignments.filter(a => {
-        return new Date(a.dueDate).getTime() === date.getTime()
+      let assignments = this.assignments.filter(a => {
+        return compareDateDay(a.dueDate, date) === 0
       }).sort((a, b) => a.dueDate - b.dueDate)
+      return assignments
     },
     getClassFromOffset(offset) {
       if (offset === 0)
@@ -126,7 +128,6 @@ export default {
     },
     toggleAssignment(uid) {
       this.$emit('toggleAssignment', uid)
-      console.log('TOGGLE', this.assignments)
     }, 
   },
 }

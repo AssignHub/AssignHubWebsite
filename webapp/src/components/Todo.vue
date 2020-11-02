@@ -32,6 +32,7 @@
 
 <script>
 import AssignmentCard from '@/components/AssignmentCard'
+import { compareDateDay } from '@/util.js'
 
 export default {
   name: 'Todo',
@@ -54,15 +55,15 @@ export default {
 
   computed: {
     dueToday() {
-      let arr = this.assignments.filter(a => this.compareDateDay(a.dueDate, this.curDate) === 0)
+      let arr = this.assignments.filter(a => compareDateDay(a.dueDate, this.curDate) === 0)
       return this.sortByDateAndDone(arr)
     },
     dueTomorrow() {
-      let arr = this.assignments.filter(a => this.compareDateDay(a.dueDate, this.tomorrowDate) === 0) 
+      let arr = this.assignments.filter(a => compareDateDay(a.dueDate, this.tomorrowDate) === 0) 
       return this.sortByDateAndDone(arr)
     },
     upcoming() {
-      let arr = this.assignments.filter(a => this.compareDateDay(a.dueDate, this.tomorrowDate) > 0) 
+      let arr = this.assignments.filter(a => compareDateDay(a.dueDate, this.tomorrowDate) > 0) 
       return this.sortByDateAndDone(arr)
     },
     tomorrowDate() {
@@ -95,18 +96,6 @@ export default {
             return 0
           return a.done ? 1 : -1  
         })
-    },
-    compareDateDay(a, b) {
-      // returns -1 if a is before b, 1 if a is after b, 0 otherwise
-      a = new Date(a)
-      b = new Date(b)
-      if (a.getFullYear() !== b.getFullYear()) {
-        return a.getFullYear() - b.getFullYear()
-      } else if (a.getMonth() !== b.getMonth()) {
-        return a.getMonth() - b.getMonth()
-      } else {
-        return a.getDate() - b.getDate()
-      }
     },
     getClassColor(classUid) {
       return this.classes.find(c => c.uid === classUid).color

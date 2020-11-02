@@ -23,7 +23,7 @@
               <Calendar class="mb-1" :assignments="assignments" :classes="classes" :curDate="curDate" :numPendingAssignments="assignmentsToAdd.length" @toggleAssignment="(uid) => toggleAssignment(uid)" />
             </v-col>
             <v-col>
-              <InputAssignment :classes="classes" />
+              <InputAssignment :classes="classes" @createAssignment="a => createAssignment(a)" />
             </v-col>
             <v-col>
               <AddAssignment :assignmentsToAdd="assignmentsToAdd" :classes="classes" @addAssignment="(uid) => addAssignment(uid)"/>
@@ -108,6 +108,10 @@ export default {
       this.$set(assignment, 'done', false)
       this.assignments.push(assignment)
     },
+    createAssignment(assignment) {
+      this.$set(assignment, 'done', false)
+      this.assignments.push(assignment)
+    }
   },
 }
 </script>

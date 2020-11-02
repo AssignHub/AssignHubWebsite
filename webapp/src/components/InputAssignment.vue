@@ -3,6 +3,7 @@
     <v-card-title>Input Assignments</v-card-title>
     <v-card-text>
       <v-text-field
+        v-model="name"
         hide-details
         filled  
         autocomplete="off" 
@@ -24,15 +25,15 @@
           />
         </v-col>
         <v-col cols="12" md="6" class="py-0">
-          <v-text-field
-            hide-details
-            filled
-            autocomplete="off"
+          <DateTimePicker 
             label="Due date/time"
-          ></v-text-field>
+            :date.sync="date"
+            :time.sync="time"
+          />
         </v-col>
       </v-row>
       <v-checkbox
+        v-model="doPublish"
         label="Publish"
         class="mt-0"
         hint="Let others use this assignment"
@@ -41,7 +42,9 @@
       </v-checkbox>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn>Submit</v-btn>
+        <v-btn
+          @click="submit"
+        >Submit</v-btn>
       </v-card-actions>
     </v-card-text>
   </v-card>
@@ -49,6 +52,8 @@
 
 <script>
 import ClassSelect from '@/components/ClassSelect'
+import DateTimePicker from '@/components/DateTimePicker'
+import { createUUID } from '@/util.js'
 
 export default {
   name: 'InputAssignment',
@@ -58,13 +63,42 @@ export default {
   },
 
   components: {
-    ClassSelect
+    ClassSelect,
+    DateTimePicker,
   },
 
   data() {
     return {
+      name: '',
       curClass: '',
+      date: null,
+      time: null,
+      doPublish: false,
     }
+  },
+
+  methods: {
+    submit() {
+      let uid = createUUID()
+      let classUid = this.classes.find(c => c.text === this.curClass).uid
+      let dueDate = Date.parse(this.date + 'T' + this.time)
+      let assignment = {
+        uid,
+        classUid,
+        name: this.name,
+        dueDate
+      }
+      this.$emit('createAssignment', assignment)
+
+      this.resetForm()
+    },
+    resetForm() {
+      this.name = ''
+      this.curClass = ''
+      this.date = null
+      this.time = null
+      this.doPublish = false
+    },
   },
 }
 </script>
