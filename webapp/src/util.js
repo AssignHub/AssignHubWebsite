@@ -1,3 +1,5 @@
+const TROJAN = require('trojan-course-api')
+
 export const createUUID = () => {
   var dt = new Date().getTime();
   var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -19,4 +21,28 @@ export const compareDateDay = (a, b) => {
   } else {
     return a.getDate() - b.getDate()
   }
+}
+
+export const getTerms = () => {
+  return TROJAN.terms().then(data => {
+    return data.terms.map(term => { 
+      term = '' + term
+      let year = term.substring(0, 4)
+      let seasons = ['Spring', 'Summer', 'Fall']
+      let season = seasons[term.substring(4) - 1]
+      return { term, text: `${season} ${year}` }
+    })
+  })
+}
+
+export const getAllDepartments = (term) => {
+  return TROJAN.deptsN({ term }).then(data => data.departments)
+}
+
+export const getCourses = (dept, term) => {
+  return TROJAN.courses(dept, { term }).then(data => data.courses)
+}
+
+export const getSections = (courseId, term) => {
+  return TROJAN.course(courseId, { term }).then(data => data.courses[courseId].sections)
 }
