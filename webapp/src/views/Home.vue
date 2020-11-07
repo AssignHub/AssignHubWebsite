@@ -7,7 +7,7 @@
         <v-col cols="12" md="2" class="py-0">
           <v-row>
             <v-col cols="12">
-              <ClassesList :classes="classes"/>
+              <ClassesList :classes="classes" :terms="terms" />
             </v-col>
             <v-col cols="12">
               <FriendsList :friends="friends" :emojis="emojis" />
@@ -44,6 +44,8 @@ import InputAssignment from '@/components/InputAssignment'
 import AddAssignment from '@/components/AddAssignment'
 import Todo from '@/components/Todo'
 
+import { get } from '@/util.js'
+
 export default {
   name: 'Home',
   
@@ -61,6 +63,7 @@ export default {
     return {
       firstName: 'Jonathan',
       lastName: 'Liu',
+      terms: [],
       classes: [
         {uid: 'BUAD-304', text: 'BUAD 304', color: 'green lighten-2'},
         {uid: 'CSCI-103', text: 'CSCI 103', color: 'orange lighten-2'},
@@ -95,6 +98,10 @@ export default {
         {uid: '7', classUid: 'CSCI-103', name: 'Algorithm Lab', dueDate: new Date().getTime() + 3*(24 * 60 * 60 * 1000)},
       ],
     }
+  },
+
+  async created() {
+    this.terms = await get('/usc/terms')
   },
 
   methods: {

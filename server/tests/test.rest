@@ -1,0 +1,13 @@
+GET http://localhost:3000/usc/terms
+
+###
+
+GET http://localhost:3000/usc/depts
+
+###
+
+GET http://localhost:3000/usc/depts/CSCI/courses?term=20203
+
+###
+
+GET http://localhost:3000/usc/courses/CSCI-103/sections?term=20211

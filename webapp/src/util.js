@@ -1,4 +1,5 @@
 const TROJAN = require('trojan-course-api')
+const serverURL = 'http://localhost:3000'
 
 export const createUUID = () => {
   var dt = new Date().getTime();
@@ -23,26 +24,46 @@ export const compareDateDay = (a, b) => {
   }
 }
 
-export const getTerms = () => {
-  return TROJAN.terms().then(data => {
-    return data.terms.map(term => { 
-      term = '' + term
-      let year = term.substring(0, 4)
-      let seasons = ['Spring', 'Summer', 'Fall']
-      let season = seasons[term.substring(4) - 1]
-      return { term, text: `${season} ${year}` }
-    })
+export const inRange = (val, a, b) => {
+  // Checks if val is in between a and b
+  return a <= val && val <= b
+} 
+
+export const get = (route) => {
+  return fetch(serverURL + route, {
+    method: 'GET',
+  }).then(res => res.json()).then(data => {
+    if (data.error)
+      throw data.error
+    
+    return data
   })
 }
 
-export const getAllDepartments = (term) => {
-  return TROJAN.deptsN({ term }).then(data => data.departments)
+export const post = (route, body) => {
+  return fetch(serverURL + route, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  }).then(res => res.json()).then(data => {
+    if (data.error)
+      throw data.error
+    
+    return data
+  })
 }
 
-export const getCourses = (dept, term) => {
-  return TROJAN.courses(dept, { term }).then(data => data.courses)
-}
-
-export const getSections = (courseId, term) => {
-  return TROJAN.course(courseId, { term }).then(data => data.courses[courseId].sections)
+export const getCurTerm = () => {
+  // Get current month and determine whether currently in spring, summer, or fall
+  // 1 = spring, 2 = summer, 3 = fall
+  let month = new Date().getMonth()
+  let year = new Date().getFullYear()
+  if (inRange(month, 0, 4))
+    return year + '1'
+  else if (inRange(month, 5, 6))
+    return year + '2'
+  else
+    return year + '3'
 }
