@@ -53,7 +53,7 @@
 <script>
 import ClassSelect from '@/components/ClassSelect'
 import DateTimePicker from '@/components/DateTimePicker'
-import { createUUID } from '@/util.js'
+import { createUUID } from '@/utils/util.js'
 
 export default {
   name: 'InputAssignment',

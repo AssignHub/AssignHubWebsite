@@ -53,7 +53,7 @@
 
 <script>
 import AssignmentCard from '@/components/AssignmentCard'
-import { compareDateDay } from '@/util.js'
+import { compareDateDay } from '@/utils/util.js'
 
 export default {
   name: 'Calendar',

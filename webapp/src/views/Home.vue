@@ -44,7 +44,7 @@ import InputAssignment from '@/components/InputAssignment'
 import AddAssignment from '@/components/AddAssignment'
 import Todo from '@/components/Todo'
 
-import { get } from '@/util.js'
+import { get } from '@/utils/util.js'
 
 export default {
   name: 'Home',
@@ -100,7 +100,7 @@ export default {
     }
   },
 
-  async created() {
+  async mounted() {
     this.terms = await get('/usc/terms')
   },
 

@@ -8,6 +8,8 @@
       item-text="text"
       item-value="term"
       v-model="term"
+      hide-details
+      class="mx-2"
     ></v-select>
     <v-list dense>
       <v-list-item
@@ -21,11 +23,14 @@
         </v-list-item-content>
       </v-list-item>
     </v-list>
+    
+    <AddClassMenu :term="term" />
   </v-card>
 </template>
 
 <script>
-import { getCurTerm } from '@/util.js'
+import AddClassMenu from '@/components/AddClassMenu'
+import { getCurTerm } from '@/utils/util.js'
 
 export default {
   name: 'ClassesList',
@@ -33,6 +38,10 @@ export default {
   props: {
     classes: { type: Array, required: true },
     terms: { type: Array, required: true },
+  },
+
+  components: {
+    AddClassMenu,
   },
 
   watch: {

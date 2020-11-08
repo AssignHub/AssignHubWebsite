@@ -1,4 +1,3 @@
-const TROJAN = require('trojan-course-api')
 const serverURL = 'http://localhost:3000'
 
 export const createUUID = () => {

@@ -20,8 +20,20 @@
         </v-list-item-icon>
       </v-list-item>
     </v-list>
+    <v-btn
+      text
+      block
+      class="grey lighten-2"
+    >+ Add Friend</v-btn>
   </v-card>
 </template>
+
+<style scoped>
+  .v-btn {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+</style>
 
 <script>
 export default {
