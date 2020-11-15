@@ -21,13 +21,12 @@ TODO: maybe cache the class data on the server and only fetch once per day (so w
         class="grey lighten-2 add-btn"
         v-bind="attrs"
         v-on="on"
-        @click="loadDepts"
       >+ Add Class</v-btn>
     </template>
     <v-card color="grey lighten-3" style="height: 335px;">
       <v-card-text class="pb-0" style="height: 280px;">
         <v-text-field
-          :label="`Search for ${curCategory}`"
+          :label="`Search for ${curCatName}`"
           solo
           hide-details
           autocomplete="off" 
@@ -35,8 +34,16 @@ TODO: maybe cache the class data on the server and only fetch once per day (so w
           v-model="query"
           class="mb-4"
         ></v-text-field>
-        <div v-if="filteredItems.length === 0" class="text-center">
-          No {{ curCategoryPlural }} to show.
+        <div v-if="menu && categories[curCategoryIndex].items === 'loading'">
+          <v-skeleton-loader 
+            v-for="i in 3"
+            :key="i"
+            type="list-item-two-line"
+            tile
+          ></v-skeleton-loader>
+        </div>
+        <div v-else-if="filteredItems.length === 0" class="text-center">
+          No {{ curCatNamePlural }} to show.
         </div>
         <v-list 
           v-else
@@ -51,10 +58,13 @@ TODO: maybe cache the class data on the server and only fetch once per day (so w
             @click="itemClicked(item)"
           >
             <v-list-item-content>
-              <v-list-item-title>{{ item }}</v-list-item-title>
-              <v-list-item-subtitle>{{ curCategoryDescriptions[item] }}</v-list-item-subtitle>
+              <v-list-item-title>{{ item.value }}</v-list-item-title>
+              <v-list-item-subtitle
+                v-for="(description, i) in categories[curCategoryIndex].getDescription(item)"
+                :key="i"
+              >{{ description }}</v-list-item-subtitle>
             </v-list-item-content>
-            <v-list-item-action v-if="!curDept">
+            <v-list-item-action v-if="curCategoryIndex < categories.length-1">
               <v-icon>mdi-chevron-right</v-icon>
             </v-list-item-action>
           </v-list-item>
@@ -63,9 +73,9 @@ TODO: maybe cache the class data on the server and only fetch once per day (so w
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn
-          v-if="curDept"
+          v-if="curCategoryIndex > 0"
           text
-          @click="curDept = null; classes = null; query = ''"
+          @click="goBack"
         >Back</v-btn>
         <v-btn
           text
@@ -98,75 +108,117 @@ export default {
     return {
       menu: false,
       query: '',
-      
-      depts: null,
-      queryDepts: [],
-      curDept: '',
 
-      classes: null,
-      queryClasses: [],
+      categories: [
+        {
+          name: 'department',
+          namePlural: 'departments',
+          items: null,
+          curItem: null,
+          route: `/usc/depts`,
+          getDescription: (item) => [item.description],
+        },
+        {
+          name: 'class',
+          namePlural: 'classes',
+          items: null,
+          curItem: null,
+          route: `/usc/depts/##[0]##/courses`, // ##[0]## refers to the curItem of the index 0 category
+          getDescription: (item) => [item.description],
+        },
+        {
+          name: 'section',
+          namePlural: 'sections',
+          items: null,
+          curItem: null,
+          route: `/usc/courses/##[1]##/sections`,
+          getDescription: this.getSectionDescription,
+        },
+      ],
     }
   },
 
   computed: {
-    curCategory() {
-      return !this.curDept ? 'department' : 'class'
+    curCategoryIndex() {
+      if (this.menu) {
+        for (let i = 0; i < this.categories.length; i++) {
+          if (!this.categories[i].curItem) {
+            this.loadCategory(i)
+            return i
+          }
+        }
+        // We have reached the end of the categories...Add the class!
+        this.$emit('addClass', {
+          class: this.categories[1].curItem.value,
+          sectionData: this.categories[2].curItem,
+        })
+        this.menu = false
+        this.resetCategories()
+      }
+      return -1 // -1 means menu isn't shown
     },
-    curCategoryPlural() {
-      return !this.curDept ? 'departments' : 'classes'
+    curCatName() {
+      return this.menu && this.categories[this.curCategoryIndex].name 
     },
-    curCategoryDescriptions() {
-      return !this.curDept ? this.depts : this.classes
+    curCatNamePlural() {
+      return this.menu && this.categories[this.curCategoryIndex].namePlural
     },
     filteredItems() {
-      if (!this.curDept) {
-        if (!this.depts)
-          return []
-        else if (!this.query)
-          return Object.keys(this.depts)
-        return this.queryFilter(Object.keys(this.depts))
-      } else {
-        if (!this.classes)
-          return []
-        else if (!this.query)
-          return Object.keys(this.classes)
-        return this.queryFilter(Object.keys(this.classes))
+      if (this.menu) {
+        const items = this.categories[this.curCategoryIndex].items
+        if (!Array.isArray(items))
+          return [] 
+
+        const filteredItems = items.filter(item => {
+          return item.value.toUpperCase().includes(this.query.toUpperCase())
+        })
+        return filteredItems 
       }
+      return []
     },
   },
 
   methods: {
-    async loadDepts() {
-      if (!this.depts) {
-        this.depts = true // Prevent running GET request again
-        this.depts = await get(`/usc/depts?term=${this.term}`)
-        this.queryDepts = Object.keys(this.depts)
+    async loadCategory(index) {
+      if (!this.categories[index].items) {
+        this.categories[index].items = 'loading' // Prevent running GET request again
+        const regex = /##\[([0-9]+)\]##/g
+        const route = this.categories[index].route.replace(regex, (match, replaceIndex) => {
+          if (this.categories[replaceIndex].curItem.value.includes('/')) {
+            alert('h3h3 brilliant hacking skills, my friend...')
+            return '<STOP>'
+          }
+          return this.categories[replaceIndex].curItem.value
+        })
+        if (!route.includes('<STOP>')) {
+          console.log('GET ', route  + `?term=${this.term}`)
+          this.categories[index].items = await get(route + `?term=${this.term}`)
+        }
       }
     },
-    async selectDept(dept) {
-      this.curDept = dept
-      this.query = ''
-      this.classes = await get(`/usc/depts/${this.curDept}/courses?term=${this.term}`)
-      this.queryClasses = Object.keys(this.classes)
-    },
-    async selectClass(c) {
-      console.log('selected class ', c)
-      const sections = await get(`/usc/courses/${c}/sections?term=${this.term}`)
-      console.log('sections: ', sections)
-    },
-    queryFilter(arr) {
-      return arr.filter(item => {
-        return this.matchesQuery(item)
-      })
-    },
-    matchesQuery(item) {
-      return item.toUpperCase().includes(this.query.toUpperCase())
-    },
     itemClicked(item) {
-      if (!this.curDept)
-        this.selectDept(item)
-      else
-        this.selectClass(item)
+      this.categories[this.curCategoryIndex].curItem = item
+      this.query = ''
+    },
+    getSectionDescription(item) {
+      const instructorString = item.instructor.first_name + ' ' + item.instructor.last_name
+      const to12HrTime = (time) => new Date(`0000-01-01T${time}:00`).toLocaleTimeString([], {timeStyle: 'short'})
+      const blocks = item.blocks; 
+      const blocksString = blocks.map(block => block.day === 'H' ? 'TH' : block.day).join('/') + ', ' + to12HrTime(blocks[0].start) + ' - ' + to12HrTime(blocks[0].end)
+      return [instructorString, blocksString]
+    },
+    goBack() {
+      const origIndex = this.curCategoryIndex
+      this.categories[origIndex-1].curItem = null
+      this.categories[origIndex].items = null
+      this.query = ''
+    },
+    resetCategories() {
+      this.query = ''
+      for (let i = 0; i < this.categories.length; i++) {
+        this.categories[i].curItem = null
+        this.categories[i].items = null
+      }
     },
   },
 }

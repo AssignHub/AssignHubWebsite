@@ -26,7 +26,14 @@ router.get('/depts', async (req, res) => {
   */
   try {
     let options = req.query.term ? { term: req.query.term } : {}
-    let depts = await TROJAN.deptsN(options).then(data => data.departments)
+    let depts = await TROJAN.deptsN(options).then(data => {
+      return Object.keys(data.departments).map(dept => {
+        return {
+          value: dept,
+          description: data.departments[dept]
+        }
+      })
+    })
     res.json(depts)
   } catch (err) {
     res.status(500).json({ error: err.message })
@@ -40,8 +47,11 @@ router.get('/depts/:dept/courses', async (req, res) => {
   try {
     let options = req.query.term ? { term: req.query.term } : {}
     let courses = await TROJAN.courses(req.params.dept, options).then(data => {
-      return Object.map(data.courses, course => {
-        return course.title
+      return Object.keys(data.courses).map(course => {
+        return {
+          value: course,
+          description: data.courses[course].title,
+        }
       })
     })
     res.json(courses)
@@ -58,8 +68,14 @@ router.get('/courses/:courseId/sections', async (req, res) => {
     let options = req.query.term ? { term: req.query.term } : {}
     let sections = await TROJAN.course(req.params.courseId, options).then(data => {
       let sectionsData = Object.filter(data.courses[req.params.courseId].sections, section => section.type === 'Lec')
-      return Object.map(sectionsData, section => {
-        return { instructor: section.instructor }
+      return Object.keys(sectionsData).map(section => {
+        const instructor = sectionsData[section].instructor
+        const blocks = sectionsData[section].blocks
+        return { 
+          value: section,
+          instructor, 
+          blocks,
+        }
       })
     })
     res.json(sections)
