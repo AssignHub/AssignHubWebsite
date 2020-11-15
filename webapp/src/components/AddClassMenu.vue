@@ -1,3 +1,9 @@
+<!-- 
+TODO: add lazy loading when loading ALL departments/classes so it's less "laggy" https://www.codeply.com/p/eOZKk873AJ 
+TODO: Add loading indicator when loading classes/depts. usc class api will be slow at times (webreg is slow too sometimes)
+TODO: maybe cache the class data on the server and only fetch once per day (so we don't need to contact API every single time)
+-->
+
 <template>
   <v-menu
     transition="slide-x-transition"
@@ -21,7 +27,7 @@
     <v-card color="grey lighten-3" style="height: 335px;">
       <v-card-text class="pb-0" style="height: 280px;">
         <v-text-field
-          :label="`Search for ${curItem}`"
+          :label="`Search for ${curCategory}`"
           solo
           hide-details
           autocomplete="off" 
@@ -29,8 +35,8 @@
           v-model="query"
           class="mb-4"
         ></v-text-field>
-        <div v-if="noItems" class="text-center">
-          No {{ curItemPlural }} to show.
+        <div v-if="filteredItems.length === 0" class="text-center">
+          No {{ curCategoryPlural }} to show.
         </div>
         <v-list 
           v-else
@@ -38,35 +44,20 @@
           class="pa-0 overflow-y-auto"
           style="max-height: 200px;"
         >
-          <template v-if="!curDept">
-            <v-list-item 
-              v-for="(dept, i) in queryDepts"
-              :key="i"
-              two-line 
-              @click="selectDept(dept)"
-            >
-              <v-list-item-content>
-                <v-list-item-title>{{ dept }}</v-list-item-title>
-                <v-list-item-subtitle>{{ depts[dept] }}</v-list-item-subtitle>
-              </v-list-item-content>
-              <v-list-item-action>
-                <v-icon>mdi-chevron-right</v-icon>
-              </v-list-item-action>
-            </v-list-item>
-          </template>
-          <template v-else>
-            <v-list-item 
-              v-for="(c, i) in queryClasses"
-              :key="i"
-              two-line 
-              @click=""
-            >
-              <v-list-item-content>
-                <v-list-item-title>{{ c }}</v-list-item-title>
-                <v-list-item-subtitle>{{ queryClasses[c] }}</v-list-item-subtitle>
-              </v-list-item-content>
-            </v-list-item>
-          </template>
+          <v-list-item 
+            v-for="(item, i) in filteredItems"
+            :key="i"
+            two-line 
+            @click="itemClicked(item)"
+          >
+            <v-list-item-content>
+              <v-list-item-title>{{ item }}</v-list-item-title>
+              <v-list-item-subtitle>{{ curCategoryDescriptions[item] }}</v-list-item-subtitle>
+            </v-list-item-content>
+            <v-list-item-action v-if="!curDept">
+              <v-icon>mdi-chevron-right</v-icon>
+            </v-list-item-action>
+          </v-list-item>
         </v-list>
       </v-card-text>
       <v-card-actions>
@@ -74,7 +65,7 @@
         <v-btn
           v-if="curDept"
           text
-          @click="curDept = null; query = ''"
+          @click="curDept = null; classes = null; query = ''"
         >Back</v-btn>
         <v-btn
           text
@@ -118,42 +109,28 @@ export default {
   },
 
   computed: {
-    noItems() {
-      if (!this.curDept)
-        return this.queryDepts.length === 0
-      else
-        return this.queryClasses.length === 0
+    curCategory() {
+      return !this.curDept ? 'department' : 'class'
     },
-    curItem() {
-      if (!this.curDept)
-        return 'department'
-      else
-        return 'class'
+    curCategoryPlural() {
+      return !this.curDept ? 'departments' : 'classes'
     },
-    curItemPlural() {
-      if (!this.curDept)
-        return 'departments'
-      else
-        return 'classes'
+    curCategoryDescriptions() {
+      return !this.curDept ? this.depts : this.classes
     },
-  },
-
-  watch: {
-    async query() {
+    filteredItems() {
       if (!this.curDept) {
-        if (this.depts) {
-          if (!this.query) 
-            this.queryDepts = Object.keys(this.depts)
-          else
-            this.queryDepts = this.queryFilter(Object.keys(this.depts))
-        }
+        if (!this.depts)
+          return []
+        else if (!this.query)
+          return Object.keys(this.depts)
+        return this.queryFilter(Object.keys(this.depts))
       } else {
-        if (this.classes) {
-          if (!this.query)
-            this.queryClasses = Object.keys(this.classes)
-          else
-            this.queryClasses = this.queryFilter(Object.keys(this.classes))
-        }
+        if (!this.classes)
+          return []
+        else if (!this.query)
+          return Object.keys(this.classes)
+        return this.queryFilter(Object.keys(this.classes))
       }
     },
   },
@@ -172,6 +149,11 @@ export default {
       this.classes = await get(`/usc/depts/${this.curDept}/courses?term=${this.term}`)
       this.queryClasses = Object.keys(this.classes)
     },
+    async selectClass(c) {
+      console.log('selected class ', c)
+      const sections = await get(`/usc/courses/${c}/sections?term=${this.term}`)
+      console.log('sections: ', sections)
+    },
     queryFilter(arr) {
       return arr.filter(item => {
         return this.matchesQuery(item)
@@ -179,7 +161,13 @@ export default {
     },
     matchesQuery(item) {
       return item.toUpperCase().includes(this.query.toUpperCase())
-    }
+    },
+    itemClicked(item) {
+      if (!this.curDept)
+        this.selectDept(item)
+      else
+        this.selectClass(item)
+    },
   },
 }
 </script>
