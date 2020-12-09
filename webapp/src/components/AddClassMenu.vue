@@ -1,7 +1,7 @@
 <!-- 
-TODO: add lazy loading when loading ALL departments/classes so it's less "laggy" https://www.codeply.com/p/eOZKk873AJ 
-TODO: Add loading indicator when loading classes/depts. usc class api will be slow at times (webreg is slow too sometimes)
-TODO: maybe cache the class data on the server and only fetch once per day (so we don't need to contact API every single time)
+TODO: add lazy loading when loading ALL departments/classes so it's less "laggy" https://www.codeply.com/p/eOZKk873AJ
+TODO: only cache term data
+TODO: change it so we don't search for classes, just input department code and class number, and it pops up with the sections
 -->
 
 <template>

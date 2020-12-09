@@ -66,3 +66,7 @@ export const getCurTerm = () => {
   else
     return year + '3'
 }
+
+export const stringReplaceByIndex = (origString, replaceString, beg, end) => {
+  return origString.substring(0, beg) + replaceString + origString.substring(end)
+}

@@ -2,7 +2,7 @@
   <v-select
     class="mb-4"
     hide-details
-    filled 
+    outlined 
     small-chips
     :label="label"
     :items="classes"

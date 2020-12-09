@@ -5,33 +5,29 @@
       <v-text-field
         v-model="name"
         hide-details
-        filled  
+        outlined  
         autocomplete="off" 
         label="Assignment name"
         class="mb-4"
       ></v-text-field>
       <!--<v-textarea
         hide-details
-        filled  
+        outlined  
         autocomplete="off" 
         label="Description (optional)"
         class="mb-4"
       ></v-textarea>-->
-      <v-row>
-        <v-col cols="12" md="6" class="py-0">
-          <ClassSelect
-            :classes="classes" 
-            v-model="curClass" 
-          />
-        </v-col>
-        <v-col cols="12" md="6" class="py-0">
-          <DateTimePicker 
-            label="Due date/time"
-            :date.sync="date"
-            :time.sync="time"
-          />
-        </v-col>
-      </v-row>
+      <ClassSelect
+        :classes="classes" 
+        v-model="curClass" 
+      />
+      <DateTimePicker 
+        dateLabel="Due date"
+        timeLabel="Time"
+        :date.sync="date"
+        :time.sync="time"
+        class="mb-4"
+      />
       <v-checkbox
         v-model="doPublish"
         label="Publish"
@@ -71,8 +67,8 @@ export default {
     return {
       name: '',
       curClass: '',
-      date: null,
-      time: null,
+      date: new Date().toISOString().substr(0, 10),
+      time: '23:59',
       doPublish: false,
     }
   },
@@ -95,8 +91,8 @@ export default {
     resetForm() {
       this.name = ''
       this.curClass = ''
-      this.date = null
-      this.time = null
+      //this.date = new Date().toISOString().substr(0, 10)
+      //this.time = '23:59'
       this.doPublish = false
     },
   },

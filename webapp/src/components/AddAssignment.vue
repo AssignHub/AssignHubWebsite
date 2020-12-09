@@ -16,7 +16,9 @@
             <v-col 
               v-for="(a, i) in filteredAssignments" 
               :key="i"
-              cols="4"
+              cols="12"
+              md="6"
+              lg="4"
               class="pa-0"
             >
               <AssignmentCard
