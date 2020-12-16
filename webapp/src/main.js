@@ -10,6 +10,7 @@ Vue.config.productionTip = false
 import GAuth from 'vue-google-oauth2'
 const gauthOptions = {
   clientId: '844813140506-upjq868ckcms47783pmelqtgqs2s1ft4.apps.googleusercontent.com',
+  prompt: 'consent',
 }
 Vue.use(GAuth, gauthOptions)
 
