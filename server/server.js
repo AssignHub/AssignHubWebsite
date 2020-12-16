@@ -13,6 +13,9 @@ db.on('open', () => console.log(`Successfully connected to db: ${process.env.DAT
 app.use(cors())
 app.use(express.json())
 
+const authRouter = require('./routes/auth')
+app.use('/auth', authRouter)
+
 const uscRouter = require('./routes/usc')
 app.use('/usc', uscRouter)
 

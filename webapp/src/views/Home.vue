@@ -1,5 +1,6 @@
 <template>
   <v-container fluid>
+    <v-btn block @click="signInGoogle">Sign in with Google</v-btn>
     <CheckIn :firstName="firstName" :emojis="emojis" />
 
     <v-container fluid class="fill-height">
@@ -44,7 +45,7 @@ import InputAssignment from '@/components/InputAssignment'
 import AddAssignment from '@/components/AddAssignment'
 import Todo from '@/components/Todo'
 
-import { get } from '@/utils/util.js'
+import { get, post } from '@/utils/util.js'
 
 export default {
   name: 'Home',
@@ -101,6 +102,7 @@ export default {
   },
 
   async mounted() {
+    console.log('isAuthorized: ', this.$gAuth.isAuthorized)
     this.terms = await get('/usc/terms')
   },
 
@@ -118,6 +120,11 @@ export default {
     createAssignment(assignment) {
       this.$set(assignment, 'done', false)
       this.assignments.push(assignment)
+    },
+    signInGoogle() {
+      this.$gAuth.getAuthCode().then(authCode => {
+        post('/auth/sign-in', { authCode }).then(data => console.log(data))
+      })
     }
   },
 }
