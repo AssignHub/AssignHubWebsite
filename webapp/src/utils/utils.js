@@ -31,6 +31,9 @@ export const inRange = (val, a, b) => {
 export const get = (route) => {
   return fetch(serverURL + route, {
     method: 'GET',
+    headers: {
+      ...getAuthHeader()
+    },
   }).then(res => res.json()).then(data => {
     if (data.error)
       throw data.error
@@ -44,6 +47,7 @@ export const post = (route, body) => {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      ...getAuthHeader(),
     },
     body: JSON.stringify(body),
   }).then(res => res.json()).then(data => {
@@ -52,6 +56,14 @@ export const post = (route, body) => {
     
     return data
   })
+}
+
+export const getAuthHeader = () => {
+  // Get JWT token
+  const token = localStorage.getItem('token')
+  if (!token)
+    return {}
+  return { 'Authorization': 'Bearer ' + token }
 }
 
 export const getCurTerm = () => {

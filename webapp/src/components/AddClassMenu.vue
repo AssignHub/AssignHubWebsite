@@ -94,7 +94,7 @@ TODO: change it so we don't search for classes, just input department code and c
 </style>
 
 <script>
-import { get } from '@/utils/util.js'
+import { get } from '@/utils/utils.js'
 import '@/utils/object_utils.js'
 
 export default {

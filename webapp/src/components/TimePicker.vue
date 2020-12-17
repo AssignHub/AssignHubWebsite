@@ -18,7 +18,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 </style>
 
 <script>
-import { inRange, stringReplaceByIndex } from '@/utils/util.js'
+import { inRange, stringReplaceByIndex } from '@/utils/utils.js'
 
 export default {
   name: 'TimePicker',
