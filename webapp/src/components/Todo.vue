@@ -32,7 +32,7 @@
 
 <script>
 import AssignmentCard from '@/components/AssignmentCard'
-import { compareDateDay } from '@/utils/util.js'
+import { compareDateDay } from '@/utils/utils.js'
 
 export default {
   name: 'Todo',

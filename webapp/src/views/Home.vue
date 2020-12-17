@@ -45,7 +45,7 @@ import InputAssignment from '@/components/InputAssignment'
 import AddAssignment from '@/components/AddAssignment'
 import Todo from '@/components/Todo'
 
-import { get, post } from '@/utils/util.js'
+import { get, post } from '@/utils/utils.js'
 
 export default {
   name: 'Home',
@@ -102,8 +102,9 @@ export default {
   },
 
   async mounted() {
-    console.log('isAuthorized: ', this.$gAuth.isAuthorized)
+    console.log(localStorage.getItem('wat'))
     this.terms = await get('/usc/terms')
+    setTimeout( () => console.log('isAuthorized: ', this.$gAuth.isAuthorized), 3000)
   },
 
   methods: {
@@ -123,7 +124,7 @@ export default {
     },
     signInGoogle() {
       this.$gAuth.getAuthCode().then(authCode => {
-        post('/auth/sign-in', { authCode }).then(data => console.log(data))
+        post('/auth/sign-in', { authCode }).then(data => localStorage.setItem('token', data.token))
       })
     }
   },

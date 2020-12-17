@@ -30,7 +30,7 @@
 
 <script>
 import AddClassMenu from '@/components/AddClassMenu'
-import { getCurTerm } from '@/utils/util.js'
+import { getCurTerm } from '@/utils/utils.js'
 
 export default {
   name: 'ClassesList',
