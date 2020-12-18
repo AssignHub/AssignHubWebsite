@@ -1,3 +1,6 @@
+import Vue from 'vue'
+import store from '@/store'
+
 const serverURL = 'http://localhost:3000'
 
 export const createUUID = () => {
@@ -81,4 +84,15 @@ export const getCurTerm = () => {
 
 export const stringReplaceByIndex = (origString, replaceString, beg, end) => {
   return origString.substring(0, beg) + replaceString + origString.substring(end)
+}
+
+export const signInGoogle = () => {
+  return Vue.gAuth.getAuthCode().then(authCode => {
+    return post('/auth/sign-in', { authCode })
+  }).then(data => {
+    localStorage.setItem('token', data.token)
+    return get('/auth/profile')
+  }).then(authUser => {
+    store.commit('setAuthUser', authUser)
+  })
 }

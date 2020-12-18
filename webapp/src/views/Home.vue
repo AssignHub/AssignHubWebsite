@@ -1,7 +1,6 @@
 <template>
   <v-container fluid>
-    <v-btn block @click="signInGoogle">Sign in with Google</v-btn>
-    <CheckIn :firstName="firstName" :emojis="emojis" />
+    <CheckIn :firstName="authUser.firstName" :emojis="emojis" />
 
     <v-container fluid class="fill-height">
       <v-row>
@@ -46,6 +45,7 @@ import AddAssignment from '@/components/AddAssignment'
 import Todo from '@/components/Todo'
 
 import { get, post } from '@/utils/utils.js'
+import { mapState } from 'vuex'
 
 export default {
   name: 'Home',
@@ -62,8 +62,6 @@ export default {
 
   data() {
     return {
-      firstName: 'Jonathan',
-      lastName: 'Liu',
       terms: [],
       classes: [
         {uid: 'BUAD-304', text: 'BUAD 304', color: 'green lighten-2'},
@@ -101,8 +99,11 @@ export default {
     }
   },
 
+  computed: {
+    ...mapState(['authUser'])
+  },
+
   async mounted() {
-    console.log(localStorage.getItem('wat'))
     this.terms = await get('/usc/terms')
     setTimeout( () => console.log('isAuthorized: ', this.$gAuth.isAuthorized), 3000)
     get('/auth/profile').then(data => {console.log('PROFILE DATA: ', data)})
@@ -123,11 +124,6 @@ export default {
       this.$set(assignment, 'done', false)
       this.assignments.push(assignment)
     },
-    signInGoogle() {
-      this.$gAuth.getAuthCode().then(authCode => {
-        post('/auth/sign-in', { authCode }).then(data => localStorage.setItem('token', data.token))
-      })
-    }
   },
 }
 </script>
