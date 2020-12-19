@@ -3,7 +3,7 @@ const TROJAN = require('trojan-course-api')
 //TROJAN.courses('MPVA', {term: '20203'}).then(console.log)
 
 TROJAN.course('BUAD-304').then(data => {
-  console.log(data.courses['BUAD-304'].sections[14723].blocks)
+  console.log(data.courses['BUAD-304'].sections[14723])
   //console.log(data.departments.LING)
   //console.log(data.departments.ENGV.depts)
 }).catch(err => console.log(err))

@@ -106,7 +106,6 @@ export default {
   async mounted() {
     this.terms = await get('/usc/terms')
     setTimeout( () => console.log('isAuthorized: ', this.$gAuth.isAuthorized), 3000)
-    get('/auth/profile').then(data => {console.log('PROFILE DATA: ', data)})
   },
 
   methods: {

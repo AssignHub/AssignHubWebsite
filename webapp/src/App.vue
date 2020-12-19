@@ -1,5 +1,8 @@
 <template>
   <v-app v-if="loaded">
+    <AutoSnackbar color="error" :text="error" />
+    <AutoSnackbar color="info" :text="info" />
+
     <v-app-bar
       app
       color="white darken-2"
@@ -43,7 +46,7 @@
     </v-app-bar>
 
     <v-main>
-      <router-view />
+      <router-view @error="showError" @info="showInfo" />
     </v-main>
   </v-app>
 </template>
@@ -55,15 +58,18 @@ html {
 </style>
 
 <script>
-import { get } from '@/utils/utils'
+import { get, post } from '@/utils/utils'
 import { mapState } from 'vuex'
+
+import AutoSnackbar from '@/components/AutoSnackbar'
 import UserAvatarContent from '@/components/UserAvatarContent'
 
 export default {
   name: 'App',
 
   components: {
-    UserAvatarContent
+    AutoSnackbar,
+    UserAvatarContent,
   },
 
   async created() {
@@ -80,13 +86,13 @@ export default {
 
   watch: {
     authUser: {
-      immediate: false,
+      immediate: true,
       handler() {
         this.redirectAuthUser()
       }
     },
     $route: {
-      immediate: false,
+      immediate: true,
       handler() {
         this.redirectAuthUser()
       }
@@ -96,6 +102,8 @@ export default {
   data() {
     return {
       loaded: false,
+      error: '',
+      info: '',
     }
   },
 
@@ -104,6 +112,14 @@ export default {
   },
 
   methods: {
+    showError(error) {
+      this.error = ''
+      this.$nextTick(() => {this.error = error})
+    },
+    showInfo(info) {
+      this.info = ''
+      this.$nextTick(() => {this.info = info})
+    },
     redirectAuthUser() {
       let authRoutes = ['Home']
       let noAuthRoutes = ['SignIn']
@@ -117,7 +133,11 @@ export default {
       }
     },
     signOut() {
-      // TODO: implement
+      post('/auth/sign-out').then(() => {
+        this.$store.commit('setAuthUser', null)
+      }).catch(err => {
+        this.showError('There was a problem signing out! Please try again later.')
+      })
     },
   },
 }
