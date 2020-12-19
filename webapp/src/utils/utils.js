@@ -34,9 +34,7 @@ export const inRange = (val, a, b) => {
 export const get = (route) => {
   return fetch(serverURL + route, {
     method: 'GET',
-    headers: {
-      ...getAuthHeader()
-    },
+    credentials: 'include',
   }).then(res => res.json()).then(data => {
     if (data.error)
       throw data.error
@@ -48,9 +46,9 @@ export const get = (route) => {
 export const post = (route, body) => {
   return fetch(serverURL + route, {
     method: 'POST',
+    credentials: 'include',
     headers: {
-      'Content-Type': 'application/json',
-      ...getAuthHeader(),
+      'Content-Type': 'application/json'
     },
     body: JSON.stringify(body),
   }).then(res => res.json()).then(data => {
@@ -59,14 +57,6 @@ export const post = (route, body) => {
     
     return data
   })
-}
-
-export const getAuthHeader = () => {
-  // Get JWT token
-  const token = localStorage.getItem('token')
-  if (!token)
-    return {}
-  return { 'Authorization': 'Bearer ' + token }
 }
 
 export const getCurTerm = () => {
@@ -89,8 +79,7 @@ export const stringReplaceByIndex = (origString, replaceString, beg, end) => {
 export const signInGoogle = () => {
   return Vue.gAuth.getAuthCode().then(authCode => {
     return post('/auth/sign-in', { authCode })
-  }).then(data => {
-    localStorage.setItem('token', data.token)
+  }).then(() => {
     return get('/auth/profile')
   }).then(authUser => {
     store.commit('setAuthUser', authUser)

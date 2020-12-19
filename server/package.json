@@ -9,12 +9,15 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "connect-redis": "^5.0.0",
+    "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "jsonwebtoken": "^8.5.1",
+    "express-session": "^1.17.1",
     "mongoose": "^5.10.13",
     "node-fetch": "^2.6.1",
+    "redis": "^3.0.2",
     "trojan-course-api": "^2.2.2"
   },
   "devDependencies": {

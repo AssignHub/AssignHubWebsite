@@ -1,9 +1,8 @@
 const express = require('express')
 const router = express.Router()
-const jwt = require('jsonwebtoken')
 const User = require('../models/user')
 const { _fetch, getProfile, getExpireDate } = require('../utils/utils')
-const { checkToken, getUser } = require('../middleware/auth')
+const { getUser } = require('../middleware/auth')
 require('dotenv').config()
 
 router.post('/sign-in', async (req, res) => {
@@ -49,17 +48,28 @@ router.post('/sign-in', async (req, res) => {
       user = new User(userData).save()
     }
     
-    // Return JWT token
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' })
-    res.json({ token })
+    // Start authenticated session
+    req.session.userId = user._id
+
+    res.json({ success: true })
   } catch(err) {
     console.error(err)
     res.status(500).json({ error: err })
   }
 })
 
-router.get('/profile', checkToken, getUser, (req, res) => {
-  res.json(res.user.basicInfo)
+router.post('/sign-out', (req, res) => {
+  req.session.destroy(err => {
+    if (err) {
+      console.error(err)
+      res.status(500).json({ error: err })
+    }
+    res.send({ success: true })
+  })
+})
+
+router.get('/profile', getUser, (req, res) => {
+  res.json(res.locals.user.basicInfo)
 })
 
 module.exports = router
