@@ -1,9 +1,3 @@
-<!-- 
-TODO: add lazy loading when loading ALL departments/classes so it's less "laggy" https://www.codeply.com/p/eOZKk873AJ
-TODO: only cache term data
-TODO: change it so we don't search for classes, just input department code and class number, and it pops up with the sections
--->
-
 <template>
   <v-menu
     transition="slide-x-transition"
@@ -23,64 +17,62 @@ TODO: change it so we don't search for classes, just input department code and c
         v-on="on"
       >+ Add Class</v-btn>
     </template>
-    <v-card color="grey lighten-3" style="height: 335px;">
-      <v-card-text class="pb-0" style="height: 280px;">
+    <v-card color="grey lighten-3">
+      <v-card-title>Add class</v-card-title>
+      <v-card-text class="px-2">
         <v-text-field
-          :label="`Search for ${curCatName}`"
-          solo
-          hide-details
-          autocomplete="off" 
-          prepend-inner-icon="mdi-magnify"
-          v-model="query"
-          class="mb-4"
-        ></v-text-field>
-        <div v-if="menu && categories[curCategoryIndex].items === 'loading'">
-          <v-skeleton-loader 
-            v-for="i in 3"
-            :key="i"
-            type="list-item-two-line"
-            tile
-          ></v-skeleton-loader>
-        </div>
-        <div v-else-if="filteredItems.length === 0" class="text-center">
-          No {{ curCatNamePlural }} to show.
-        </div>
-        <v-list 
-          v-else
+          id="dept-text-field"
+          label="Department"
+          placeholder="eg. BUAD, CSCI"
+          v-model="dept"
+          autocomplete="off"
+          outlined
           dense
-          class="pa-0 overflow-y-auto"
-          style="max-height: 200px;"
-        >
-          <v-list-item 
-            v-for="(item, i) in filteredItems"
-            :key="i"
-            two-line 
-            @click="itemClicked(item)"
-          >
-            <v-list-item-content>
-              <v-list-item-title>{{ item.value }}</v-list-item-title>
-              <v-list-item-subtitle
-                v-for="(description, i) in categories[curCategoryIndex].getDescription(item)"
-                :key="i"
-              >{{ description }}</v-list-item-subtitle>
-            </v-list-item-content>
-            <v-list-item-action v-if="curCategoryIndex < categories.length-1">
-              <v-icon>mdi-chevron-right</v-icon>
-            </v-list-item-action>
-          </v-list-item>
-        </v-list>
+          class="white mb-2"
+          hide-details
+          onkeypress="return /[a-z]/i.test(event.key)"
+          :disabled="loading"
+        ></v-text-field>
+      
+        <v-text-field
+          label="Course Number"
+          placeholder="eg. 101, 304"
+          v-model="courseNum"
+          type="number"
+          autocomplete="off"
+          outlined
+          dense
+          class="white mb-2"
+          hide-details
+          :disabled="loading"
+        ></v-text-field>
+
+        <v-text-field
+          label="Section"
+          placeholder="eg. 12345"
+          v-model="sectionNum"
+          type="number"
+          autocomplete="off"
+          outlined
+          dense
+          class="white"
+          hide-details
+          :disabled="loading"
+        ></v-text-field>
       </v-card-text>
       <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn
-          v-if="curCategoryIndex > 0"
-          text
-          @click="goBack"
-        >Back</v-btn>
+        <v-spacer/>
         <v-btn
           text
-          @click="menu = false; query = ''"
+          class="mr-2"
+          @click="menu = false; dept = ''; courseNum = ''; sectionNum = '';"
         >Close</v-btn>
+        <v-btn
+          :disabled="!enableAdd"
+          color="primary"
+          :loading="loading"
+          @click="addClass"
+        >Add</v-btn>
       </v-card-actions>
     </v-card>
   </v-menu>
@@ -93,9 +85,32 @@ TODO: change it so we don't search for classes, just input department code and c
   }
 </style>
 
+<style>
+  #dept-text-field {
+    text-transform: uppercase;
+  }
+  ::-webkit-inner-spin-button, ::-webkit-outer-spin-button {
+    display: none; /* TODO: find the equivalent for firefox */
+  }
+  ::-webkit-input-placeholder { /* WebKit browsers */
+    text-transform: none;
+  }
+  :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    text-transform: none;
+  }
+  ::-moz-placeholder { /* Mozilla Firefox 19+ */
+    text-transform: none;
+  }
+  :-ms-input-placeholder { /* Internet Explorer 10+ */
+    text-transform: none;
+  }
+  ::placeholder { /* Recent browsers */
+    text-transform: none;
+  }
+</style>
+
 <script>
-import { get } from '@/utils/utils.js'
-import '@/utils/object_utils.js'
+import { get, post } from '@/utils/utils'
 
 export default {
   name: 'AddClassMenu',
@@ -107,119 +122,49 @@ export default {
   data() {
     return {
       menu: false,
-      query: '',
-
-      categories: [
-        {
-          name: 'department',
-          namePlural: 'departments',
-          items: null,
-          curItem: null,
-          route: `/usc/depts`,
-          getDescription: (item) => [item.description],
-        },
-        {
-          name: 'class',
-          namePlural: 'classes',
-          items: null,
-          curItem: null,
-          route: `/usc/depts/##[0]##/courses`, // ##[0]## refers to the curItem of the index 0 category
-          getDescription: (item) => [item.description],
-        },
-        {
-          name: 'section',
-          namePlural: 'sections',
-          items: null,
-          curItem: null,
-          route: `/usc/courses/##[1]##/sections`,
-          getDescription: this.getSectionDescription,
-        },
-      ],
+      dept: '',
+      courseNum: '',
+      sectionNum: '',
+      loading: false,
     }
   },
 
   computed: {
-    curCategoryIndex() {
-      if (this.menu) {
-        for (let i = 0; i < this.categories.length; i++) {
-          if (!this.categories[i].curItem) {
-            this.loadCategory(i)
-            return i
-          }
-        }
-        // We have reached the end of the categories...Add the class!
-        this.$emit('addClass', {
-          class: this.categories[1].curItem.value,
-          sectionData: this.categories[2].curItem,
-        })
-        this.menu = false
-        this.resetCategories()
-      }
-      return -1 // -1 means menu isn't shown
+    enableAdd() {
+      return this.dept && this.courseNum && this.sectionNum
     },
-    curCatName() {
-      return this.menu && this.categories[this.curCategoryIndex].name 
-    },
-    curCatNamePlural() {
-      return this.menu && this.categories[this.curCategoryIndex].namePlural
-    },
-    filteredItems() {
-      if (this.menu) {
-        const items = this.categories[this.curCategoryIndex].items
-        if (!Array.isArray(items))
-          return [] 
-
-        const filteredItems = items.filter(item => {
-          return item.value.toUpperCase().includes(this.query.toUpperCase())
-        })
-        return filteredItems 
-      }
-      return []
+    courseId() {
+      return this.dept.toUpperCase() + '-' + this.courseNum
     },
   },
 
   methods: {
-    async loadCategory(index) {
-      if (!this.categories[index].items) {
-        this.categories[index].items = 'loading' // Prevent running GET request again
-        const regex = /##\[([0-9]+)\]##/g
-        const route = this.categories[index].route.replace(regex, (match, replaceIndex) => {
-          if (this.categories[replaceIndex].curItem.value.includes('/')) {
-            alert('h3h3 brilliant hacking skills, my friend...')
-            return '<STOP>'
-          }
-          return this.categories[replaceIndex].curItem.value
-        })
-        if (!route.includes('<STOP>')) {
-          console.log('GET ', route  + `?term=${this.term}`)
-          this.categories[index].items = await get(route + `?term=${this.term}`)
+    addClass() {
+      this.loading = true
+      
+      post(`/usc/add-class?term=${this.term}`, {
+        courseId: this.courseId,
+        sectionId: this.sectionNum,
+      }).then(data => {
+        this.$emit('info', `Successfully added "${this.courseId}"`)
+        this.resetForm()
+        this.loading = false
+      }).catch(err => {
+        if (err === 'class-not-found') {
+          this.$emit('error', 'The class you tried to add does not exist!')
+        } else if (err === 'class-not-lec') {
+          this.$emit('error', 'The class you tried to add is not a Lecture section. Please try again.')
         }
-      }
+        this.loading = false
+      })
+
+      get(`/usc/my-classes?term=${this.term}`).then(data => console.log('My classes: ', data))
     },
-    itemClicked(item) {
-      this.categories[this.curCategoryIndex].curItem = item
-      this.query = ''
+    resetForm() {
+      this.dept = ''
+      this.courseNum = ''
+      this.sectionNum = ''
     },
-    getSectionDescription(item) {
-      const instructorString = item.instructor.first_name + ' ' + item.instructor.last_name
-      const to12HrTime = (time) => new Date(`0000-01-01T${time}:00`).toLocaleTimeString([], {timeStyle: 'short'})
-      const blocks = item.blocks; 
-      const blocksString = blocks.map(block => block.day === 'H' ? 'TH' : block.day).join('/') + ', ' + to12HrTime(blocks[0].start) + ' - ' + to12HrTime(blocks[0].end)
-      return [instructorString, blocksString]
-    },
-    goBack() {
-      const origIndex = this.curCategoryIndex
-      this.categories[origIndex-1].curItem = null
-      this.categories[origIndex].items = null
-      this.query = ''
-    },
-    resetCategories() {
-      this.query = ''
-      for (let i = 0; i < this.categories.length; i++) {
-        this.categories[i].curItem = null
-        this.categories[i].items = null
-      }
-    },
-  },
+  }
 }
 </script>

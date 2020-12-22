@@ -6,9 +6,13 @@ exports.getUser = async (req, res, next) => {
   if (req.session.userId) {
     try {
       res.locals.user = await User.findById(req.session.userId)
+      if (!res.locals.user) {
+        throw 'User does not exist!'
+      }
     } catch (err) {
       console.error(err)
       res.status(500).json({ error: 'user-does-not-exist' })
+      return
     }
     
     if (res.locals.user.accessTokenExpireDate < new Date().getTime()) {
@@ -22,11 +26,12 @@ exports.getUser = async (req, res, next) => {
       } catch (err) {
         console.error(err)
         res.status(403).json({ error: 'invalid-token' })
+        return
       }
     }
 
     next()
   } else {
-    res.status(403).json({ error: 'no-session' })
+    res.status(401).json({ error: 'no-session' })
   }
 }

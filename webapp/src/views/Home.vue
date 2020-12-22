@@ -7,26 +7,54 @@
         <v-col cols="12" md="2" class="py-0">
           <v-row>
             <v-col cols="12">
-              <ClassesList :classes="classes" :terms="terms" />
+              <ClassesList :classes="classes" :terms="terms" @error="error => $emit('error', error)" @info="info => $emit('info', info)" />
             </v-col>
             <v-col cols="12">
-              <FriendsList :friends="friends" :emojis="emojis" />
+              <FriendsList :friends="friends" :emojis="emojis" @error="error => $emit('error', error)" @info="info => $emit('info', info)" />
             </v-col>
           </v-row>
         </v-col>
         <v-col cols="3" md="2">
-          <Todo style="height: 100%;" :assignments="assignments" :classes="classes" :curDate="curDate" @toggleAssignment="(uid) => toggleAssignment(uid)"/>
+          <Todo 
+            style="height: 100%;" 
+            :assignments="assignments" 
+            :classes="classes" 
+            :curDate="curDate" 
+            @toggleAssignment="(uid) => toggleAssignment(uid)" 
+            @error="error => $emit('error', error)" 
+            @info="info => $emit('info', info)"
+          />
         </v-col>
         <v-col class="py-0">
           <v-row>
             <v-col cols="12">
-              <Calendar class="mb-1" :assignments="assignments" :classes="classes" :curDate="curDate" :numPendingAssignments="assignmentsToAdd.length" @toggleAssignment="(uid) => toggleAssignment(uid)" />
+              <Calendar 
+                class="mb-1" 
+                :assignments="assignments" 
+                :classes="classes" 
+                :curDate="curDate" 
+                :numPendingAssignments="assignmentsToAdd.length" 
+                @toggleAssignment="(uid) => toggleAssignment(uid)" 
+                @error="error => $emit('error', error)" 
+                @info="info => $emit('info', info)"
+              />
             </v-col>
             <v-col>
-              <InputAssignment :classes="classes" @createAssignment="a => createAssignment(a)" />
+              <InputAssignment 
+                :classes="classes" 
+                @createAssignment="a => createAssignment(a)"
+                @error="error => $emit('error', error)" 
+                @info="info => $emit('info', info)"
+              />
             </v-col>
             <v-col>
-              <AddAssignment :assignmentsToAdd="assignmentsToAdd" :classes="classes" @addAssignment="(uid) => addAssignment(uid)"/>
+              <AddAssignment 
+                :assignmentsToAdd="assignmentsToAdd" 
+                :classes="classes" 
+                @addAssignment="(uid) => addAssignment(uid)"
+                @error="error => $emit('error', error)" 
+                @info="info => $emit('info', info)"
+              />
             </v-col>
           </v-row>
         </v-col>

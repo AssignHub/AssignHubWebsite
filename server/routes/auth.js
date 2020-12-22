@@ -45,7 +45,8 @@ router.post('/sign-in', async (req, res) => {
     
     // Create new account if no account exists for email
     if (!user) {
-      user = new User(userData).save()
+      user = await new User(userData).save()
+      console.log('New account created: ', profileData.email)
     }
     
     // Start authenticated session

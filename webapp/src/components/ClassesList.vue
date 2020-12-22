@@ -24,7 +24,7 @@
       </v-list-item>
     </v-list>
     
-    <AddClassMenu :term="term" />
+    <AddClassMenu :term="term" @error="error => $emit('error', error)" @info="info => $emit('info', info)" />
   </v-card>
 </template>
 
