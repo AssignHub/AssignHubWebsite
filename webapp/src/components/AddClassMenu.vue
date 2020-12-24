@@ -55,10 +55,12 @@
           autocomplete="off"
           outlined
           dense
-          class="white"
+          class="white mb-2"
           hide-details
           :disabled="loading"
         ></v-text-field>
+
+        <ColorSelect class="white" v-model="color" :colors="colors" />
       </v-card-text>
       <v-card-actions>
         <v-spacer/>
@@ -111,12 +113,20 @@
 
 <script>
 import { get, post } from '@/utils/utils'
+import { CLASS_COLORS } from '@/constants'
+
+import ColorSelect from '@/components/ColorSelect'
 
 export default {
   name: 'AddClassMenu',
 
   props: {
-    term: {type: String, required: true},
+    term: { type: String, required: true },
+    classes: { type: Array, required: true },
+  },
+
+  components: {
+    ColorSelect,
   },
 
   data() {
@@ -125,7 +135,14 @@ export default {
       dept: '',
       courseNum: '',
       sectionNum: '',
+      color: '',
       loading: false,
+    }
+  },
+
+  watch: {
+    colors: {
+      handler() { this.color = this.colors[Math.floor(Math.random() * this.colors.length)] },
     }
   },
 
@@ -136,6 +153,14 @@ export default {
     courseId() {
       return this.dept.toUpperCase() + '-' + this.courseNum
     },
+    colors() {
+      let colors = CLASS_COLORS
+      for (let c of this.classes) {
+        let i = colors.indexOf(c.color)
+        if (i > -1) colors.splice(i, 1)
+      }
+      return colors
+    },
   },
 
   methods: {
@@ -145,6 +170,7 @@ export default {
       post(`/usc/add-class?term=${this.term}`, {
         courseId: this.courseId,
         sectionId: this.sectionNum,
+        color: this.color,
       }).then(data => {
         this.$emit('info', `Successfully added "${this.courseId}"`)
         this.resetForm()
@@ -154,11 +180,13 @@ export default {
           this.$emit('error', 'The class you tried to add does not exist!')
         } else if (err === 'class-not-lec') {
           this.$emit('error', 'The class you tried to add is not a Lecture section. Please try again.')
+        } else if (err === 'already-in-class') {
+          this.$emit('error', 'You are already in that class!')
+        } else {
+          this.$emit('error', 'Something went wrong when trying to add that class. Please try again later.')
         }
         this.loading = false
       })
-
-      get(`/usc/my-classes?term=${this.term}`).then(data => console.log('My classes: ', data))
     },
     resetForm() {
       this.dept = ''

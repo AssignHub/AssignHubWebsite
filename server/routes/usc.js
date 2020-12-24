@@ -45,6 +45,7 @@ router.post('/add-class', getUser, getTerm, async (req, res) => {
   /* Body params:
   *  courseId - the class's course id (e.g. BUAD-304)
   *  sectionId - the class's section id (e.g. 12345)
+  *  color - the color, in hex format (e.g. #1fa3bc)
   */
   
   let section;
@@ -67,6 +68,7 @@ router.post('/add-class', getUser, getTerm, async (req, res) => {
     }
 
     if (section.type !== 'Lec') {
+      // If not a lecture section
       res.status(400).json({ error: 'class-not-lec' })
       return
     }
@@ -92,8 +94,14 @@ router.post('/add-class', getUser, getTerm, async (req, res) => {
       course = await new Course(courseData).save()
     }
     
-    if (!res.locals.user.classes.includes(course._id))
-      res.locals.user.classes.push(course._id)
+    if (res.locals.user.classes.filter(e => e.class.equals(course._id)).length > 0) {
+      // If user already enrolled in class
+      console.log('USER ALREADY ENROLLED!!!')
+      res.status(400).json({ error: 'already-in-class' })
+      return
+    }
+
+    res.locals.user.classes.push({ class: course._id, color: req.body.color })
     await res.locals.user.save()
 
     res.status(201).json({ success: true })
@@ -111,7 +119,7 @@ router.get('/my-classes', getUser, getTerm, async (req, res) => {
   */
   try {
     await res.locals.user.populate({
-      path: 'classes',
+      path: 'classes.class',
       match: { term: res.locals.term }
     }).execPopulate()
     res.json({ classes: res.locals.user.classes })

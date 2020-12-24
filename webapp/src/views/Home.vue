@@ -7,7 +7,7 @@
         <v-col cols="12" md="2" class="py-0">
           <v-row>
             <v-col cols="12">
-              <ClassesList :classes="classes" :terms="terms" @error="error => $emit('error', error)" @info="info => $emit('info', info)" />
+              <ClassesList :classes="classes" :terms="terms" :term="term" @error="error => $emit('error', error)" @info="info => $emit('info', info)" />
             </v-col>
             <v-col cols="12">
               <FriendsList :friends="friends" :emojis="emojis" @error="error => $emit('error', error)" @info="info => $emit('info', info)" />
@@ -72,7 +72,7 @@ import InputAssignment from '@/components/InputAssignment'
 import AddAssignment from '@/components/AddAssignment'
 import Todo from '@/components/Todo'
 
-import { get, post } from '@/utils/utils.js'
+import { get, post, getCurTerm } from '@/utils/utils'
 import { mapState } from 'vuex'
 
 export default {
@@ -90,12 +90,14 @@ export default {
 
   data() {
     return {
+      // Variables
       terms: [],
+      term: '',
       classes: [
-        {uid: 'BUAD-304', text: 'BUAD 304', color: 'green lighten-2'},
+        /*{uid: 'BUAD-304', text: 'BUAD 304', color: 'green lighten-2'},
         {uid: 'CSCI-103', text: 'CSCI 103', color: 'orange lighten-2'},
         {uid: 'MATH-225', text: 'MATH 225', color: 'blue lighten-2'},
-        {uid: 'ENGR-102', text: 'ENGR 102', color: 'pink lighten-2'},
+        {uid: 'ENGR-102', text: 'ENGR 102', color: 'pink lighten-2'},*/
       ],
       emojis: [
         require('@/assets/crying.png'),
@@ -113,16 +115,16 @@ export default {
       ],
       curDate: new Date(),
       assignments: [
-        {uid: '0', classUid: 'CSCI-103', name: 'Quiz 4', dueDate: new Date(), done: false},
+        /*{uid: '0', classUid: 'CSCI-103', name: 'Quiz 4', dueDate: new Date(), done: false},
         {uid: '1', classUid: 'MATH-225', name: 'Homework 5', dueDate: new Date().getTime() + 1*(24 * 60 * 60 * 1000), done: false},
         {uid: '2', classUid: 'BUAD-304', name: 'Thomas Green Case Study', dueDate: new Date().getTime() + 2*(24 * 60 * 60 * 1000), done: false},
-        {uid: '3', classUid: 'ENGR-102', name: 'Class Presentation', dueDate: new Date().getTime() + 3*(24 * 60 * 60 * 1000), done: false},
+        {uid: '3', classUid: 'ENGR-102', name: 'Class Presentation', dueDate: new Date().getTime() + 3*(24 * 60 * 60 * 1000), done: false},*/
       ],
       assignmentsToAdd: [
-        {uid: '4', classUid: 'MATH-225', name: 'Homework 6', dueDate: new Date().getTime() + 2*(24 * 60 * 60 * 1000)},
+        /*{uid: '4', classUid: 'MATH-225', name: 'Homework 6', dueDate: new Date().getTime() + 2*(24 * 60 * 60 * 1000)},
         {uid: '5', classUid: 'ENGR-102', name: 'Pitch Presentation', dueDate: new Date().getTime() + 1*(24 * 60 * 60 * 1000)},
         {uid: '6', classUid: 'CSCI-103', name: 'Recursion Lab', dueDate: new Date().getTime() + 4*(24 * 60 * 60 * 1000)},
-        {uid: '7', classUid: 'CSCI-103', name: 'Algorithm Lab', dueDate: new Date().getTime() + 3*(24 * 60 * 60 * 1000)},
+        {uid: '7', classUid: 'CSCI-103', name: 'Algorithm Lab', dueDate: new Date().getTime() + 3*(24 * 60 * 60 * 1000)},*/
       ],
     }
   },
@@ -133,7 +135,9 @@ export default {
 
   async mounted() {
     this.terms = await get('/usc/terms')
-    setTimeout( () => console.log('isAuthorized: ', this.$gAuth.isAuthorized), 3000)
+    this.term = getCurTerm()
+    this.classes = (await get(`/usc/my-classes?term=${this.term}`)).classes
+    console.log(this.classes)
   },
 
   methods: {

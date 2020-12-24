@@ -4,6 +4,7 @@
     hide-details
     outlined 
     small-chips
+    no-data-text="You are not in any classes!"
     :label="label"
     :items="classes"
     :clearable="clearable"
@@ -13,12 +14,12 @@
   >
     <template v-slot:item="{ item }">
       <v-chip small :color="item.color">
-        {{ item.text }}
+        {{ item.class.courseId }}
       </v-chip>
     </template>
     <template v-slot:selection="{ attrs, item, selected }">
       <v-chip small :color="item.color" :input-value="selected" v-bind="attrs">
-        {{ item.text }}
+        {{ item.class.courseId }}
       </v-chip>
     </template>
   </v-select>

@@ -8,13 +8,19 @@ const userSchema = new mongoose.Schema({
   pic: { type: String, required: true },
   
   // Google OAuth
-  accessToken: { type: String },
-  refreshToken: { type: String },
-  accessTokenExpireDate: { type: Number },
+  accessToken: String,
+  refreshToken: String,
+  accessTokenExpireDate: Number,
 
   // Classes and assignments
-  classes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }],
-  assignments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Assignment' }],
+  classes: [{
+    class: { type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true },
+    color: { type: String, required: true },
+  }],
+  assignments: [{ 
+    assignment: { type: mongoose.Schema.Types.ObjectId, ref: 'Assignment', required: true },
+    done: { type: Boolean, default: false }, 
+  }],
 })
 
 userSchema.virtual('basicInfo').get(function() {

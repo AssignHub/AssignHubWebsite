@@ -22,7 +22,7 @@ exports.getUser = async (req, res, next) => {
         res.locals.user.accessToken = accessTokenData.access_token,
         res.locals.user.accessTokenExpireDate = getExpireDate(accessTokenData.expires_in)
 
-        res.locals.user = res.locals.user.save()
+        res.locals.user = await res.locals.user.save()
       } catch (err) {
         console.error(err)
         res.status(403).json({ error: 'invalid-token' })

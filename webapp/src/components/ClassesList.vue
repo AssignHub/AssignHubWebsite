@@ -4,7 +4,7 @@
     <v-select
       :items="terms"
       dense
-      solo
+      outlined
       item-text="text"
       item-value="term"
       v-model="term"
@@ -18,19 +18,18 @@
       >
         <v-list-item-content class="pa-0">
           <v-col cols="auto" class="pa-0">
-            <v-chip :color="c.color">{{ c.text }}</v-chip>
+            <v-chip :color="c.color">{{ c.class.courseId }}</v-chip>
           </v-col>
         </v-list-item-content>
       </v-list-item>
     </v-list>
     
-    <AddClassMenu :term="term" @error="error => $emit('error', error)" @info="info => $emit('info', info)" />
+    <AddClassMenu :term="term" :classes="classes" @error="error => $emit('error', error)" @info="info => $emit('info', info)" />
   </v-card>
 </template>
 
 <script>
 import AddClassMenu from '@/components/AddClassMenu'
-import { getCurTerm } from '@/utils/utils.js'
 
 export default {
   name: 'ClassesList',
@@ -38,25 +37,11 @@ export default {
   props: {
     classes: { type: Array, required: true },
     terms: { type: Array, required: true },
+    term: { type: String, required: true },
   },
 
   components: {
     AddClassMenu,
-  },
-
-  watch: {
-    terms() {
-      if (this.terms.length > 0) {
-        // set to current term
-        this.term = getCurTerm()
-      }
-    },
-  },
-
-  data() {
-    return {
-      term: '',
-    }
   },
 }
 </script>
