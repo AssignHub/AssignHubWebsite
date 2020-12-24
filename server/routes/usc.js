@@ -93,10 +93,9 @@ router.post('/add-class', getUser, getTerm, async (req, res) => {
       }
       course = await new Course(courseData).save()
     }
-    
+
     if (res.locals.user.classes.filter(e => e.class.equals(course._id)).length > 0) {
       // If user already enrolled in class
-      console.log('USER ALREADY ENROLLED!!!')
       res.status(400).json({ error: 'already-in-class' })
       return
     }
@@ -122,7 +121,8 @@ router.get('/my-classes', getUser, getTerm, async (req, res) => {
       path: 'classes.class',
       match: { term: res.locals.term }
     }).execPopulate()
-    res.json({ classes: res.locals.user.classes })
+    const classes = await res.locals.user.classes.filter(c => c.class !== null)
+    res.json({ classes })
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: err })

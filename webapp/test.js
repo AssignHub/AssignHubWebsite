@@ -2,9 +2,9 @@ const TROJAN = require('trojan-course-api')
 
 //TROJAN.courses('MPVA', {term: '20203'}).then(console.log)
 
-TROJAN.course('BUAD-304').then(data => {
+TROJAN.course('CSCI-103', { term: '20203' }).then(data => {
   //console.log(data)
-  console.log(data.courses['BUAD-304'].sections[14723])
+  console.log(data.courses['CSCI-103'].sections)
   //console.log(data.departments.LING)
   //console.log(data.departments.ENGV.depts)
 }).catch(err => console.log(err))

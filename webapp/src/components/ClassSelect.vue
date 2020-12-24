@@ -45,6 +45,7 @@ export default {
 
   methods: {
     updateValue(value) {
+      console.log('class select value: ', value)
       this.$emit('input', value)
     },
   },

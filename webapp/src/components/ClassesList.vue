@@ -7,7 +7,8 @@
       outlined
       item-text="text"
       item-value="term"
-      v-model="term"
+      :value="term"
+      @input="(term) => $emit('update:term', term)"
       hide-details
       class="mx-2"
     ></v-select>

@@ -7,7 +7,7 @@
         <v-col cols="12" md="2" class="py-0">
           <v-row>
             <v-col cols="12">
-              <ClassesList :classes="classes" :terms="terms" :term="term" @error="error => $emit('error', error)" @info="info => $emit('info', info)" />
+              <ClassesList :classes="classes" :terms="terms" :term.sync="term" @error="error => $emit('error', error)" @info="info => $emit('info', info)" />
             </v-col>
             <v-col cols="12">
               <FriendsList :friends="friends" :emojis="emojis" @error="error => $emit('error', error)" @info="info => $emit('info', info)" />
@@ -136,8 +136,17 @@ export default {
   async mounted() {
     this.terms = await get('/usc/terms')
     this.term = getCurTerm()
-    this.classes = (await get(`/usc/my-classes?term=${this.term}`)).classes
-    console.log(this.classes)
+  },
+
+  watch: {
+    term() {
+      // TODO: maybe return ALL classes from ALL terms, and then filter based on term in front end
+      this.classes = []
+      get(`/usc/my-classes?term=${this.term}`).then(data => {
+        this.classes = data.classes
+        console.log('classes: ', this.classes)
+      })
+    },
   },
 
   methods: {

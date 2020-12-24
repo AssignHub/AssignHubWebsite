@@ -65,7 +65,7 @@ export default {
 
   data() {
     return {
-      curClasses: '',
+      curClasses: [],
     }
   },
 
@@ -74,9 +74,8 @@ export default {
       if (this.curClasses.length === 0)
         return this.assignmentsToAdd.sort((a, b) => a.dueDate - b.dueDate)
 
-      let filteredAssignments = this.curClasses.map(classText => {
-        let classUid = this.classes.find(c => c.text === classText).uid
-        return this.assignmentsToAdd.filter(a => a.classUid === classUid)
+      let filteredAssignments = this.curClasses.map(c => {
+        return this.assignmentsToAdd.filter(a => a.classUid === c.class._id)
       }).flat().sort((a, b) => a.dueDate - b.dueDate)
       return filteredAssignments
     },
