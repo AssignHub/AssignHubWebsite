@@ -154,7 +154,7 @@ export default {
       return this.dept.toUpperCase() + '-' + this.courseNum
     },
     colors() {
-      let colors = CLASS_COLORS
+      let colors = [...CLASS_COLORS]
       for (let c of this.classes) {
         let i = colors.indexOf(c.color)
         if (i > -1) colors.splice(i, 1)
