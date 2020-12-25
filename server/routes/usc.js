@@ -1,9 +1,43 @@
 const express = require('express')
 const router = express.Router()
+const cron = require('node-cron')
+const editJsonFile = require('edit-json-file')
 const TROJAN = require('trojan-course-api')
 const Course = require('../models/course')
 const { getUser } = require('../middleware/auth')
 require('../utils/object_utils')
+
+// Cache terms daily with cron
+const writeTermsToJson = async () => {
+  try {
+    const terms = await TROJAN.terms().then(data => {
+      return data.terms.map(term => { 
+        term = '' + term
+        const year = term.substring(0, 4)
+        const seasons = ['Spring', 'Summer', 'Fall']
+        const season = seasons[term.substring(4) - 1]
+        return { term, text: `${season} ${year}` }
+      })
+    })
+    let jsonFile = editJsonFile(`${__dirname}/../config/usc.json`)
+    jsonFile.set('terms', terms)
+    jsonFile.save()
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+const getTerms = () => {
+  return editJsonFile(`${__dirname}/../config/usc.json`).toObject().terms
+}
+
+writeTermsToJson()
+cron.schedule('0 0 * * *', () => {
+  console.log('========================================')
+  console.log('-----------Updating USC Terms-----------')
+  console.log('========================================')
+  writeTermsToJson()
+})
 
 // Middleware
 const getTerm = (req, res, next) => {
@@ -17,22 +51,9 @@ const getTerm = (req, res, next) => {
 }
 
 // Routes
-router.get('/terms', async (req, res) => {
-  try {
-    const terms = await TROJAN.terms().then(data => {
-      return data.terms.map(term => { 
-        term = '' + term
-        const year = term.substring(0, 4)
-        const seasons = ['Spring', 'Summer', 'Fall']
-        const season = seasons[term.substring(4) - 1]
-        return { term, text: `${season} ${year}` }
-      })
-    })
-    res.json(terms)
-  } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: err })
-  }
+router.get('/terms', (req, res) => {
+  let terms = getTerms()
+  res.json(terms)
 })
 
 router.post('/add-class', getUser, getTerm, async (req, res) => {
@@ -110,19 +131,21 @@ router.post('/add-class', getUser, getTerm, async (req, res) => {
   }
 })
 
-router.get('/my-classes', getUser, getTerm, async (req, res) => {
+router.get('/my-classes', getUser, async (req, res) => {
   // Requires authentication
 
   /* Query params:
-  *  term - the desired term
+  *  terms - the desired term
   */
   try {
+    let terms = getTerms().map(t => t.term)
+
     await res.locals.user.populate({
       path: 'classes.class',
-      match: { term: res.locals.term }
+      match: { term: { '$in': terms } }
     }).execPopulate()
     const classes = await res.locals.user.classes.filter(c => c.class !== null)
-    res.json({ classes })
+    res.json(classes)
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: err })

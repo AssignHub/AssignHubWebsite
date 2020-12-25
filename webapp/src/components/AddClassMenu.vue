@@ -173,6 +173,7 @@ export default {
         color: this.color,
       }).then(data => {
         this.$emit('info', `Successfully added "${this.courseId}"`)
+        this.$emit('addedClass')
         this.resetForm()
         this.loading = false
       }).catch(err => {
