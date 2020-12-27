@@ -9,6 +9,9 @@ require('../utils/object_utils')
 
 // Cache terms daily with cron
 const writeTermsToJson = async () => {
+  console.log('========================================')
+  console.log('-----------Updating USC Terms-----------')
+  console.log('========================================')
   try {
     const terms = await TROJAN.terms().then(data => {
       return data.terms.map(term => { 
@@ -33,9 +36,6 @@ const getTerms = () => {
 
 writeTermsToJson()
 cron.schedule('0 0 * * *', () => {
-  console.log('========================================')
-  console.log('-----------Updating USC Terms-----------')
-  console.log('========================================')
   writeTermsToJson()
 })
 
@@ -49,6 +49,7 @@ const getTerm = (req, res, next) => {
     next()
   }
 }
+exports.getTerm = getTerm
 
 // Routes
 router.get('/terms', (req, res) => {
@@ -133,18 +134,14 @@ router.post('/add-class', getUser, getTerm, async (req, res) => {
 
 router.get('/my-classes', getUser, async (req, res) => {
   // Requires authentication
-
-  /* Query params:
-  *  terms - the desired term
-  */
   try {
     let terms = getTerms().map(t => t.term)
 
     await res.locals.user.populate({
       path: 'classes.class',
-      match: { term: { '$in': terms } }
+      match: { term: { $in: terms } }
     }).execPopulate()
-    const classes = await res.locals.user.classes.filter(c => c.class !== null)
+    const classes = res.locals.user.classes.filter(c => c.class !== null)
     res.json(classes)
   } catch (err) {
     console.error(err)

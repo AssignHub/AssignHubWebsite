@@ -8,7 +8,7 @@
           <v-row>
             <v-col cols="12">
               <ClassesList 
-                :classes="classes" 
+                :classes="termClasses" 
                 :terms="terms" 
                 :term.sync="term" 
                 @error="error => $emit('error', error)" 
@@ -25,7 +25,7 @@
           <Todo 
             style="height: 100%;" 
             :assignments="assignments" 
-            :classes="classes" 
+            :classes="termClasses" 
             :curDate="curDate" 
             @toggleAssignment="(uid) => toggleAssignment(uid)" 
             @error="error => $emit('error', error)" 
@@ -38,7 +38,7 @@
               <Calendar 
                 class="mb-1" 
                 :assignments="assignments" 
-                :classes="classes" 
+                :classes="termClasses" 
                 :curDate="curDate" 
                 :numPendingAssignments="assignmentsToAdd.length" 
                 @toggleAssignment="(uid) => toggleAssignment(uid)" 
@@ -48,7 +48,7 @@
             </v-col>
             <v-col>
               <InputAssignment 
-                :classes="classes" 
+                :classes="termClasses" 
                 @createAssignment="a => createAssignment(a)"
                 @error="error => $emit('error', error)" 
                 @info="info => $emit('info', info)"
@@ -57,7 +57,7 @@
             <v-col>
               <AddAssignment 
                 :assignmentsToAdd="assignmentsToAdd" 
-                :classes="classes" 
+                :classes="termClasses" 
                 @addAssignment="(uid) => addAssignment(uid)"
                 @error="error => $emit('error', error)" 
                 @info="info => $emit('info', info)"
@@ -137,7 +137,10 @@ export default {
   },
 
   computed: {
-    ...mapState(['authUser'])
+    ...mapState(['authUser']),
+    termClasses() {
+      return this.classes.filter(c => c.class.term === this.term)
+    },
   },
 
   async mounted() {

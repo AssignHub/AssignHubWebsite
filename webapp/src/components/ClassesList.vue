@@ -14,7 +14,7 @@
     ></v-select>
     <v-list dense>
       <v-list-item
-        v-for="(c, i) in termClasses"
+        v-for="(c, i) in classes"
         :key="i"
       >
         <v-list-item-content class="pa-0">
@@ -27,7 +27,7 @@
     
     <AddClassMenu 
       :term="term" 
-      :classes="termClasses" 
+      :classes="classes" 
       @error="error => $emit('error', error)" 
       @info="info => $emit('info', info)" 
       @addedClass="() => $emit('addedClass')"
@@ -49,12 +49,6 @@ export default {
 
   components: {
     AddClassMenu,
-  },
-
-  computed: {
-    termClasses() {
-      return this.classes.filter(c => c.class.term === this.term)
-    },
   },
 }
 </script>
