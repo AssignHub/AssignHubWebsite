@@ -25,6 +25,7 @@ const userSchema = new mongoose.Schema({
 
 userSchema.virtual('basicInfo').get(function() {
   return {
+    userId: this._id,
     firstName: this.firstName,
     lastName: this.lastName,
     email: this.email,

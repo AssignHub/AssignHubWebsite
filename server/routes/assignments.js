@@ -4,9 +4,11 @@ const Assignment = require('../models/assignment')
 const Course = require('../models/course')
 const { getUser } = require('../middleware/auth')
 
-const { getTerm } = require('../routes/usc') // TODO: replace when we get more schools
+const { getTerm } = require('../middleware/usc') // TODO: replace when we get more schools
 
 router.post('/create', getUser, async (req, res) => {
+  // Create a new assignment
+
   // Requires authentication
 
   /* Body params:
@@ -40,11 +42,17 @@ router.post('/create', getUser, async (req, res) => {
 })
 
 router.patch('/toggle/:assignmentId', getUser, async (req, res) => {
+  // Toggle the done state of assignment
+
   // Requires authentication
 
   const { assignmentId } = req.params
   try {
-    const index = res.locals.user.assignments.findIndex(a => a.assignment === assignmentId)
+    const index = res.locals.user.assignments.findIndex(a => a.assignment == assignmentId)
+    if (index === -1) {
+      res.status(400).json({ error: 'No such assignment' })
+      return
+    }
     res.locals.user.assignments[index].done = !res.locals.user.assignments[index].done
     await res.locals.user.save()
 
@@ -56,6 +64,8 @@ router.patch('/toggle/:assignmentId', getUser, async (req, res) => {
 })
 
 router.get('/mine', getUser, getTerm, async (req, res) => {
+  // Get all user's assignments for the current term
+
   // Requires authentication
 
   /* Query params:
@@ -64,9 +74,19 @@ router.get('/mine', getUser, getTerm, async (req, res) => {
   try {
     await res.locals.user.populate({
       path: 'assignments.assignment',
-      match: { term: res.locals.term },
+      populate: {
+        path: 'course',
+        match: { term: res.locals.term },
+        select: 'courseId',
+      },
     }).execPopulate()
-    const assignments = res.locals.user.assignments.filter(a => a.assignment !== null)
+    const assignments = res.locals.user.assignments
+      .filter(a => a.assignment.course !== null)
+      .map(a => {
+        a = a.toJSON()
+        const { _id, assignment, ...rest } = a
+        return { ...assignment, ...rest }
+      })
 
     res.json(assignments)
   } catch (err) {
@@ -76,6 +96,8 @@ router.get('/mine', getUser, getTerm, async (req, res) => {
 })
 
 router.get('/public', getUser, getTerm, async (req, res) => {
+  // Get all the public assignments based on user's classes
+
   // Requires authentication
 
   /* Query params:
@@ -94,7 +116,15 @@ router.get('/public', getUser, getTerm, async (req, res) => {
       path: 'course',
       match: { term: res.locals.term },
     })
-    res.json(publicAssignments.filter(a => a.course && courseIds.includes(a.course.courseId)))
+    const assignments = publicAssignments
+      .filter(a => a.course && courseIds.includes(a.course.courseId))
+      .map(a => {
+        a = a.toJSON()
+        const { _id, assignment, ...rest } = a
+        return { ...assignment, ...rest }
+      })
+
+    res.json(assignments)
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: err })

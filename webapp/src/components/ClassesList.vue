@@ -19,7 +19,7 @@
       >
         <v-list-item-content class="pa-0">
           <v-col cols="auto" class="pa-0">
-            <v-chip :color="c.color">{{ c.class.courseId }}</v-chip>
+            <v-chip :color="c.color">{{ c.courseId }}</v-chip>
           </v-col>
         </v-list-item-content>
       </v-list-item>

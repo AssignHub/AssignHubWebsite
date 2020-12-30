@@ -4,6 +4,7 @@ const cron = require('node-cron')
 const editJsonFile = require('edit-json-file')
 const TROJAN = require('trojan-course-api')
 const Course = require('../models/course')
+const { getTerm } = require('../middleware/usc')
 const { getUser } = require('../middleware/auth')
 require('../utils/object_utils')
 
@@ -38,18 +39,6 @@ writeTermsToJson()
 cron.schedule('0 0 * * *', () => {
   writeTermsToJson()
 })
-
-// Middleware
-const getTerm = (req, res, next) => {
-  if (!req.query.term) {
-    res.status(400).json({error: 'The term query param is required!'})
-    return 
-  } else {
-    res.locals.term = req.query.term
-    next()
-  }
-}
-exports.getTerm = getTerm
 
 // Routes
 router.get('/terms', (req, res) => {
@@ -141,7 +130,14 @@ router.get('/my-classes', getUser, async (req, res) => {
       path: 'classes.class',
       match: { term: { $in: terms } }
     }).execPopulate()
-    const classes = res.locals.user.classes.filter(c => c.class !== null)
+    const classes = res.locals.user.classes
+      .filter(c => c.class !== null)
+      .map(c => {
+        c = c.toJSON()
+        const { _id, class: classData, ...rest } = c
+        return { ...classData, ...rest }
+      })
+
     res.json(classes)
   } catch (err) {
     console.error(err)

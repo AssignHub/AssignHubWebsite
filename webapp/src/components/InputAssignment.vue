@@ -40,6 +40,7 @@
         <v-spacer></v-spacer>
         <v-btn
           @click="submit"
+          :loading="loading"
         >Submit</v-btn>
       </v-card-actions>
     </v-card-text>
@@ -49,7 +50,7 @@
 <script>
 import ClassSelect from '@/components/ClassSelect'
 import DateTimePicker from '@/components/DateTimePicker'
-import { createUUID } from '@/utils/utils.js'
+import { get, post, patch } from '@/utils/utils.js'
 
 export default {
   name: 'InputAssignment',
@@ -70,21 +71,26 @@ export default {
       date: new Date().toISOString().substr(0, 10),
       time: '23:59',
       doPublish: false,
+      loading: false,
     }
   },
 
   methods: {
     submit() {
-      let uid = createUUID()
-      let classUid = this.classes.find(c => c.text === this.curClass).uid
+      let courseObjectId = this.curClass._id
       let dueDate = Date.parse(this.date + 'T' + this.time)
       let assignment = {
-        uid,
-        classUid,
+        courseObjectId,
         name: this.name,
-        dueDate
+        dueDate,
+        public: this.doPublish,
       }
-      this.$emit('createAssignment', assignment)
+      
+      this.loading = true
+      post('/assignments/create', assignment).then(() => {
+        this.loading = false
+        this.$emit('createdAssignment', assignment)
+      })
 
       this.resetForm()
     },

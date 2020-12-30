@@ -43,9 +43,17 @@ export const get = (route) => {
   })
 }
 
-export const post = (route, body) => {
+export const post = (route, body={}) => {
+  return fetchMethod('POST', route, body)
+}
+
+export const patch = (route, body={}) => {
+  return fetchMethod('PATCH', route, body)
+}
+
+export const fetchMethod = (method, route, body={}) => {
   return fetch(serverURL + route, {
-    method: 'POST',
+    method,
     credentials: 'include',
     headers: {
       'Content-Type': 'application/json'

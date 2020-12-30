@@ -27,7 +27,7 @@
             :assignments="assignments" 
             :classes="termClasses" 
             :curDate="curDate" 
-            @toggleAssignment="(uid) => toggleAssignment(uid)" 
+            @toggleAssignment="(id) => toggleAssignment(id)" 
             @error="error => $emit('error', error)" 
             @info="info => $emit('info', info)"
           />
@@ -41,7 +41,7 @@
                 :classes="termClasses" 
                 :curDate="curDate" 
                 :numPendingAssignments="assignmentsToAdd.length" 
-                @toggleAssignment="(uid) => toggleAssignment(uid)" 
+                @toggleAssignment="(id) => toggleAssignment(id)" 
                 @error="error => $emit('error', error)" 
                 @info="info => $emit('info', info)"
               />
@@ -49,7 +49,7 @@
             <v-col>
               <InputAssignment 
                 :classes="termClasses" 
-                @createAssignment="a => createAssignment(a)"
+                @createdAssignment="getAssignments"
                 @error="error => $emit('error', error)" 
                 @info="info => $emit('info', info)"
               />
@@ -79,7 +79,7 @@ import InputAssignment from '@/components/InputAssignment'
 import AddAssignment from '@/components/AddAssignment'
 import Todo from '@/components/Todo'
 
-import { get, post, getCurTerm } from '@/utils/utils'
+import { get, post, patch, getCurTerm } from '@/utils/utils'
 import { mapState } from 'vuex'
 
 export default {
@@ -139,20 +139,27 @@ export default {
   computed: {
     ...mapState(['authUser']),
     termClasses() {
-      return this.classes.filter(c => c.class.term === this.term)
+      return this.classes.filter(c => c.term === this.term)
+    },
+  },
+
+  watch: {
+    term() {
+      this.getAssignments()
     },
   },
 
   async mounted() {
     this.terms = await get('/usc/terms')
     this.term = getCurTerm()
-    await this.getClasses()
+    await Promise.all([this.getClasses()])
   },
 
   methods: {
-    toggleAssignment(uid) {
-      let index = this.assignments.findIndex(a => a.uid === uid)
+    toggleAssignment(id) {
+      let index = this.assignments.findIndex(a => a._id === id)
       this.$set(this.assignments[index], 'done', !this.assignments[index].done)
+      patch(`/assignments/toggle/${id}`).catch(err => this.$emit('error', 'There was a problem toggling that assignment!'))
     },
     addAssignment(uid) {
       let index = this.assignmentsToAdd.findIndex(a => a.uid === uid)
@@ -160,9 +167,12 @@ export default {
       this.$set(assignment, 'done', false)
       this.assignments.push(assignment)
     },
-    createAssignment(assignment) {
-      this.$set(assignment, 'done', false)
-      this.assignments.push(assignment)
+    getAssignments() {
+      this.assignments = []
+      get(`/assignments/mine?term=${this.term}`).then(data => {
+        this.assignments = data
+        console.log('assignments: ', this.assignments)
+      })
     },
     getClasses() {
       get(`/usc/my-classes`).then(data => {

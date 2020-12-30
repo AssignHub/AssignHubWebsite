@@ -20,7 +20,7 @@
               :assignment="a"
               :classes="classes"
               :disabled="a.done"
-              @click="toggleAssignment(a.uid)"
+              @click="$emit('toggleAssignment', a._id)"
             />
           </div>
         </div>
@@ -126,9 +126,6 @@ export default {
     prevWeek() {
       this.weekOffset--
     },
-    toggleAssignment(uid) {
-      this.$emit('toggleAssignment', uid)
-    }, 
   },
 }
 </script>

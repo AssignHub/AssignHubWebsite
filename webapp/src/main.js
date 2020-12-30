@@ -3,6 +3,8 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import vuetify from './plugins/vuetify'
+import VueSocketIO from 'vue-socket.io'
+import SocketIO from 'socket.io-client'
 
 Vue.config.productionTip = false
 
@@ -13,6 +15,16 @@ const gauthOptions = {
   prompt: 'consent',
 }
 Vue.use(GAuth, gauthOptions)
+
+// Socket.io
+Vue.use(new VueSocketIO({
+  debug: true,
+  connection: SocketIO('http://localhost:3000'),
+  vuex: {
+    store,
+    mutationPrefix: 'SOCKET_',
+  },
+}))
 
 new Vue({
   router,

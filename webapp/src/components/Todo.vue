@@ -11,7 +11,7 @@
           class="mx-2 mb-2"  
           showDate
           :disabled="a.done"
-          @click="toggleAssignment(a.uid)"
+          @click="$emit('toggleAssignment', a._id)"
         />
       </v-card-text>
       <!--<v-card-text :key="i" class="pa-0">
@@ -85,9 +85,6 @@ export default {
   },
 
   methods: {
-    toggleAssignment(uid) {
-      this.$emit('toggleAssignment', uid)
-    },
     sortByDateAndDone(arr) {
       return arr
         .sort((a, b) => a.dueDate - b.dueDate)
@@ -96,9 +93,6 @@ export default {
             return 0
           return a.done ? 1 : -1  
         })
-    },
-    getClassColor(classUid) {
-      return this.classes.find(c => c.uid === classUid).color
     },
     timeString(a) {
       return new Date(a.dueDate).toLocaleTimeString([], {timeStyle: 'short'})

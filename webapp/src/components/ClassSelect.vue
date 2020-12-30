@@ -14,12 +14,12 @@
   >
     <template v-slot:item="{ item }">
       <v-chip small :color="item.color">
-        {{ item.class.courseId }}
+        {{ item.courseId }}
       </v-chip>
     </template>
     <template v-slot:selection="{ attrs, item, selected }">
       <v-chip small :color="item.color" :input-value="selected" v-bind="attrs">
-        {{ item.class.courseId }}
+        {{ item.courseId }}
       </v-chip>
     </template>
   </v-select>

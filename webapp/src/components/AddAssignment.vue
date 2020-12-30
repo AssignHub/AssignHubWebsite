@@ -75,7 +75,7 @@ export default {
         return this.assignmentsToAdd.sort((a, b) => a.dueDate - b.dueDate)
 
       let filteredAssignments = this.curClasses.map(c => {
-        return this.assignmentsToAdd.filter(a => a.classUid === c.class._id)
+        return this.assignmentsToAdd.filter(a => a.classUid === c._id)
       }).flat().sort((a, b) => a.dueDate - b.dueDate)
       return filteredAssignments
     },

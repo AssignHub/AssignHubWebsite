@@ -23,7 +23,9 @@
     "node-cron": "^2.0.3",
     "node-fetch": "^2.6.1",
     "redis": "^3.0.2",
-    "trojan-course-api": "^2.2.2"
+    "socket.io": "^3.0.4",
+    "trojan-course-api": "^2.2.2",
+    "ws": "^7.4.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.6"

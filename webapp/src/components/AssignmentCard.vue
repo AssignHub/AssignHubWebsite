@@ -1,7 +1,6 @@
 <template>
   <v-card
-    :class="getClassColor(assignment.classUid)"
-    :style="{opacity: disabled ? '50%' : 'unset'}"
+    :style="{opacity: disabled ? '50%' : 'unset', backgroundColor: color}"
     v-on="!toAdd ? { click } : {}"
   >
     <v-card-text class="py-1">
@@ -45,12 +44,12 @@ export default {
     timeString() {
       return this.dueDate.toLocaleTimeString([], {timeStyle: 'short'})
     },
+    color() {
+      return this.classes.find(c => c.courseId === this.assignment.course.courseId).color
+    },
   },
 
   methods: {
-    getClassColor(classUid) {
-      return this.classes.find(c => c.uid === classUid).color
-    },
     click() {
       this.$emit('click')
     },
