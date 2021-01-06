@@ -146,6 +146,7 @@ export default {
   watch: {
     term() {
       this.getAssignments()
+      this.getPublicAssignments()
     },
   },
 
@@ -157,21 +158,31 @@ export default {
 
   methods: {
     toggleAssignment(id) {
-      let index = this.assignments.findIndex(a => a._id === id)
-      this.$set(this.assignments[index], 'done', !this.assignments[index].done)
-      patch(`/assignments/toggle/${id}`).catch(err => this.$emit('error', 'There was a problem toggling that assignment!'))
+      patch(`/assignments/${id}/toggle`).then(() => {
+        let index = this.assignments.findIndex(a => a._id === id)
+        this.$set(this.assignments[index], 'done', !this.assignments[index].done)
+      }).catch(err => this.$emit('error', 'There was a problem toggling that assignment!'))
     },
-    addAssignment(uid) {
-      let index = this.assignmentsToAdd.findIndex(a => a.uid === uid)
-      let assignment = this.assignmentsToAdd.splice(index, 1)[0]
-      this.$set(assignment, 'done', false)
-      this.assignments.push(assignment)
+    addAssignment(id) {
+      post('/assignments/add', { assignmentId: id }).then(() => {
+        let index = this.assignmentsToAdd.findIndex(a => a._id === id)
+        let assignment = this.assignmentsToAdd.splice(index, 1)[0]
+        this.$set(assignment, 'done', false)
+        this.assignments.push(assignment)
+      }).catch(err => this.$emit('There was a problem adding that assignment'))
     },
     getAssignments() {
       this.assignments = []
       get(`/assignments/mine?term=${this.term}`).then(data => {
         this.assignments = data
         console.log('assignments: ', this.assignments)
+      })
+    },
+    getPublicAssignments() {
+      this.assignmentsToAdd = []
+      get(`/assignments/public?term=${this.term}`).then(data => {
+        this.assignmentsToAdd = data
+        console.log('assignmentsToAdd: ', this.assignmentsToAdd)
       })
     },
     getClasses() {

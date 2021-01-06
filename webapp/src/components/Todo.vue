@@ -14,18 +14,6 @@
           @click="$emit('toggleAssignment', a._id)"
         />
       </v-card-text>
-      <!--<v-card-text :key="i" class="pa-0">
-        <v-list>
-          <v-list-item v-for="(a, i) in c.assignments" :key="i" class="">
-            <v-checkbox
-              v-model="a.done"
-              :label="a.name"
-              class="mt-0"
-              hide-details
-            ></v-checkbox>
-          </v-list-item>
-        </v-list>
-      </v-card-text>-->
     </template>
   </v-card>
 </template>

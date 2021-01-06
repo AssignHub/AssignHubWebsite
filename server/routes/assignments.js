@@ -1,3 +1,5 @@
+// TODO: catch error if req.body is wrong
+
 const express = require('express')
 const router = express.Router()
 const Assignment = require('../models/assignment')
@@ -5,6 +7,7 @@ const Course = require('../models/course')
 const { getUser } = require('../middleware/auth')
 
 const { getTerm } = require('../middleware/usc') // TODO: replace when we get more schools
+const assignment = require('../models/assignment')
 
 router.post('/create', getUser, async (req, res) => {
   // Create a new assignment
@@ -41,7 +44,26 @@ router.post('/create', getUser, async (req, res) => {
   }
 })
 
-router.patch('/toggle/:assignmentId', getUser, async (req, res) => {
+router.post('/add', getUser, async (req, res) => {
+  // Add a public assignment
+
+  /* Body params:
+  *  assignmentId - id of the assignment to add
+  */
+
+  const { assignmentId } = req.body
+  try {
+    res.locals.user.assignments.push({ assignment: assignmentId })
+    await res.locals.user.save()
+
+    res.status(201).json({ success: true })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: err })
+  }
+})
+
+router.patch('/:assignmentId/toggle', getUser, async (req, res) => {
   // Toggle the done state of assignment
 
   // Requires authentication
@@ -104,27 +126,29 @@ router.get('/public', getUser, getTerm, async (req, res) => {
   *  term - the desired term
   */
   try {
+    const assignmentIds = res.locals.user.assignments.map(a => a.assignment)
+
+    // Get courseIds for currently enrolled classes
     await res.locals.user.populate({
       path: 'classes.class',
       match: { term: res.locals.term },
       select: 'courseId',
     }).execPopulate()
-    const classes = res.locals.user.classes.filter(c => c.class !== null)
-    const courseIds = classes.map(c => c.class.courseId)
+    const courseIds = res.locals.user.classes.filter(c => c.class !== null).map(c => c.class.courseId)
     
-    const publicAssignments = await Assignment.find({ public: true }).populate({
+    const publicAssignments = (await Assignment.find({ 
+      public: true, 
+      dueDate: { $gte: new Date().toISOString() },   
+      _id: { $nin: assignmentIds }
+    }).populate({
       path: 'course',
       match: { term: res.locals.term },
+      select: 'courseId'
+    })).filter(a => {
+      return a.course && courseIds.includes(a.course.courseId)
     })
-    const assignments = publicAssignments
-      .filter(a => a.course && courseIds.includes(a.course.courseId))
-      .map(a => {
-        a = a.toJSON()
-        const { _id, assignment, ...rest } = a
-        return { ...assignment, ...rest }
-      })
 
-    res.json(assignments)
+    res.json(publicAssignments)
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: err })

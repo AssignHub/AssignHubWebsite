@@ -29,8 +29,8 @@ router.post('/sign-in', async (req, res) => {
     // Find user and update info and tokens
     const profileData = await getProfile(tokenData.access_token)
     const userData = { 
-      firstName: profileData.given_name, 
-      lastName: profileData.family_name, 
+      firstName: profileData.given_name || 'null', 
+      lastName: profileData.family_name || 'null', 
       email: profileData.email,
       pic: profileData.picture,
       accessToken: tokenData.access_token,

@@ -25,7 +25,7 @@
                 :assignment="a"
                 :classes="classes"
                 class="mx-1 mb-2"
-                @add="add(a.uid)"
+                @add="$emit('addAssignment', a._id)"
                 toAdd
                 showDate
               />
@@ -78,12 +78,6 @@ export default {
         return this.assignmentsToAdd.filter(a => a.classUid === c._id)
       }).flat().sort((a, b) => a.dueDate - b.dueDate)
       return filteredAssignments
-    },
-  },
-
-  methods: {
-    add(uid) {
-      this.$emit('addAssignment', uid)
     },
   },
 }
