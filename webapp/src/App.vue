@@ -58,7 +58,7 @@ html {
 </style>
 
 <script>
-import { get, post } from '@/utils/utils'
+import { get, post, signOut } from '@/utils/utils'
 import { mapState } from 'vuex'
 
 import AutoSnackbar from '@/components/AutoSnackbar'
@@ -133,9 +133,7 @@ export default {
       }
     },
     signOut() {
-      post('/auth/sign-out').then(() => {
-        this.$store.commit('setAuthUser', null)
-      }).catch(err => {
+      signOut().catch(err => {
         this.showError('There was a problem signing out! Please try again later.')
       })
     },

@@ -21,7 +21,7 @@ app.use(cookieParser())
 app.use(express.json())
 
 // Configure session
-app.use(session({
+const sessionMiddleware = session({
   secret: process.env.SESSION_SECRET,
   cookie: {
     secure: false, // TODO: Change when actually in the server
@@ -30,7 +30,9 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   unset: 'destroy',
-}))
+})
+const sharedSession = require('express-socket.io-session')
+app.use(sessionMiddleware)
 
 // Cors
 app.use(cors({
@@ -49,15 +51,12 @@ const uscRouter = require('./routes/usc')
 app.use('/usc', uscRouter)
 
 const assignmentsRouter = require('./routes/assignments')
-const { client } = require('./redis')
 app.use('/assignments', assignmentsRouter)
 
 // Server
 const server = app.listen(3000, () => console.log('Server listening on port 3000'))
 
-// Sockets
-const socketClients = {}
-const io = require('socket.io')(server, {
+const io = require('./websockets').initialize(server, {
   cors: {
     origin: 'http://localhost:8080',
     methods: ['GET', 'POST'],
@@ -65,9 +64,9 @@ const io = require('socket.io')(server, {
     exposedHeaders: ['set-cookie'],
   },
 })
-io.on('connection', socket => {
-  //console.log('client connected!')
-  socket.on('disconnect', () => {
-    //console.log('client disconnected!')
-  })
-})
+
+io.use(sharedSession(sessionMiddleware))
+
+/*io.use((socket, next) => {
+  sessionMiddleware(socket.request, {}, next)
+})*/

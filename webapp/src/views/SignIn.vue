@@ -44,7 +44,9 @@ export default {
   },
 
   methods: {
-    signInGoogle,
+    signInGoogle() {
+      signInGoogle().catch((err) => this.$emit('error', 'There was a problem signing you in! Please try again later.'))
+    },
   }
 }
 </script>

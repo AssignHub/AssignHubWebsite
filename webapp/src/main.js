@@ -17,9 +17,11 @@ const gauthOptions = {
 Vue.use(GAuth, gauthOptions)
 
 // Socket.io
+export const socket = SocketIO('http://localhost:3000', { withCredentials: true })
+
 Vue.use(new VueSocketIO({
   debug: true,
-  connection: SocketIO('http://localhost:3000'),
+  connection: socket,
   vuex: {
     store,
     mutationPrefix: 'SOCKET_',
