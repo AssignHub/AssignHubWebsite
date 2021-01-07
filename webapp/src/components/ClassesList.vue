@@ -8,7 +8,7 @@
       item-text="text"
       item-value="term"
       :value="term"
-      @input="(term) => $emit('update:term', term)"
+      @input="(term) => changeTerm(term)"
       hide-details
       class="mx-2"
     ></v-select>
@@ -25,30 +25,28 @@
       </v-list-item>
     </v-list>
     
-    <AddClassMenu 
-      :term="term" 
-      :classes="classes" 
-      @error="error => $emit('error', error)" 
-      @info="info => $emit('info', info)" 
-      @addedClass="() => $emit('addedClass')"
-    />
+    <AddClassMenu />
   </v-card>
 </template>
 
 <script>
 import AddClassMenu from '@/components/AddClassMenu'
+import { mapState, mapGetters, mapActions } from 'vuex'
 
 export default {
   name: 'ClassesList',
 
-  props: {
-    classes: { type: Array, required: true },
-    terms: { type: Array, required: true },
-    term: { type: String, required: true },
-  },
-
   components: {
     AddClassMenu,
+  },
+
+  computed: {
+    ...mapState([ 'term', 'terms' ]),
+    ...mapGetters({ classes: 'termClasses' }),
+  },
+
+  methods: {
+    ...mapActions([ 'changeTerm' ]),
   },
 }
 </script>

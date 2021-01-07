@@ -23,9 +23,8 @@
             >
               <AssignmentCard
                 :assignment="a"
-                :classes="classes"
                 class="mx-1 mb-2"
-                @add="$emit('addAssignment', a._id)"
+                @add="addAssignmentFromPublic(a._id)"
                 toAdd
                 showDate
               />
@@ -49,14 +48,10 @@
 <script>
 import AssignmentCard from '@/components/AssignmentCard'
 import ClassSelect from '@/components/ClassSelect'
+import { mapState, mapGetters, mapActions } from 'vuex'
 
 export default {
   name: 'AddAssignment',
-
-  props: {
-    classes: {type: Array, required: true},
-    assignmentsToAdd: {type: Array, required: true},
-  },
 
   components: {
     AssignmentCard,
@@ -70,15 +65,21 @@ export default {
   },
 
   computed: {
+    ...mapState([ 'publicAssignments' ]),
+    ...mapGetters({ classes: 'termClasses' }),
     filteredAssignments() {
       if (this.curClasses.length === 0)
-        return this.assignmentsToAdd.sort((a, b) => a.dueDate - b.dueDate)
+        return this.publicAssignments.sort((a, b) => a.dueDate - b.dueDate)
 
       let filteredAssignments = this.curClasses.map(c => {
-        return this.assignmentsToAdd.filter(a => a.classUid === c._id)
+        return this.publicAssignments.filter(a => a.classUid === c._id)
       }).flat().sort((a, b) => a.dueDate - b.dueDate)
       return filteredAssignments
     },
+  },
+
+  methods: {
+    ...mapActions([ 'addAssignmentFromPublic' ]),
   },
 }
 </script>

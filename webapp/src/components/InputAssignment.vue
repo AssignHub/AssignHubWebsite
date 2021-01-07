@@ -51,13 +51,10 @@
 import ClassSelect from '@/components/ClassSelect'
 import DateTimePicker from '@/components/DateTimePicker'
 import { get, post, patch } from '@/utils/utils.js'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'InputAssignment',
-
-  props: {
-    classes: {type: Array, required: true},
-  },
 
   components: {
     ClassSelect,
@@ -75,6 +72,10 @@ export default {
     }
   },
 
+  computed: {
+    ...mapGetters({ classes: 'termClasses' }),
+  },
+
   methods: {
     submit() {
       let courseObjectId = this.curClass._id
@@ -89,7 +90,6 @@ export default {
       this.loading = true
       post('/assignments/create', assignment).then(() => {
         this.loading = false
-        this.$emit('createdAssignment', assignment)
       })
 
       this.resetForm()

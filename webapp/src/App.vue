@@ -46,7 +46,7 @@
     </v-app-bar>
 
     <v-main>
-      <router-view @error="showError" @info="showInfo" />
+      <router-view />
     </v-main>
   </v-app>
 </template>
@@ -59,7 +59,7 @@ html {
 
 <script>
 import { get, post, signOut } from '@/utils/utils'
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 
 import AutoSnackbar from '@/components/AutoSnackbar'
 import UserAvatarContent from '@/components/UserAvatarContent'
@@ -73,6 +73,7 @@ export default {
   },
 
   async created() {
+    // TODO: move this to vuex
     await get('/auth/profile').then(authUser => {
       this.$store.commit('setAuthUser', authUser)
     }).catch(err => {
@@ -102,24 +103,15 @@ export default {
   data() {
     return {
       loaded: false,
-      error: '',
-      info: '',
     }
   },
 
   computed: {
-    ...mapState(['authUser'])
+    ...mapState(['authUser', 'error', 'info'])
   },
 
   methods: {
-    showError(error) {
-      this.error = ''
-      this.$nextTick(() => {this.error = error})
-    },
-    showInfo(info) {
-      this.info = ''
-      this.$nextTick(() => {this.info = info})
-    },
+    ...mapActions([ 'signOut' ]),
     redirectAuthUser() {
       let authRoutes = ['Home']
       let noAuthRoutes = ['SignIn']
@@ -131,11 +123,6 @@ export default {
         if (noAuthRoutes.includes(this.$route.name))
           this.$router.replace({ name: 'Home' })
       }
-    },
-    signOut() {
-      signOut().catch(err => {
-        this.showError('There was a problem signing out! Please try again later.')
-      })
     },
   },
 }

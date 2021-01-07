@@ -34,7 +34,7 @@
 
 <script>
 import ButtonWithImage from '@/components/ButtonWithImage'
-import { signInGoogle } from '@/utils/utils' 
+import { mapActions } from 'vuex'
 
 export default {
   name: 'SignIn',
@@ -44,9 +44,7 @@ export default {
   },
 
   methods: {
-    signInGoogle() {
-      signInGoogle().catch((err) => this.$emit('error', 'There was a problem signing you in! Please try again later.'))
-    },
+    ...mapActions([ 'signInGoogle' ]),
   }
 }
 </script>

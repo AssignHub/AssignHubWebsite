@@ -11,7 +11,7 @@
           class="mx-2 mb-2"  
           showDate
           :disabled="a.done"
-          @click="$emit('toggleAssignment', a._id)"
+          @click="toggleAssignment(a._id)"
         />
       </v-card-text>
     </template>
@@ -21,15 +21,10 @@
 <script>
 import AssignmentCard from '@/components/AssignmentCard'
 import { compareDateDay } from '@/utils/utils.js'
+import { mapState, mapGetters, mapActions } from 'vuex'
 
 export default {
   name: 'Todo',
-
-  props: {
-    assignments: {type: Array, required: true},
-    classes: {type: Array, required: true},
-    curDate: {type: Date, required: true},
-  },
 
   components: {
     AssignmentCard,
@@ -38,10 +33,13 @@ export default {
   data() {
     return {
       dayLength: 24 * 60 * 60 * 1000,
+      curDate: new Date(),
     }
   },
 
   computed: {
+    ...mapState([ 'assignments' ]),
+    ...mapGetters({ classes: 'termClasses' }),
     dueToday() {
       let arr = this.assignments.filter(a => compareDateDay(a.dueDate, this.curDate) === 0)
       return this.sortByDateAndDone(arr)
@@ -73,6 +71,7 @@ export default {
   },
 
   methods: {
+    ...mapActions([ 'toggleAssignment' ]),
     sortByDateAndDone(arr) {
       return arr
         .sort((a, b) => a.dueDate - b.dueDate)

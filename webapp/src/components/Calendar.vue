@@ -18,9 +18,8 @@
               :key="i"
               class="mb-2 mx-2"
               :assignment="a"
-              :classes="classes"
               :disabled="a.done"
-              @click="$emit('toggleAssignment', a._id)"
+              @click="toggleAssignment(a._id)"
             />
           </div>
         </div>
@@ -54,16 +53,10 @@
 <script>
 import AssignmentCard from '@/components/AssignmentCard'
 import { compareDateDay } from '@/utils/utils.js'
+import { mapState, mapGetters, mapActions } from 'vuex'
 
 export default {
   name: 'Calendar',
-
-  props: {
-    assignments: {type: Array, required: true},
-    classes: {type: Array, required: true},
-    curDate: {type: Date, required: true},
-    numPendingAssignments: {type: Number, required: true},
-  },
 
   components: {
     AssignmentCard,
@@ -74,10 +67,13 @@ export default {
       months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
       dayLength: 24 * 60 * 60 * 1000,
       weekOffset: 0,
+      curDate: new Date(),
     }
   },
 
   computed: {
+    ...mapState([ 'assignments' ]),
+    ...mapGetters({ classes: 'termClasses', numPendingAssignments: 'numPublicAssignments' }),
     month() {
       return this.months[this.daysOfWeek[0].date.getMonth()]
     },
@@ -104,6 +100,7 @@ export default {
   },
 
   methods: {
+    ...mapActions([ 'toggleAssignment' ]),
     getDateWithOffset(offset) {
       return new Date(this.curDate.getTime() + offset*this.dayLength)
     },

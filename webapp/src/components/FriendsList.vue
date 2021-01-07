@@ -36,12 +36,13 @@
 </style>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
   name: 'FriendsList',
 
-  props: {
-    friends: { type: Array, required: true },
-    emojis: { type: Array, required: true },
+  computed: {
+    ...mapState([ 'friends', 'emojis' ])
   },
 }
 </script>

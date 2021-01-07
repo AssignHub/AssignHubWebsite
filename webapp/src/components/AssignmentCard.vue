@@ -23,18 +23,20 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
   name: 'AssignmentCard',
 
   props: {
     assignment: {type: Object, required: true},
-    classes: {type: Array, required: true},
     toAdd: {type: Boolean, default: false},
     showDate: {type: Boolean, default: false},
     disabled: {type: Boolean, default: false},
   },
 
   computed: {
+    ...mapGetters({ classes: 'termClasses' }),
     dueDate() {
       return new Date(this.assignment.dueDate)
     },
@@ -45,6 +47,8 @@ export default {
       return this.dueDate.toLocaleTimeString([], {timeStyle: 'short'})
     },
     color() {
+      if (this.classes.length === 0)
+        return 'white'
       return this.classes.find(c => c.courseId === this.assignment.course.courseId).color
     },
   },

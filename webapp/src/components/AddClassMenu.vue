@@ -114,16 +114,12 @@
 <script>
 import { get, post } from '@/utils/utils'
 import { CLASS_COLORS } from '@/constants'
+import { mapState, mapGetters } from 'vuex'
 
 import ColorSelect from '@/components/ColorSelect'
 
 export default {
   name: 'AddClassMenu',
-
-  props: {
-    term: { type: String, required: true },
-    classes: { type: Array, required: true },
-  },
 
   components: {
     ColorSelect,
@@ -147,6 +143,8 @@ export default {
   },
 
   computed: {
+    ...mapState([ 'term' ]),
+    ...mapGetters({ classes: 'termClasses' }),
     enableAdd() {
       return this.dept && this.courseNum && this.sectionNum
     },
@@ -172,19 +170,18 @@ export default {
         sectionId: this.sectionNum,
         color: this.color,
       }).then(data => {
-        this.$emit('info', `Successfully added "${this.courseId}"`)
-        this.$emit('addedClass')
+        this.$store.dispatch('showInfo', `Successfully added "${this.courseId}"`)
         this.resetForm()
         this.loading = false
       }).catch(err => {
         if (err === 'class-not-found') {
-          this.$emit('error', 'The class you tried to add does not exist!')
+          this.$store.dispatch('showError', 'The class you tried to add does not exist!')
         } else if (err === 'class-not-lec') {
-          this.$emit('error', 'The class you tried to add is not a Lecture section. Please try again.')
+          this.$store.dispatch('showError', 'The class you tried to add is not a Lecture section. Please try again.')
         } else if (err === 'already-in-class') {
-          this.$emit('error', 'You are already in that class!')
+          this.$store.dispatch('showError', 'You are already in that class!')
         } else {
-          this.$emit('error', 'Something went wrong when trying to add that class. Please try again later.')
+          this.$store.dispatch('showError', 'Something went wrong when trying to add that class. Please try again later.')
         }
         this.loading = false
       })

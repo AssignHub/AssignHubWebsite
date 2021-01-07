@@ -89,21 +89,3 @@ export const socketReconnect = () => {
   socket.disconnect()
   socket.connect()
 }
-
-export const signInGoogle = () => {
-  return Vue.gAuth.getAuthCode().then(authCode => {
-    return post('/auth/sign-in', { authCode })
-  }).then(() => {
-    return get('/auth/profile')
-  }).then(authUser => {
-    socketReconnect()
-    store.commit('setAuthUser', authUser)
-  })
-}
-
-export const signOut = () => {
-  return post('/auth/sign-out').then(() => {
-    socketReconnect()
-    store.commit('setAuthUser', null)
-  })
-}

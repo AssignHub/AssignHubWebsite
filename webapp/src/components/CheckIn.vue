@@ -2,7 +2,7 @@
   <v-container>
     <v-row justify="center">
       <v-col cols="12">
-        <div class="text-center text-h3">How are you doing today, {{ firstName }}?</div>
+        <div class="text-center text-h3">How are you doing today, {{ authUser.firstName }}?</div>
       </v-col>
       <!-- Icons are from here: https://icons8.com/icon/set/face/emoji -->
       <v-col cols="12" style="position: relative; height: 90px;">
@@ -58,18 +58,19 @@
 </style>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
   name: 'CheckIn',
-
-  props: {
-    firstName: { type: String, required: true },
-    emojis: { type: Array, required: true },
-  },
 
   data() {
     return {
       selectedEmoji: null,
     }
+  },
+
+  computed: {
+    ...mapState([ 'authUser', 'emojis' ])
   },
 
   methods: {
