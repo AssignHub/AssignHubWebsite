@@ -9,6 +9,7 @@
         autocomplete="off" 
         label="Assignment name"
         class="mb-4"
+        :disabled="loading"
       ></v-text-field>
       <!--<v-textarea
         hide-details
@@ -20,12 +21,14 @@
       <ClassSelect
         :classes="classes" 
         v-model="curClass" 
+        :disabled="loading"
       />
       <DateTimePicker 
         dateLabel="Due date"
         timeLabel="Time"
         :date.sync="date"
         :time.sync="time"
+        :isDisabled="loading"
         class="mb-4"
       />
       <v-checkbox
@@ -34,12 +37,14 @@
         class="mt-0"
         hint="Let others use this assignment"
         persistent-hint
+        :disabled="loading"
       >
       </v-checkbox>
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn
           @click="submit"
+          :disabled="!enableSubmit"
           :loading="loading"
         >Submit</v-btn>
       </v-card-actions>
@@ -51,7 +56,7 @@
 import ClassSelect from '@/components/ClassSelect'
 import DateTimePicker from '@/components/DateTimePicker'
 import { get, post, patch } from '@/utils/utils.js'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   name: 'InputAssignment',
@@ -74,9 +79,13 @@ export default {
 
   computed: {
     ...mapGetters({ classes: 'termClasses' }),
+    enableSubmit() {
+      return this.name && this.curClass && this.date && this.time
+    },
   },
 
   methods: {
+    ...mapActions([ 'showError' ]),
     submit() {
       let courseObjectId = this.curClass._id
       let dueDate = Date.parse(this.date + 'T' + this.time)
@@ -89,10 +98,12 @@ export default {
       
       this.loading = true
       post('/assignments/create', assignment).then(() => {
+        this.resetForm()
+        this.loading = false
+      }).catch(err => {
+        this.showError('There was a problem creating that assignment! Please try again later.')
         this.loading = false
       })
-
-      this.resetForm()
     },
     resetForm() {
       this.name = ''

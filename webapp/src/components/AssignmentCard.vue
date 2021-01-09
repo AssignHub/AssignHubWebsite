@@ -2,6 +2,8 @@
   <v-card
     :style="{opacity: disabled ? '50%' : 'unset', backgroundColor: color}"
     v-on="!toAdd ? { click } : {}"
+    @contextmenu="(e) => $emit('contextmenu', e)"
+    @mousedown="(e) => $emit('mousedown', e)"
   >
     <v-card-text class="py-1">
       <v-row>
@@ -54,11 +56,11 @@ export default {
   },
 
   methods: {
-    click() {
-      this.$emit('click')
+    click(e) {
+      this.$emit('click', e)
     },
-    add() {
-      this.$emit('add')
+    add(e) {
+      this.$emit('add', e)
     },
   }
 }

@@ -25,12 +25,16 @@ const userSchema = new mongoose.Schema({
 
 userSchema.virtual('basicInfo').get(function() {
   return {
-    userId: this._id,
+    _id: this._id,
     firstName: this.firstName,
     lastName: this.lastName,
     email: this.email,
     pic: this.pic,
   }
+})
+
+userSchema.virtual('fullName').get(function() {
+  return this.firstName + ' ' + this.lastName
 })
 
 module.exports = mongoose.model('User', userSchema)

@@ -2,12 +2,12 @@
 
 const express = require('express')
 const router = express.Router()
+const { io, socketClients } = require('../websockets')
 const Assignment = require('../models/assignment')
 const Course = require('../models/course')
 const { getUser } = require('../middleware/auth')
 
 const { getTerm } = require('../middleware/usc') // TODO: replace when we get more schools
-const assignment = require('../models/assignment')
 
 router.post('/create', getUser, async (req, res) => {
   // Create a new assignment
@@ -31,11 +31,20 @@ router.post('/create', getUser, async (req, res) => {
     }
 
     const assignment = await new Assignment({
-      course: courseObjectId, name, dueDate, public
+      creator: res.locals.user._id, course: courseObjectId, name, dueDate, public
     }).save()
 
     res.locals.user.assignments.push({assignment: assignment._id})
     await res.locals.user.save()
+
+    // Socket communication
+    for (let socketId of socketClients()[res.locals.user._id]) {
+      const assignmentPopulated = await assignment.populate({
+        path: 'course',
+        select: 'courseId',
+      }).execPopulate()
+      io().sockets.sockets.get(socketId).emit('addAssignment', { ...assignmentPopulated.toJSON(), done: false })
+    }
 
     res.status(201).json({ success: true })
   } catch (err) {
@@ -79,6 +88,39 @@ router.patch('/:assignmentId/toggle', getUser, async (req, res) => {
     await res.locals.user.save()
 
     res.json({ success: true })    
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: err })
+  }
+})
+
+router.delete('/:assignmentId', getUser, async (req, res) => {
+  // Delete assignment
+
+  // Requires authentication
+
+  const { assignmentId } = req.params
+  try {
+    const index = res.locals.user.assignments.findIndex(a => a.assignment == assignmentId)
+    if (index === -1) {
+      res.status(400).json({ error: 'No such assignment' })
+      return
+    }
+    res.locals.user.assignments.splice(index, 1)
+    await res.locals.user.save()
+
+    // Remove assignment object if not public
+    const assignment = await Assignment.findById(assignmentId)
+    if (!assignment.public) {
+      await Assignment.findByIdAndDelete(assignmentId)
+    }
+
+    // Socket communication
+    for (let socketId of socketClients()[res.locals.user._id]) {
+      io().sockets.sockets.get(socketId).emit('removeAssignment', assignmentId)
+    }
+
+    res.json({ success: true })
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: err })
@@ -144,6 +186,9 @@ router.get('/public', getUser, getTerm, async (req, res) => {
       path: 'course',
       match: { term: res.locals.term },
       select: 'courseId'
+    }).populate({
+      path: 'creator',
+      select: 'firstName lastName'
     })).filter(a => {
       return a.course && courseIds.includes(a.course.courseId)
     })

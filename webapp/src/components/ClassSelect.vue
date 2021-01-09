@@ -9,6 +9,7 @@
     :items="classes"
     :clearable="clearable"
     :multiple="multiple"
+    :disabled="disabled"
     :value="value"
     @input="updateValue"
   >
@@ -40,6 +41,7 @@ export default {
     clearable: {type: Boolean, default: false},
     label: {type: String, default: 'Class'},
     multiple: {type: Boolean, default: false},
+    disabled: {type: Boolean, default: false},
     value: {},
   },
 

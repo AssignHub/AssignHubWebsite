@@ -12,7 +12,7 @@
         <div class="col-day" v-for="(day, i) in daysOfWeek" :key="i" style="" :style="i !== 0 && 'border-left: solid; border-width: 1px;'">
           <div class="text-center text-h5 mb-n2" :class="getClassFromOffset(day.offset)">{{ day.name }}</div>
           <div class="text-center text-h7" :class="getClassFromOffset(day.offset)">{{ day.date.getDate() }}</div>
-          <div style="height: 200px; overflow-y: auto;">
+          <div class="assignment-container" style="height: 200px; overflow-y: auto;" @scroll="hideContextMenu">
             <AssignmentCard
               v-for="(a, i) in getAssignmentsForDate(day.date)" 
               :key="i"
@@ -20,6 +20,8 @@
               :assignment="a"
               :disabled="a.done"
               @click="toggleAssignment(a._id)"
+              @mousedown="(e) => {if (e.which === 3) hideContextMenu()}"
+              @contextmenu="(e) => showAssignmentMenu(e, a._id)"
             />
           </div>
         </div>
@@ -48,12 +50,33 @@
 .col-day {
   width: 14.28% !important;
 }
+
+.assignment-container {
+  scrollbar-width: thin;
+}
+
+.assignment-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.assignment-container::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+}
+
+.assignment-container::-webkit-scrollbar-thumb {
+  background: #CCC; 
+}
+
+.assignment-container::-webkit-scrollbar-thumb:hover {
+  background: #888; 
+}
 </style>
 
 <script>
 import AssignmentCard from '@/components/AssignmentCard'
 import { compareDateDay } from '@/utils/utils.js'
-import { mapState, mapGetters, mapActions } from 'vuex'
+import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
+import { CONTEXT_MENU_TYPES } from '@/constants'
 
 export default {
   name: 'Calendar',
@@ -100,6 +123,7 @@ export default {
   },
 
   methods: {
+    ...mapMutations([ 'hideContextMenu', 'showContextMenu' ]),
     ...mapActions([ 'toggleAssignment' ]),
     getDateWithOffset(offset) {
       return new Date(this.curDate.getTime() + offset*this.dayLength)
@@ -122,6 +146,14 @@ export default {
     },
     prevWeek() {
       this.weekOffset--
+    },
+    showAssignmentMenu(e, id) {
+      e.preventDefault()
+      this.showContextMenu({
+        type: CONTEXT_MENU_TYPES.assignment,
+        data: { assignmentId: id },
+        mouseEvent: e,
+      })
     },
   },
 }

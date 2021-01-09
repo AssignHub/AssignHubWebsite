@@ -20,12 +20,14 @@
               outlined
               v-bind="attrs"
               v-on="on"
+              :disabled="isDisabled"
               :value="dateString"
             >
             </v-text-field>
           </template>
           <v-date-picker
             :value="date"
+            :min="minDate"
             @input="(date) => {$emit('update:date', date); menu=false}"
           ></v-date-picker>
         </v-menu>
@@ -33,6 +35,7 @@
       <v-col cols="12" md="6" class="py-0 pl-md-0">
         <TimePicker 
           :label="timeLabel"
+          :disabled="isDisabled"
           :value="time"
           @input="(time) => $emit('update:time', time)"
         />
@@ -43,6 +46,7 @@
 
 <script>
 import TimePicker from '@/components/TimePicker'
+import { setNumDigits } from '@/utils/utils'
 
 export default {
   name: 'DateTimePicker',
@@ -50,6 +54,7 @@ export default {
   props: {
     dateLabel: {type: String, default: 'Pick date'},
     timeLabel: {type: String, default: 'Pick time'},
+    isDisabled: {type: Boolean, default: false},
     date: {type: String},
     time: {type: String}
   },
@@ -71,6 +76,12 @@ export default {
       let s = (this.date ? this.date : '')
       const [year, month, day] = this.date.split('-')
       return month + '/' + day + '/' + year.substring(2)
+    },
+    minDate() {
+      let minDateSplit = new Date().toLocaleDateString().split('/')
+      minDateSplit = [minDateSplit[2], setNumDigits(minDateSplit[0], 2), setNumDigits(minDateSplit[1], 2)]
+      const minDate = minDateSplit.join('-')
+      return minDate
     },
   },
 }

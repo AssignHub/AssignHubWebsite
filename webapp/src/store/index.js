@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { get, post, patch, getCurTerm, socketReconnect } from '@/utils/utils'
+import { get, post, patch, _delete, getCurTerm, socketReconnect } from '@/utils/utils'
 
 Vue.use(Vuex)
 
@@ -8,6 +8,14 @@ const getDefaultState = () => {
   return {
     error: '',
     info: '',
+
+    contextMenu: {
+      show: false,
+      type: -1,
+      data: null,
+      x: 0,
+      y: 0,
+    },
 
     authUser: null,
 
@@ -56,6 +64,21 @@ export default new Vuex.Store({
       state.info = info
     },
 
+    showContextMenu(state, payload) {
+      const { type, data, mouseEvent } = payload
+      state.contextMenu.type = type
+      state.contextMenu.data = data
+      state.contextMenu.x = mouseEvent.clientX
+      state.contextMenu.y = mouseEvent.clientY
+
+      if (!state.contextMenu.show)
+        state.contextMenu.show = true
+    },
+    hideContextMenu(state) {
+      if (state.contextMenu.show)
+        state.contextMenu.show = false
+    },
+
     setAuthUser(state, authUser) {
       state.authUser = authUser
     },
@@ -85,10 +108,18 @@ export default new Vuex.Store({
       assignment.done = false
       state.assignments.push(assignment)
     },
+    insertAssignment(state, data) {
+      const { index, assignment } = data
+      state.assignments.splice(index, 0, assignment)
+    },
 
     SOCKET_addAssignment(state, assignment) {
       state.assignments.push(assignment)
-      //console.log('assignments UPDATED: ', state.assignments)
+    },
+    SOCKET_removeAssignment(state, assignmentId) {
+      const index = state.assignments.findIndex(a => a._id === assignmentId)
+      if (index !== -1)
+        state.assignments.splice(index, 1)
     },
     SOCKET_addClass(state, c) {
       state.classes.push(c)
@@ -113,7 +144,7 @@ export default new Vuex.Store({
         socketReconnect()
         commit('setAuthUser', authUser)
       }).catch((err) => {
-        dispatch('showError', 'There was an error trying to sign in! Please try again later.')
+        dispatch('showError', 'There was an problem trying to sign in! Please try again later.')
       })
     },
     signOut({ commit, dispatch }) {
@@ -121,7 +152,7 @@ export default new Vuex.Store({
         socketReconnect()
         commit('resetState')
       }).catch((err) => {
-        dispatch('showError', 'There was an error trying to sign out! Please try again later.')
+        dispatch('showError', 'There was an problem trying to sign out! Please try again later.')
       })
     },
 
@@ -137,40 +168,41 @@ export default new Vuex.Store({
         commit('setTerms', terms)
         return dispatch('changeTerm', getCurTerm())
       }).catch(err => {
-        dispatch('showError', 'There was an error fetching your school\'s terms! Please try again later.')
+        dispatch('showError', 'There was an problem fetching your school\'s terms! Please try again later.')
       })
     },
-    getClasses({ commit }) {
+    getClasses({ commit, dispatch }) {
       return get(`/usc/my-classes`).then(classes => {
         commit('setClasses', classes)
       }).catch(err => {
-        dispatch('showError', 'There was an error fetching your classes! Please try again later.')
+        dispatch('showError', 'There was an problem fetching your classes! Please try again later.')
       })
     },
-    getAssignments({ state, commit }) {
+    getAssignments({ state, commit, dispatch }) {
       commit('setAssignments', [])
       return get(`/assignments/mine?term=${state.term}`).then(assignments => {
         commit('setAssignments', assignments)
       }).catch(err => {
-        dispatch('showError', 'There was an error fetching your assignments! Please try again later.')
+        dispatch('showError', 'There was an problem fetching your assignments! Please try again later.')
       })
     },
-    getPublicAssignments({ state, commit }) {
+    getPublicAssignments({ state, commit, dispatch }) {
       commit('setPublicAssignments', [])
       return get(`/assignments/public?term=${state.term}`).then(publicAssignments => {
         commit('setPublicAssignments', publicAssignments)
       }).catch(err => {
-        dispatch('showError', 'There was an error fetching public assignments! Please try again later.')
+        dispatch('showError', 'There was an problem fetching public assignments! Please try again later.')
       })
     },
-    toggleAssignment({ commit }, assignmentId) {
+    toggleAssignment({ commit, dispatch }, assignmentId) {
       commit('toggleAssignment', assignmentId)
       return patch(`/assignments/${assignmentId}/toggle`).catch(err => {
         // Toggle back to original state if error
         commit('toggleAssignment', assignmentId)
+        dispatch('showError', 'There was an problem toggling that assignment! Please try again later.')
       })
     },
-    addAssignmentFromPublic({ state, commit }, assignmentId) {
+    addAssignmentFromPublic({ state, commit, dispatch }, assignmentId) {
       const origAssignments = [...state.assignments]
       const origPublicAssignments = [...state.publicAssignments]
       commit('addAssignmentFromPublic', assignmentId)
@@ -178,8 +210,15 @@ export default new Vuex.Store({
         // Revert back to original arrays if error
         commit('setAssignments', origAssignments)
         commit('setPublicAssignments', origPublicAssignments)
+        dispatch('showError', 'There was an problem adding that assignment! Please try again later.')
       })
     },
+    removeAssignment({ commit, dispatch }, assignmentId) {
+      return _delete(`/assignments/${assignmentId}`).catch(err => {
+        // Re-add assignment
+        dispatch('showError', 'There was an problem removing that assignment! Please try again later.')
+      })
+    }
   },
   modules: {
   }

@@ -1,5 +1,22 @@
 <template>
   <v-container fluid>
+    <v-menu
+      v-model="contextMenu.show"
+      :position-x="contextMenu.x"
+      :position-y="contextMenu.y"
+      absolute
+      transition="false"
+    >
+      <v-list v-if="contextMenu.type === CONTEXT_MENU_TYPES.assignment" class="py-0" dense>
+        <v-list-item @click="">
+          <v-list-item-title>Edit</v-list-item-title>
+        </v-list-item>
+        <v-list-item @click="() => removeAssignment(contextMenu.data.assignmentId)">
+          <v-list-item-title class="red--text">Remove</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-menu>
+
     <CheckIn />
 
     <v-container fluid class="fill-height">
@@ -45,7 +62,8 @@ import AddAssignment from '@/components/AddAssignment'
 import Todo from '@/components/Todo'
 
 import { get, post, patch, getCurTerm } from '@/utils/utils'
-import { mapActions } from 'vuex'
+import { mapState, mapActions } from 'vuex'
+import { CONTEXT_MENU_TYPES } from '@/constants'
 
 // TODO: socket stuff (add assignments, etc.)
 export default {
@@ -65,8 +83,18 @@ export default {
     this.populateData()
   },
 
+  data() {
+    return {
+      CONTEXT_MENU_TYPES,
+    }
+  },
+
+  computed: {
+    ...mapState([ 'contextMenu' ]),
+  },
+
   methods: {
-    ...mapActions([ 'populateData' ]),
+    ...mapActions([ 'populateData', 'removeAssignment' ]),
   },
 }
 </script>

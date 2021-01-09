@@ -12,6 +12,8 @@
           showDate
           :disabled="a.done"
           @click="toggleAssignment(a._id)"
+          @mousedown="(e) => {if (e.which === 3) hideContextMenu()}"
+          @contextmenu="(e) => showAssignmentMenu(e, a._id)"
         />
       </v-card-text>
     </template>
@@ -21,7 +23,8 @@
 <script>
 import AssignmentCard from '@/components/AssignmentCard'
 import { compareDateDay } from '@/utils/utils.js'
-import { mapState, mapGetters, mapActions } from 'vuex'
+import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
+import { CONTEXT_MENU_TYPES } from '@/constants'
 
 export default {
   name: 'Todo',
@@ -71,6 +74,7 @@ export default {
   },
 
   methods: {
+    ...mapMutations(['showContextMenu', 'hideContextMenu']),
     ...mapActions([ 'toggleAssignment' ]),
     sortByDateAndDone(arr) {
       return arr
@@ -83,6 +87,14 @@ export default {
     },
     timeString(a) {
       return new Date(a.dueDate).toLocaleTimeString([], {timeStyle: 'short'})
+    },
+    showAssignmentMenu(e, id) {
+      e.preventDefault()
+      this.showContextMenu({
+        type: CONTEXT_MENU_TYPES.assignment,
+        data: { assignmentId: id },
+        mouseEvent: e,
+      })
     },
   }
 }

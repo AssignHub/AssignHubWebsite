@@ -19,3 +19,8 @@ export const CLASS_COLORS = [
   '#90A4AE',
   //'#E0E0E0',
 ]
+
+export const CONTEXT_MENU_TYPES = {
+  assignment: 0,
+  class: 1,
+}

@@ -52,6 +52,10 @@ export const patch = (route, body={}) => {
   return fetchMethod('PATCH', route, body)
 }
 
+export const _delete = (route, body={}) => {
+  return fetchMethod('DELETE', route, body)
+}
+
 export const fetchMethod = (method, route, body={}) => {
   return fetch(serverURL + route, {
     method,
@@ -88,4 +92,12 @@ export const stringReplaceByIndex = (origString, replaceString, beg, end) => {
 export const socketReconnect = () => {
   socket.disconnect()
   socket.connect()
+}
+
+export const setNumDigits = (num, numDigits) => {
+  // Converts a number to a certain number of digits by adding 0's to the front
+  let numString = '' + num
+  const extraDigits = numDigits - numString.length
+  numString = (extraDigits > 0 ? '0'.repeat(extraDigits) : '') + numString
+  return numString  
 }

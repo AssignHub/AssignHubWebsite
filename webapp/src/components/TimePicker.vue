@@ -6,6 +6,7 @@
     hide-details
     outlined
     autocomplete="off"
+    :disabled="disabled"
     :value="value"
     @input="(value) => $emit('input', value)"
   ></v-text-field>
@@ -25,6 +26,7 @@ export default {
 
   props: {
     label: {type: String, default: 'Pick time'},
+    disabled: {type: Boolean, default: false},
     value: {type: String},
   },
 }
