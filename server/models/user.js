@@ -1,5 +1,13 @@
 const mongoose = require('mongoose')
 
+const Moods = Object.freeze({
+  Crying: 'crying',
+  Sad: 'sad',
+  Tired: 'tired',
+  Smiling: 'smiling',
+  Sunglasses: 'sunglasses',
+})
+
 const userSchema = new mongoose.Schema({
   // basicInfo
   firstName: { type: String, required: true },
@@ -21,6 +29,11 @@ const userSchema = new mongoose.Schema({
     assignment: { type: mongoose.Schema.Types.ObjectId, ref: 'Assignment', required: true },
     done: { type: Boolean, default: false }, 
   }],
+  hiddenAssignments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Assignment' }],
+
+  // Friends and mood
+  mood: { type: String, enum: Object.values(Moods) },
+  friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 })
 
 userSchema.virtual('basicInfo').get(function() {
@@ -36,5 +49,7 @@ userSchema.virtual('basicInfo').get(function() {
 userSchema.virtual('fullName').get(function() {
   return this.firstName + ' ' + this.lastName
 })
+
+Object.assign(userSchema.statics, { Moods })
 
 module.exports = mongoose.model('User', userSchema)

@@ -109,8 +109,17 @@ export default new Vuex.Store({
       state.assignments.push(assignment)
     },
     insertAssignment(state, data) {
-      const { index, assignment } = data
-      state.assignments.splice(index, 0, assignment)
+      const { index, assignment, isPublic } = data
+      if (isPublic)
+        state.publicAssignments.splice(index, 0, assignment)
+      else
+        state.assignments.splice(index, 0, assignment)
+    },
+    removeAssignment(state, data) {
+      const { assignmentId, isPublic } = data
+      const arr = isPublic ? state.publicAssignments : state.assignments
+      const index = arr.findIndex(a => a._id === assignmentId)
+      arr.splice(index, 1)
     },
 
     SOCKET_addAssignment(state, assignment) {
@@ -215,10 +224,18 @@ export default new Vuex.Store({
     },
     removeAssignment({ commit, dispatch }, assignmentId) {
       return _delete(`/assignments/${assignmentId}`).catch(err => {
-        // Re-add assignment
         dispatch('showError', 'There was an problem removing that assignment! Please try again later.')
       })
-    }
+    },
+    hidePublicAssignment({ state, commit, dispatch }, assignmentId) {
+      const origIndex = state.publicAssignments.findIndex(a => a._id === assignmentId)
+      const origAssignment = state.publicAssignments[origIndex]
+      commit('removeAssignment', { assignmentId, isPublic: true }) // TODO: implement
+      return post(`/assignments/public/${assignmentId}/hide`).catch(err => {
+        commit('insertAssignment', { index: origIndex, assignment: origAssignment, isPublic: true }) // TODO: implement
+        dispatch('showError', 'There was an problem hiding that assignment! Please try again later.')
+      })
+    },
   },
   modules: {
   }

@@ -40,7 +40,7 @@
         :disabled="loading"
       >
       </v-checkbox>
-      <v-card-actions>
+      <v-card-actions class="pa-0">
         <v-spacer></v-spacer>
         <v-btn
           @click="submit"

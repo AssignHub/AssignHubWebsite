@@ -1,0 +1,7 @@
+Home page shows how many people are enrolled in the same class and your classmates.
+- You can easily add friends from this list of classmates
+- otherwise, add friends by searching up name or email address
+- display profile pic + name + email in search results
+
+When user signs in for the first time in a day, prompt for mood and reset mood to null
+Allow user to change mood

@@ -17,16 +17,18 @@
               v-for="(a, i) in filteredAssignments" 
               :key="i"
               cols="12"
-              md="6"
-              lg="4"
+              :md="6"
+              :lg="6"
               class="pa-0"
             >
               <AssignmentCard
                 :assignment="a"
                 class="mx-1 mb-2"
                 @add="addAssignmentFromPublic(a._id)"
+                @remove="hidePublicAssignment(a._id)"
                 toAdd
                 showDate
+                showCreator
               />
             </v-col>
           </v-row>
@@ -79,7 +81,7 @@ export default {
   },
 
   methods: {
-    ...mapActions([ 'addAssignmentFromPublic' ]),
+    ...mapActions([ 'addAssignmentFromPublic', 'hidePublicAssignment' ]),
   },
 }
 </script>

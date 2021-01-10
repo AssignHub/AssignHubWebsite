@@ -4,6 +4,7 @@
     v-on="!toAdd ? { click } : {}"
     @contextmenu="(e) => $emit('contextmenu', e)"
     @mousedown="(e) => $emit('mousedown', e)"
+    class="pa-0"
   >
     <v-card-text class="py-1">
       <v-row>
@@ -13,10 +14,20 @@
             :style="{textDecoration: disabled ? 'line-through' : 'unset'}"
           >{{ assignment.name }}</div>
           <div class="text-caption">{{ dateString }}{{ timeString }}</div>
+          <div v-if="showCreator" class="text-caption">{{ creatorString }}</div>
         </v-col>
-        <v-col v-if="toAdd" class="pa-0" cols="auto">
-          <v-btn icon @click="add">
+        <v-col 
+          v-if="toAdd" 
+          class="pa-1 elevation-2 rounded" 
+          style="background-color: rgba(255, 255, 255, 0.3)" 
+          cols="auto"
+          align-self="start"  
+        >
+          <v-btn icon @click="add" small class="d-block">
             <v-icon>mdi-plus</v-icon>
+          </v-btn>
+          <v-btn icon @click="remove" small class="d-block">
+            <v-icon>mdi-delete</v-icon>
           </v-btn>
         </v-col>
       </v-row>
@@ -35,6 +46,7 @@ export default {
     toAdd: {type: Boolean, default: false},
     showDate: {type: Boolean, default: false},
     disabled: {type: Boolean, default: false},
+    showCreator: {type: Boolean, default: false},
   },
 
   computed: {
@@ -47,6 +59,9 @@ export default {
     },
     timeString() {
       return this.dueDate.toLocaleTimeString([], {timeStyle: 'short'})
+    },
+    creatorString() {
+      return 'Created by ' + this.assignment.creator.firstName + ' ' + this.assignment.creator.lastName
     },
     color() {
       if (this.classes.length === 0)
@@ -62,6 +77,9 @@ export default {
     add(e) {
       this.$emit('add', e)
     },
+    remove(e) {
+      this.$emit('remove', e)
+    }
   }
 }
 </script>
