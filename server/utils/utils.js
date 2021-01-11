@@ -38,4 +38,8 @@ const getExpireDate = (expiresIn) => {
   return new Date(new Date().getTime() + expiresIn*1000).getTime()
 }
 
-module.exports = { _fetch, getProfile, getAccessToken, getExpireDate }
+const escapeRegExp = (string)=> {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+}
+
+module.exports = { _fetch, getProfile, getAccessToken, getExpireDate, escapeRegExp }

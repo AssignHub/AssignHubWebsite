@@ -6,6 +6,7 @@ const TROJAN = require('trojan-course-api')
 const Course = require('../models/course')
 const { getTerm } = require('../middleware/usc')
 const { getUser } = require('../middleware/auth')
+const { emitToUser } = require('../websockets')
 require('../utils/object_utils')
 
 // Cache terms daily with cron
@@ -114,6 +115,8 @@ router.post('/add-class', getUser, getTerm, async (req, res) => {
     res.locals.user.classes.push({ class: course._id, color: req.body.color })
     await res.locals.user.save()
 
+    emitToUser(res.locals.user._id, 'addClass', { ...course.toJSON(), color: req.body.color })
+
     res.status(201).json({ success: true })
   } catch (err) {
     console.error(err)
@@ -139,6 +142,28 @@ router.get('/my-classes', getUser, async (req, res) => {
       })
 
     res.json(classes)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: err })
+  }
+})
+
+router.delete('/classes/:courseObjectId', getUser, getTerm, async (req, res) => {
+  // Deletes the requested class
+  // Requires authentication
+
+  const { courseObjectId } = req.params
+  try {
+    await Course.deleteOne({ _id: courseObjectId })
+    await res.locals.user.populate({
+      path: 'assignments.assignment',
+      select: 'course'
+    }).execPopulate()
+    res.locals.user.assignments = res.locals.user.assignments.filter(a => a.course !== courseObjectId)
+    
+    emitToUser(res.locals.user._id, 'removeClass', courseObjectId)
+
+    res.json({ success: true })
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: err })

@@ -89,9 +89,11 @@ export default new Vuex.Store({
     setTerm(state, term) {
       state.term = term
     },
+
     setClasses(state, classes) {
       state.classes = classes
     },
+
     setAssignments(state, assignments) {
       state.assignments = assignments
     },
@@ -130,9 +132,14 @@ export default new Vuex.Store({
       if (index !== -1)
         state.assignments.splice(index, 1)
     },
-    SOCKET_addClass(state, c) {
-      state.classes.push(c)
+    SOCKET_addClass(state, _class) {
+      state.classes.push(_class)
     }, 
+    SOCKET_removeClass(state, courseObjectId) {
+      const index = state.classes.findIndex(c => c._id === courseObjectId)
+      if (index !== -1)
+        state.classes.splice(index, 1)
+    }
   },
   actions: {
     showError({ commit }, error) {
@@ -180,6 +187,8 @@ export default new Vuex.Store({
         dispatch('showError', 'There was an problem fetching your school\'s terms! Please try again later.')
       })
     },
+
+    // Classes
     getClasses({ commit, dispatch }) {
       return get(`/usc/my-classes`).then(classes => {
         commit('setClasses', classes)
@@ -187,6 +196,15 @@ export default new Vuex.Store({
         dispatch('showError', 'There was an problem fetching your classes! Please try again later.')
       })
     },
+    removeClass({ state, dispatch }, courseObjectId) {
+      return _delete(`/usc/classes/${courseObjectId}?term=${state.term}`).then(() => {
+        dispatch('getAssignments')
+      }).catch(err => {
+        dispatch('showError', 'There was a problem removing that class! Please try again later.')
+      })
+    },
+
+    // Assignments
     getAssignments({ state, commit, dispatch }) {
       commit('setAssignments', [])
       return get(`/assignments/mine?term=${state.term}`).then(assignments => {

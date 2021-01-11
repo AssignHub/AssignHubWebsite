@@ -1,8 +1,10 @@
 const router = require('express').Router()
 const User = require('../models/user')
 const { getUser } = require('../middleware/auth')
+const { escapeRegExp } = require('../utils/utils')
 
 router.get('/mine', getUser, async (req, res) => {
+  // Get current user's friends
   // Requires authentication
 
   try {
@@ -18,7 +20,7 @@ router.get('/mine', getUser, async (req, res) => {
   }
 })
 
-router.get('/search', /*getUser,*/ async (req, res) => {
+router.get('/search', getUser, async (req, res) => {
   // Search for friend by name or email
   // Requires authentication
 
@@ -28,20 +30,22 @@ router.get('/search', /*getUser,*/ async (req, res) => {
 
   let { query } = req.query
   query = decodeURIComponent(query)
-  const queryTermsRegex = query.split(' ').map(term => new RegExp(term, 'i'))
+  const queryTermsRegex = query.split(' ').map(term => new RegExp(escapeRegExp(term), 'i'))
 
   try {
-    // TODO: fix so it doesn't show stopmotionpeps if I search "Jonathan L"
+    // Find users that contain all of the query terms among their firstName, lastName, and email
     const users = await User.find({
-      $or: [
-        { firstName: { $in: queryTermsRegex } },
-        { lastName: { $in: queryTermsRegex } },
-        { email: { $in: queryTermsRegex } },
-      ]
-    }, 'firstName lastName email pic') 
-
-    console.log('queryterms', queryTermsRegex)
-    console.log('USERS: ', users)
+      $expr: {
+        $reduce: {
+          input: queryTermsRegex,
+          initialValue: true,
+          in: { $and: [
+            '$$value',
+            { $regexMatch: { input: { $concat: ['$firstName', ' ', '$lastName', ' ', '$email'] }, regex: '$$this' } }
+          ]},
+        },
+      },
+    }, 'firstName lastName email pic')
 
     res.json(users)
   } catch (err) {
@@ -51,7 +55,21 @@ router.get('/search', /*getUser,*/ async (req, res) => {
 })
 
 router.post('/add', getUser, async (req, res) => {
+  // Adds user to current user's friends list
+  // Requires authentication
 
+  /* Body params:
+  *  userId - the userId of friend to add
+  */
+  
+  const { userId } = req.body
+  try {
+    const friendToAdd = await User.findById(userId)
+    
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: err })
+  }
 })
 
 module.exports = router

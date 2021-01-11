@@ -1,6 +1,5 @@
 <template>
   <v-select
-    class="mb-4"
     hide-details
     outlined 
     small-chips

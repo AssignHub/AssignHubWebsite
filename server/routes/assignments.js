@@ -2,7 +2,7 @@
 
 const express = require('express')
 const router = express.Router()
-const { io, socketClients } = require('../websockets')
+const { io, socketClients, emitToUser } = require('../websockets')
 const Assignment = require('../models/assignment')
 const Course = require('../models/course')
 const { getUser } = require('../middleware/auth')
@@ -111,13 +111,11 @@ router.post('/create', getUser, async (req, res) => {
     await res.locals.user.save()
 
     // Socket communication
-    for (let socketId of socketClients()[res.locals.user._id]) {
-      const assignmentPopulated = await assignment.populate({
-        path: 'course',
-        select: 'courseId',
-      }).execPopulate()
-      io().sockets.sockets.get(socketId).emit('addAssignment', { ...assignmentPopulated.toJSON(), done: false })
-    }
+    const assignmentPopulated = await assignment.populate({
+      path: 'course',
+      select: 'courseId',
+    }).execPopulate()
+    emitToUser(res.locals.user._id, 'addAssignment', { ...assignmentPopulated.toJSON(), done: false })
 
     res.status(201).json({ success: true })
   } catch (err) {
@@ -195,18 +193,20 @@ router.delete('/:assignmentId', getUser, async (req, res) => {
       return
     }
     res.locals.user.assignments.splice(index, 1)
-    await res.locals.user.save()
 
     // Remove assignment object if not public
     const assignment = await Assignment.findById(assignmentId)
     if (!assignment.public) {
       await Assignment.findByIdAndDelete(assignmentId)
+    } else {
+      res.locals.user.hiddenAssignments.push(assignmentId)
     }
 
+    // Save user object
+    await res.locals.user.save()
+
     // Socket communication
-    for (let socketId of socketClients()[res.locals.user._id]) {
-      io().sockets.sockets.get(socketId).emit('removeAssignment', assignmentId)
-    }
+    emitToUser(res.locals.user._id, 'removeAssignment', assignmentId)
 
     res.json({ success: true })
   } catch (err) {

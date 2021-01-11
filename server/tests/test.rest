@@ -16,4 +16,4 @@ GET http://localhost:3000/usc/courses/CSCI-103/sections?term=20211
 GET http://localhost:3000/usc/courses/_/sections?term=20211
 
 ###
-GET http://localhost:3000/friends/search?query=jonathan%20l
+GET http://localhost:3000/friends/search?query=liu.z

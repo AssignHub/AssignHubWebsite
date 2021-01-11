@@ -8,6 +8,7 @@
         v-model="curClasses" 
         clearable
         multiple
+        class="mb-4"
       />
 
       <v-card class="grey lighten-5 inner-shadow">

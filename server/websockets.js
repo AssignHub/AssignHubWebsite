@@ -23,6 +23,12 @@ exports.io = () => io
 
 exports.socketClients = () => socketClients
 
+exports.emitToUser = (userId, message, data) => {
+  for (let socketId of socketClients[userId]) {
+    io.sockets.sockets.get(socketId).emit(message, data)
+  } 
+}
+
 exports.initialize = (server, options={}) => {
   io = require('socket.io')(server, options) 
 

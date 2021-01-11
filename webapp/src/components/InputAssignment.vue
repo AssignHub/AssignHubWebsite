@@ -22,6 +22,7 @@
         :classes="classes" 
         v-model="curClass" 
         :disabled="loading"
+        class="mb-4"
       />
       <DateTimePicker 
         dateLabel="Due date"

@@ -6,7 +6,10 @@
     @mousedown="(e) => $emit('mousedown', e)"
     class="pa-0"
   >
-    <v-card-text class="py-1">
+    <div class="courseId pl-1">
+      {{ assignment.course.courseId }}
+    </div>
+    <v-card-text>
       <v-row>
         <v-col class="pa-0">
           <div 
@@ -34,6 +37,19 @@
     </v-card-text>
   </v-card>
 </template>
+
+<style scoped>
+  .courseId {
+    font-size: 0.7rem;
+    color: white;
+    background-color: rgba(120, 120, 120, 0.4);
+    /*position: absolute;
+    bottom: 0;
+    left: 0;
+    transform-origin: 0 0;
+    transform: rotate(270deg);*/
+  }
+</style>
 
 <script>
 import { mapGetters } from 'vuex'
@@ -64,9 +80,10 @@ export default {
       return 'Created by ' + this.assignment.creator.firstName + ' ' + this.assignment.creator.lastName
     },
     color() {
-      if (this.classes.length === 0)
+      const _class = this.classes.find(c => c.courseId === this.assignment.course.courseId)
+      if (!_class)
         return 'white'
-      return this.classes.find(c => c.courseId === this.assignment.course.courseId).color
+      return _class.color
     },
   },
 
