@@ -12,19 +12,18 @@
       />
 
       <v-card class="grey lighten-5 inner-shadow">
-        <v-card-text v-if="filteredAssignments.length > 0" class="py-2">
-          <v-row>
+        <v-card-text v-if="filteredAssignments.length > 0" class="pt-2 pb-0 px-1">
+          <v-row no-gutters>
             <v-col 
               v-for="(a, i) in filteredAssignments" 
               :key="i"
               cols="12"
               :md="6"
               :lg="6"
-              class="pa-0"
             >
               <AssignmentCard
-                :assignment="a"
                 class="mx-1 mb-2"
+                :assignment="a"
                 @add="addAssignmentFromPublic(a._id)"
                 @remove="hidePublicAssignment(a._id)"
                 toAdd
@@ -74,8 +73,8 @@ export default {
       if (this.curClasses.length === 0)
         return this.publicAssignments.sort((a, b) => a.dueDate - b.dueDate)
 
-      let filteredAssignments = this.curClasses.map(c => {
-        return this.publicAssignments.filter(a => a.classUid === c._id)
+      let filteredAssignments = this.curClasses.map(courseObjectId => {
+        return this.publicAssignments.filter(a => a.course._id === courseObjectId)
       }).flat().sort((a, b) => a.dueDate - b.dueDate)
       return filteredAssignments
     },

@@ -11,4 +11,12 @@ const courseSchema = new mongoose.Schema({
   blocks: { type: Array },
 })
 
+courseSchema.methods.findMembers = function(cb) {
+  return this.model('User').find({
+    $expr: {
+      $in: [ this._id, { $map: { input: '$classes', in: '$$this.class' } } ],
+    },
+  }, cb)
+}
+
 module.exports = mongoose.model('Course', courseSchema)

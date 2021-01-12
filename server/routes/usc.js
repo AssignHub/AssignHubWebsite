@@ -115,7 +115,8 @@ router.post('/add-class', getUser, getTerm, async (req, res) => {
     res.locals.user.classes.push({ class: course._id, color: req.body.color })
     await res.locals.user.save()
 
-    emitToUser(res.locals.user._id, 'addClass', { ...course.toJSON(), color: req.body.color })
+    const numMembers = await course.findMembers().lean().countDocuments()
+    emitToUser(res.locals.user._id, 'addClass', { ...course.toJSON(), color: req.body.color, numMembers })
 
     res.status(201).json({ success: true })
   } catch (err) {
@@ -133,13 +134,16 @@ router.get('/my-classes', getUser, async (req, res) => {
       path: 'classes.class',
       match: { term: { $in: terms } }
     }).execPopulate()
-    const classes = res.locals.user.classes
-      .filter(c => c.class !== null)
-      .map(c => {
-        c = c.toJSON()
-        const { _id, class: classData, ...rest } = c
-        return { ...classData, ...rest }
-      })
+
+    const formatClass = async (c) => {
+      const numMembers = await c.class.findMembers().lean().countDocuments()
+      c = c.toJSON()
+      const { _id, class: classData, ...rest } = c
+      return { ...classData, ...rest, numMembers }
+    } 
+
+    let classes = await res.locals.user.classes.filter(c => c.class !== null)
+    classes = await Promise.all(classes.map((c) => formatClass(c)))
 
     res.json(classes)
   } catch (err) {
@@ -148,22 +152,48 @@ router.get('/my-classes', getUser, async (req, res) => {
   }
 })
 
-router.delete('/classes/:courseObjectId', getUser, getTerm, async (req, res) => {
+router.delete('/classes/:courseObjectId', getUser, async (req, res) => {
   // Deletes the requested class
   // Requires authentication
 
   const { courseObjectId } = req.params
   try {
-    await Course.deleteOne({ _id: courseObjectId })
+    // Remove class
+    const classIndex = res.locals.user.classes.findIndex(c => c.class == courseObjectId)
+    if (classIndex !== -1)
+      res.locals.user.classes.splice(classIndex, 1)
+    
+    // Remove assignments
     await res.locals.user.populate({
       path: 'assignments.assignment',
       select: 'course'
     }).execPopulate()
     res.locals.user.assignments = res.locals.user.assignments.filter(a => a.course !== courseObjectId)
     
+    await res.locals.user.save()
+
     emitToUser(res.locals.user._id, 'removeClass', courseObjectId)
 
     res.json({ success: true })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: err })
+  }
+})
+
+router.get('/classes/:courseObjectId/members', async (req, res) => {
+  // Gets the members in this class
+  // Requires authentication
+
+  const { courseObjectId } = req.params
+  try {
+    const course = await Course.findById(courseObjectId)
+    const members = await course.findMembers()
+      .lean()
+      .select('firstName lastName email pic')
+      .sort({ lastName: 1, firstName: 1, email: 1 })
+
+    res.json(members)
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: err })

@@ -88,7 +88,7 @@ export default {
   methods: {
     ...mapActions([ 'showError' ]),
     submit() {
-      let courseObjectId = this.curClass._id
+      let courseObjectId = this.curClass
       let dueDate = Date.parse(this.date + 'T' + this.time)
       let assignment = {
         courseObjectId,

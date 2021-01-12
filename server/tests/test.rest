@@ -17,3 +17,6 @@ GET http://localhost:3000/usc/courses/_/sections?term=20211
 
 ###
 GET http://localhost:3000/friends/search?query=liu.z
+
+###
+GET http://localhost:3000/usc/classes/5ffb8cd6a3452d2c78c7bd17/members

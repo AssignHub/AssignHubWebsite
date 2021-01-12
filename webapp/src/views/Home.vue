@@ -31,7 +31,7 @@
             </v-col>
           </v-row>
         </v-col>
-        <v-col cols="3" md="2">
+        <v-col cols="3" md="2" class="py-0">
           <Todo style="height: 100%;" />
         </v-col>
         <v-col class="py-0">

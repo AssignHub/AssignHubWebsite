@@ -6,6 +6,7 @@
     no-data-text="You are not in any classes!"
     :label="label"
     :items="classes"
+    item-value="_id"
     :clearable="clearable"
     :multiple="multiple"
     :disabled="disabled"
@@ -17,8 +18,8 @@
         {{ item.courseId }}
       </v-chip>
     </template>
-    <template v-slot:selection="{ attrs, item, selected }">
-      <v-chip small :color="item.color" :input-value="selected" v-bind="attrs">
+    <template v-slot:selection="{ item, select }">
+      <v-chip small :color="item.color" :close="multiple" @click:close="deselect(item._id)">
         {{ item.courseId }}
       </v-chip>
     </template>
@@ -48,6 +49,9 @@ export default {
     updateValue(value) {
       console.log('class select value: ', value)
       this.$emit('input', value)
+    },
+    deselect(id) {
+      this.updateValue(this.value.filter(courseObjectId => courseObjectId !== id))
     },
   },
 }
