@@ -86,7 +86,7 @@
                   <v-list-item-title>{{ member.firstName }} {{ member.lastName }}</v-list-item-title>
                   <v-list-item-subtitle>{{ member.email }}</v-list-item-subtitle>
                 </v-list-item-content>
-                <v-list-item-action>
+                <v-list-item-action v-if="member._id !== authUser._id">
                   <v-tooltip right>
                     <template v-slot:activator="{ on, attrs }">
                       <v-btn 
@@ -119,7 +119,7 @@
 </style>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 import { get } from '@/utils/utils'
 
 export default {
@@ -147,6 +147,7 @@ export default {
   },
 
   computed: {
+    ...mapState([ 'authUser' ]),
     blocksString() {
       const daysString = this._class.blocks.map(block => {
         return block.day === 'H' ? 'TH' : block.day
@@ -175,7 +176,6 @@ export default {
     getMembers() {
       if (!this.gotMembers) {
         this.gotMembers = true
-        console.log('GETTING')
         get(`/usc/classes/${this._class._id}/members`).then(members => {
           this.members = members
         })

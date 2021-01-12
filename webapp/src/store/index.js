@@ -230,13 +230,14 @@ export default new Vuex.Store({
       })
     },
     addAssignmentFromPublic({ state, commit, dispatch }, assignmentId) {
-      const origAssignments = [...state.assignments]
-      const origPublicAssignments = [...state.publicAssignments]
+      // TODO: this could lead to bugs so make it run remove/insert operations instead of set operations
+      const origIndex = state.publicAssignments.findIndex(a => a._id === assignmentId)
+      const origAssignment = state.publicAssignments[origIndex]
       commit('addAssignmentFromPublic', assignmentId)
       return post('/assignments/add', { assignmentId }).catch(err => {
         // Revert back to original arrays if error
-        commit('setAssignments', origAssignments)
-        commit('setPublicAssignments', origPublicAssignments)
+        commit('removeAssignment', { assignmentId, isPublic: false })
+        commit('insertAssignment', { index: origIndex, assignment: origAssignment, isPublic: true })
         dispatch('showError', 'There was an problem adding that assignment! Please try again later.')
       })
     },
@@ -248,7 +249,7 @@ export default new Vuex.Store({
     hidePublicAssignment({ state, commit, dispatch }, assignmentId) {
       const origIndex = state.publicAssignments.findIndex(a => a._id === assignmentId)
       const origAssignment = state.publicAssignments[origIndex]
-      commit('removeAssignment', { assignmentId, isPublic: true }) // TODO: implement
+      commit('removeAssignment', { assignmentId, isPublic: true })
       return post(`/assignments/public/${assignmentId}/hide`).catch(err => {
         commit('insertAssignment', { index: origIndex, assignment: origAssignment, isPublic: true }) // TODO: implement
         dispatch('showError', 'There was an problem hiding that assignment! Please try again later.')

@@ -71,11 +71,11 @@ export default {
     ...mapGetters({ classes: 'termClasses' }),
     filteredAssignments() {
       if (this.curClasses.length === 0)
-        return this.publicAssignments.sort((a, b) => a.dueDate - b.dueDate)
+        return this.publicAssignments.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
 
       let filteredAssignments = this.curClasses.map(courseObjectId => {
         return this.publicAssignments.filter(a => a.course._id === courseObjectId)
-      }).flat().sort((a, b) => a.dueDate - b.dueDate)
+      }).flat().sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
       return filteredAssignments
     },
   },
