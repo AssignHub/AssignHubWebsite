@@ -230,7 +230,6 @@ export default new Vuex.Store({
       })
     },
     addAssignmentFromPublic({ state, commit, dispatch }, assignmentId) {
-      // TODO: this could lead to bugs so make it run remove/insert operations instead of set operations
       const origIndex = state.publicAssignments.findIndex(a => a._id === assignmentId)
       const origAssignment = state.publicAssignments[origIndex]
       commit('addAssignmentFromPublic', assignmentId)
@@ -254,6 +253,11 @@ export default new Vuex.Store({
         commit('insertAssignment', { index: origIndex, assignment: origAssignment, isPublic: true }) // TODO: implement
         dispatch('showError', 'There was an problem hiding that assignment! Please try again later.')
       })
+    },
+
+    // Friends
+    addFriend({ commit, dispatch }, userId) {
+      console.log('TODO: add friend', userId)
     },
   },
   modules: {

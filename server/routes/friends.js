@@ -1,5 +1,6 @@
 const router = require('express').Router()
 const User = require('../models/user')
+const FriendRequest = require('../models/friend_request')
 const { getUser } = require('../middleware/auth')
 const { escapeRegExp } = require('../utils/utils')
 
@@ -54,18 +55,99 @@ router.get('/search', getUser, async (req, res) => {
   }
 })
 
-router.post('/add', getUser, async (req, res) => {
-  // Adds user to current user's friends list
+router.get('/requests', getUser, async (req, res) => {
+  // Get all incoming and outgoing friend requests
+  // Requires authentication
+
+  try {
+    await res.locals.user.populate({
+      path: 'outgoingFriendRequests',
+      select: 'firstName lastName email pic',
+    }).populate({
+      path: 'incomingFriendRequests',
+      select: 'firstName lastName email pic',
+    }).execPopulate()
+
+    res.json({
+      outgoing: res.locals.user.outgoingFriendRequests,
+      incoming: res.locals.user.incomingFriendRequests,
+    })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: err })
+  }
+})
+
+router.post('/create-request', getUser, async (req, res) => {
+  // Create a new friend request
   // Requires authentication
 
   /* Body params:
-  *  userId - the userId of friend to add
+  *  userId - the userId of the friend to add
   */
-  
+
   const { userId } = req.body
   try {
-    const friendToAdd = await User.findById(userId)
+    await new FriendRequest({
+      from: res.locals.user._id, 
+      to: userId,
+    }).save()
+
+    res.status(201).json({ sucess: true })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: err })
+  }
+})
+
+router.post('/accept-request', getUser, async (req, res) => {
+  // Accept friend request and delete friend request
+  // Requires authentication
+
+  /* Body params:
+  *  friendRequestId - the id of the friend request
+  */
+  
+  const { friendRequestId } = req.body
+  try {
+    const friendRequest = await FriendRequest.findById(friendRequestId).populate('from').populate('to')
+    if (friendRequest.to._id != res.locals.user._id) {
+      // Friend request was not directed to you
+      res.status(403).json({ error: 'not-allowed' })
+      return
+    }
+
+    friendRequest.from.friends.push(friendRequest.to._id)
+    friendRequest.to.friends.push(friendRequest.from._id)
+    await Promise.all([ friendRequest.from.save(), friendRequest.to.save() ])
+    await FriendRequest.findByIdAndDelete(friendRequestId)
     
+    res.json({ success: true })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: err })
+  }
+})
+
+router.delete('/reject-request', getUser, async (req, res) => {
+  // Delete friend request
+  // Requires authentication
+
+  /* Body params:
+  *  friendRequestId - the id of the friend request
+  */
+
+  const { friendRequestId } = req.body
+  try {
+    const friendRequest = await FriendRequest.findById(friendRequestId)
+    if (friendRequest.to != res.locals.user._id) {
+      // Friend request was not directed to you
+      res.status(403).json({ error: 'not-allowed' })
+      return
+    }
+    await FriendRequest.findByIdAndDelete(friendRequestId)
+
+    res.json({ success: true })
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: err })
