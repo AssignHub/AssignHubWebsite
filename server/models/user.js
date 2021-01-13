@@ -50,6 +50,18 @@ userSchema.virtual('fullName').get(function() {
   return this.firstName + ' ' + this.lastName
 })
 
+userSchema.virtual('outgoingFriendRequests', {
+  ref: 'FriendRequest',
+  localField: '_id',
+  foreignField: 'from',
+})
+
+userSchema.virtual('incomingFriendRequests', {
+  ref: 'FriendRequest',
+  localField: '_id',
+  foreignField: 'to',
+})
+
 Object.assign(userSchema.statics, { Moods })
 
 module.exports = mongoose.model('User', userSchema)

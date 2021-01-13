@@ -66,7 +66,6 @@
         <v-spacer/>
         <v-btn
           text
-          class="mr-2"
           @click="menu = false; dept = ''; courseNum = ''; sectionNum = '';"
         >Close</v-btn>
         <v-btn
