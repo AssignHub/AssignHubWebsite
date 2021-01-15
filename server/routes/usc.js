@@ -7,6 +7,7 @@ const Course = require('../models/course')
 const { getTerm } = require('../middleware/usc')
 const { getUser } = require('../middleware/auth')
 const { emitToUser } = require('../websockets')
+const Assignment = require('../models/assignment')
 require('../utils/object_utils')
 
 // Cache terms daily with cron
@@ -166,9 +167,20 @@ router.delete('/classes/:courseObjectId', getUser, async (req, res) => {
     // Remove assignments
     await res.locals.user.populate({
       path: 'assignments.assignment',
-      select: 'course'
+      select: 'course public'
     }).execPopulate()
-    res.locals.user.assignments = res.locals.user.assignments.filter(a => a.course !== courseObjectId)
+
+    const toDelete = [] // Store assignments to delete forever (e.g. not public)
+    res.locals.user.assignments = res.locals.user.assignments.filter(a => {
+      const remove = a.assignment.course == courseObjectId
+      if (remove && !a.assignment.public)
+        toDelete.push(a.assignment._id)
+      return !remove
+    })
+
+    for (let id of toDelete) {
+      await Assignment.findByIdAndDelete(id)
+    }
     
     await res.locals.user.save()
 

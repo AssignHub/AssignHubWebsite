@@ -41,7 +41,7 @@
           v-for="user in filteredResults"
           :key="user._id"
           :user="user"
-          showAddFriendBtn
+          :btnTypes="['add-friend']"
         />
         <v-list-item v-for="n in 12" :key="n">
           wat
@@ -100,11 +100,13 @@ export default {
 
   methods: {
     search() {
-      this.loading = true
-      get(`/friends/search?query=${this.query}`).then(results => {
-        this.loading = false
-        this.results = results
-      })
+      if (this.query) {
+        this.loading = true
+        get(`/friends/search?query=${this.query}`).then(results => {
+          this.loading = false
+          this.results = results
+        })
+      }
     },
     reset() {
       this.query = ''

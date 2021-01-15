@@ -3,6 +3,7 @@ const User = require('../models/user')
 const FriendRequest = require('../models/friend_request')
 const { getUser } = require('../middleware/auth')
 const { escapeRegExp } = require('../utils/utils')
+const { emitToUser } = require('../websockets')
 
 router.get('/mine', getUser, async (req, res) => {
   // Get current user's friends
@@ -62,10 +63,16 @@ router.get('/requests', getUser, async (req, res) => {
   try {
     await res.locals.user.populate({
       path: 'outgoingFriendRequests',
-      select: 'firstName lastName email pic',
+      populate: {
+        path: 'to',
+        select: 'firstName lastName email pic',
+      },  
     }).populate({
       path: 'incomingFriendRequests',
-      select: 'firstName lastName email pic',
+      populate: {
+        path: 'from',
+        select: 'firstName lastName email pic',
+      }
     }).execPopulate()
 
     res.json({
@@ -86,12 +93,31 @@ router.post('/create-request', getUser, async (req, res) => {
   *  userId - the userId of the friend to add
   */
 
+  // TODO: check if request has already been sent to current user, and if so, res.redirect('accept-request')
+
   const { userId } = req.body
   try {
-    await new FriendRequest({
+    const request = await new FriendRequest({
       from: res.locals.user._id, 
       to: userId,
     }).save()
+
+    const toUser = await User.findById(userId, 'firstName lastName email pic').lean()
+
+    emitToUser(res.locals.user._id, 'addFriendRequest', { 
+      type: 'outgoing', 
+      request: {
+        _id: request._id,
+        to: toUser,
+      } 
+    })
+    emitToUser(userId, 'addFriendRequest', { 
+      type: 'incoming',
+      request: {
+        _id: request._id,
+        from: res.locals.user.basicInfo,
+      } 
+    })
 
     res.status(201).json({ sucess: true })
   } catch (err) {
@@ -121,6 +147,11 @@ router.post('/accept-request', getUser, async (req, res) => {
     friendRequest.to.friends.push(friendRequest.from._id)
     await Promise.all([ friendRequest.from.save(), friendRequest.to.save() ])
     await FriendRequest.findByIdAndDelete(friendRequestId)
+
+    emitToUser(friendRequest.from._id, 'removeFriendRequest', friendRequestId)
+    emitToUser(friendRequest.to._id, 'removeFriendRequest', friendRequestId)
+    emitToUser(friendRequest.from._id, 'addFriend', friendRequest.to.basicInfo)
+    emitToUser(friendRequest.to._id, 'addFriend', friendRequest.from.basicInfo)
     
     res.json({ success: true })
   } catch (err) {
@@ -139,13 +170,45 @@ router.delete('/reject-request', getUser, async (req, res) => {
 
   const { friendRequestId } = req.body
   try {
-    const friendRequest = await FriendRequest.findById(friendRequestId)
+    const friendRequest = await FriendRequest.findById(friendRequestId).lean()
     if (friendRequest.to != res.locals.user._id) {
       // Friend request was not directed to you
       res.status(403).json({ error: 'not-allowed' })
       return
     }
     await FriendRequest.findByIdAndDelete(friendRequestId)
+
+    emitToUser(friendRequest.from, 'removeFriendRequest', friendRequestId)
+    emitToUser(friendRequest.to, 'removeFriendRequest', friendRequestId)
+
+    res.json({ success: true })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: err })
+  }
+})
+
+router.delete('/cancel-request', getUser, async (req, res) => {
+  // Cancels a friend request you sent
+  // Requires authentication
+
+  /* Body params:
+  *  friendRequestId - the id of the friend request
+  */
+
+  const { friendRequestId } = req.body
+  try {
+    const friendRequest = await FriendRequest.findById(friendRequestId).lean()
+    if (friendRequest.from === res.locals.user._id.toString()) {
+      console.log('friendRequest: ', friendRequest.from == res.locals.user._id.toString())
+      // Friend request was not created by you
+      res.status(403).json({ error: 'not-allowed' })
+      return
+    }
+    await FriendRequest.findByIdAndDelete(friendRequestId)
+
+    emitToUser(friendRequest.from, 'removeFriendRequest', friendRequestId)
+    emitToUser(friendRequest.to, 'removeFriendRequest', friendRequestId)
 
     res.json({ success: true })
   } catch (err) {

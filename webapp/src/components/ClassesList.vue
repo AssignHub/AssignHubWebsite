@@ -14,8 +14,8 @@
     ></v-select>
     <v-list dense>
       <v-list-item
-        v-for="(_class, i) in classes"
-        :key="i"
+        v-for="_class in classes"
+        :key="_class._id"
       >
         <v-list-item-content class="pa-0">
           <v-col cols="auto" class="pa-0">

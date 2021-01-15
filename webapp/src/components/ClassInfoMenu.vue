@@ -82,7 +82,7 @@
                 v-for="member in members" 
                 :key="member._id" 
                 :user="member"
-                showAddFriendBtn
+                :btnTypes="['add-friend']"
               />
             </v-list>
           </v-card-text>
@@ -104,7 +104,7 @@
 <script>
 import UserListItem from '@/components/UserListItem'
 import { mapState, mapActions } from 'vuex'
-import { get } from '@/utils/utils'
+import { get, _delete } from '@/utils/utils'
 
 export default {
   name: 'ClassInfoMenu',
@@ -148,7 +148,7 @@ export default {
   },
 
   methods: {
-    ...mapActions([ 'removeClass' ]),
+    ...mapActions([ 'showError', 'getAssignments' ]),
     to12Hr(time) {
       const [ hour, min ] = time.split(':')
       let newHour;
@@ -168,6 +168,13 @@ export default {
           this.members = members
         })
       }
+    },
+    removeClass(courseObjectId) {
+      _delete(`/usc/classes/${courseObjectId}?term=${this.term}`).then(() => {
+        this.getAssignments()
+      }).catch(err => {
+        this.showError('There was a problem removing that class! Please try again later.')
+      })
     },
   },
 }

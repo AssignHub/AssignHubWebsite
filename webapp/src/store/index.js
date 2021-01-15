@@ -32,6 +32,8 @@ const getDefaultState = () => {
       require('@/assets/smiling.png'),
       require('@/assets/sunglasses.png'),
     ],
+
+    // Friends
     friends: [
       {firstName: 'Jill', lastName: 'Smith', emojiIndex: 1},
       {firstName: 'Leonardo', lastName: 'DiCaprio', emojiIndex: 0},
@@ -39,6 +41,10 @@ const getDefaultState = () => {
       {firstName: 'Jacob', lastName: 'Chen', emojiIndex: 2},
       {firstName: 'Kevin', lastName: 'Hunter', emojiIndex: 4},
     ],
+    friendRequests: {
+      incoming: [],
+      outgoing: [],
+    },
   }
 }
 
@@ -124,24 +130,40 @@ export default new Vuex.Store({
       arr.splice(index, 1)
     },
 
+    // Friends
+    setFriendRequests(state, friendRequests) {
+      state.friendRequests = friendRequests
+    },
+
+    // Websockets
     SOCKET_addAssignment(state, assignment) {
       state.assignments.push(assignment)
     },
     SOCKET_removeAssignment(state, assignmentId) {
-      const index = state.assignments.findIndex(a => a._id === assignmentId)
-      if (index !== -1)
-        state.assignments.splice(index, 1)
+      state.assignments = state.assignments.filter(a => a._id !== assignmentId)
     },
     SOCKET_addClass(state, _class) {
       state.classes.push(_class)
     }, 
     SOCKET_removeClass(state, courseObjectId) {
-      const index = state.classes.findIndex(c => c._id === courseObjectId)
-      if (index !== -1)
-        state.classes.splice(index, 1)
-    }
+      state.classes = state.classes.filter(c => c._id !== courseObjectId)
+    },
+    SOCKET_addFriendRequest(state, friendRequest) {
+      if (friendRequest.type === 'outgoing') 
+        state.friendRequests.outgoing.push(friendRequest.request)
+      if (friendRequest.type === 'incoming') 
+        state.friendRequests.incoming.push(friendRequest.request)
+    },
+    SOCKET_removeFriendRequest(state, friendRequestId) {
+      state.friendRequests.outgoing = state.friendRequests.outgoing.filter(req => req._id !== friendRequestId)
+      state.friendRequests.incoming = state.friendRequests.incoming.filter(req => req._id !== friendRequestId)
+    },
+    SOCKET_addFriend(state, user) {
+      state.friends.push(user)
+    },
   },
   actions: {
+    // Error & info
     showError({ commit }, error) {
       commit('setError', '')
       setTimeout(() => commit('setError', error), 0)
@@ -151,6 +173,7 @@ export default new Vuex.Store({
       setTimeout(() => commit('setInfo', info), 0)
     },
 
+    // Auth
     signInGoogle({ commit, dispatch }) {
       return Vue.gAuth.getAuthCode().then(authCode => {
         return post('/auth/sign-in', { authCode })
@@ -172,19 +195,19 @@ export default new Vuex.Store({
       })
     },
 
+    async populateData({ dispatch }) {
+      await Promise.all([ dispatch('getClasses'), dispatch('getTerms'), dispatch('getFriendRequests') ])
+    },
     async changeTerm({ commit, dispatch }, term) {
       commit('setTerm', term)
       await Promise.all([ dispatch('getAssignments'), dispatch('getPublicAssignments') ])
     }, 
-    async populateData({ dispatch }) {
-      await Promise.all([ dispatch('getClasses'), dispatch('getTerms') ])
-    },
     getTerms({ commit, dispatch }) {
       return get('/usc/terms').then(terms => {
         commit('setTerms', terms)
         return dispatch('changeTerm', getCurTerm())
       }).catch(err => {
-        dispatch('showError', 'There was an problem fetching your school\'s terms! Please try again later.')
+        dispatch('showError', 'There was an problem fetching your school\'s terms!')
       })
     },
 
@@ -193,14 +216,7 @@ export default new Vuex.Store({
       return get(`/usc/my-classes`).then(classes => {
         commit('setClasses', classes)
       }).catch(err => {
-        dispatch('showError', 'There was an problem fetching your classes! Please try again later.')
-      })
-    },
-    removeClass({ state, dispatch }, courseObjectId) {
-      return _delete(`/usc/classes/${courseObjectId}?term=${state.term}`).then(() => {
-        dispatch('getAssignments')
-      }).catch(err => {
-        dispatch('showError', 'There was a problem removing that class! Please try again later.')
+        dispatch('showError', 'There was an problem fetching your classes!')
       })
     },
 
@@ -210,7 +226,7 @@ export default new Vuex.Store({
       return get(`/assignments/mine?term=${state.term}`).then(assignments => {
         commit('setAssignments', assignments)
       }).catch(err => {
-        dispatch('showError', 'There was an problem fetching your assignments! Please try again later.')
+        dispatch('showError', 'There was an problem fetching your assignments!')
       })
     },
     getPublicAssignments({ state, commit, dispatch }) {
@@ -218,7 +234,7 @@ export default new Vuex.Store({
       return get(`/assignments/public?term=${state.term}`).then(publicAssignments => {
         commit('setPublicAssignments', publicAssignments)
       }).catch(err => {
-        dispatch('showError', 'There was an problem fetching public assignments! Please try again later.')
+        dispatch('showError', 'There was an problem fetching public assignments!')
       })
     },
     toggleAssignment({ commit, dispatch }, assignmentId) {
@@ -256,9 +272,13 @@ export default new Vuex.Store({
     },
 
     // Friends
-    addFriend({ commit, dispatch }, userId) {
-      console.log('TODO: add friend', userId)
-    },
+    getFriendRequests({ commit, dispatch }) {
+      return get('/friends/requests').then(requests => {
+        commit('setFriendRequests', requests)
+      }).catch(err => {
+        dispatch('showError', 'There was a problem fetching your friend requests!')
+      })
+    }, 
   },
   modules: {
   }
