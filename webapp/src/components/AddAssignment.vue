@@ -26,9 +26,9 @@
                 :assignment="a"
                 @add="addAssignmentFromPublic(a._id)"
                 @remove="hidePublicAssignment(a._id)"
-                toAdd
-                showDate
-                showCreator
+                to-add
+                show-date
+                show-creator
               />
             </v-col>
           </v-row>

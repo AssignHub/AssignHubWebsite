@@ -18,7 +18,7 @@
         {{ item.courseId }}
       </v-chip>
     </template>
-    <template v-slot:selection="{ item, select }">
+    <template v-slot:selection="{ item }">
       <v-chip small :color="item.color" :close="multiple" @click:close="deselect(item._id)">
         {{ item.courseId }}
       </v-chip>

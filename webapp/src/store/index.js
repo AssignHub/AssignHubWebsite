@@ -25,22 +25,8 @@ const getDefaultState = () => {
     publicAssignments: [],
     classes: [],
 
-    emojis: [
-      require('@/assets/crying.png'),
-      require('@/assets/sad.png'),
-      require('@/assets/tired.png'),
-      require('@/assets/smiling.png'),
-      require('@/assets/sunglasses.png'),
-    ],
-
     // Friends
-    friends: [
-      {firstName: 'Jill', lastName: 'Smith', emojiIndex: 1},
-      {firstName: 'Leonardo', lastName: 'DiCaprio', emojiIndex: 0},
-      {firstName: 'Carol', lastName: 'Johnson', emojiIndex: 3},
-      {firstName: 'Jacob', lastName: 'Chen', emojiIndex: 2},
-      {firstName: 'Kevin', lastName: 'Hunter', emojiIndex: 4},
-    ],
+    friends: [],
     friendRequests: {
       incoming: [],
       outgoing: [],
@@ -131,6 +117,9 @@ export default new Vuex.Store({
     },
 
     // Friends
+    setFriends(state, friends) {
+      state.friends = friends
+    },
     setFriendRequests(state, friendRequests) {
       state.friendRequests = friendRequests
     },
@@ -160,6 +149,9 @@ export default new Vuex.Store({
     },
     SOCKET_addFriend(state, user) {
       state.friends.push(user)
+    },
+    SOCKET_removeFriend(state, friendId) {
+      state.friends = state.friends.filter(f => f._id !== friendId)
     },
   },
   actions: {
@@ -196,7 +188,7 @@ export default new Vuex.Store({
     },
 
     async populateData({ dispatch }) {
-      await Promise.all([ dispatch('getClasses'), dispatch('getTerms'), dispatch('getFriendRequests') ])
+      await Promise.all([ dispatch('getClasses'), dispatch('getTerms'), dispatch('getFriends'), dispatch('getFriendRequests') ])
     },
     async changeTerm({ commit, dispatch }, term) {
       commit('setTerm', term)
@@ -256,11 +248,6 @@ export default new Vuex.Store({
         dispatch('showError', 'There was an problem adding that assignment! Please try again later.')
       })
     },
-    removeAssignment({ commit, dispatch }, assignmentId) {
-      return _delete(`/assignments/${assignmentId}`).catch(err => {
-        dispatch('showError', 'There was an problem removing that assignment! Please try again later.')
-      })
-    },
     hidePublicAssignment({ state, commit, dispatch }, assignmentId) {
       const origIndex = state.publicAssignments.findIndex(a => a._id === assignmentId)
       const origAssignment = state.publicAssignments[origIndex]
@@ -272,6 +259,13 @@ export default new Vuex.Store({
     },
 
     // Friends
+    getFriends({ commit, dispatch }) {
+      return get('/friends/mine').then(friends => {
+        commit('setFriends', friends)
+      }).catch(err => {
+        dispatch('showError', 'There was a problem fetching your friends!')
+      })
+    },
     getFriendRequests({ commit, dispatch }) {
       return get('/friends/requests').then(requests => {
         commit('setFriendRequests', requests)

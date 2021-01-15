@@ -23,4 +23,21 @@ export const CLASS_COLORS = [
 export const CONTEXT_MENU_TYPES = {
   assignment: 0,
   class: 1,
+  removeFriend: 2,
 }
+
+export const MOODS = Object.freeze({
+  Crying: 'crying',
+  Sad: 'sad',
+  Tired: 'tired',
+  Smiling: 'smiling',
+  Sunglasses: 'sunglasses',
+})
+
+export const EMOJIS = Object.freeze({
+  [MOODS.Crying]: require('@/assets/crying.png'),
+  [MOODS.Sad]: require('@/assets/sad.png'),
+  [MOODS.Tired]: require('@/assets/tired.png'),
+  [MOODS.Smiling]: require('@/assets/smiling.png'),
+  [MOODS.Sunglasses]: require('@/assets/sunglasses.png'),
+})

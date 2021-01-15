@@ -10,7 +10,7 @@ router.get('/mine', getUser, async (req, res) => {
   // Requires authentication
 
   try {
-    await res.locals.user.friends.populate({
+    await res.locals.user.populate({
       path: 'friends',
       select: 'firstName lastName email pic mood'
     }).execPopulate()
@@ -97,6 +97,10 @@ router.post('/create-request', getUser, async (req, res) => {
 
   const { userId } = req.body
   try {
+    // Check if request has already been sent to current user by the "to" user
+    //await res.locals.user.populate('incomingFriendRequests').execPopulate()
+
+
     const request = await new FriendRequest({
       from: res.locals.user._id, 
       to: userId,
@@ -137,7 +141,7 @@ router.post('/accept-request', getUser, async (req, res) => {
   const { friendRequestId } = req.body
   try {
     const friendRequest = await FriendRequest.findById(friendRequestId).populate('from').populate('to')
-    if (friendRequest.to._id != res.locals.user._id) {
+    if (friendRequest.to._id != res.locals.user._id.toString()) {
       // Friend request was not directed to you
       res.status(403).json({ error: 'not-allowed' })
       return
@@ -171,7 +175,7 @@ router.delete('/reject-request', getUser, async (req, res) => {
   const { friendRequestId } = req.body
   try {
     const friendRequest = await FriendRequest.findById(friendRequestId).lean()
-    if (friendRequest.to != res.locals.user._id) {
+    if (friendRequest.to != res.locals.user._id.toString()) {
       // Friend request was not directed to you
       res.status(403).json({ error: 'not-allowed' })
       return
@@ -199,8 +203,7 @@ router.delete('/cancel-request', getUser, async (req, res) => {
   const { friendRequestId } = req.body
   try {
     const friendRequest = await FriendRequest.findById(friendRequestId).lean()
-    if (friendRequest.from === res.locals.user._id.toString()) {
-      console.log('friendRequest: ', friendRequest.from == res.locals.user._id.toString())
+    if (friendRequest.from != res.locals.user._id.toString()) {
       // Friend request was not created by you
       res.status(403).json({ error: 'not-allowed' })
       return
@@ -215,6 +218,39 @@ router.delete('/cancel-request', getUser, async (req, res) => {
     console.error(err)
     res.status(500).json({ error: err })
   }
+})
+
+router.delete('/:friendId', getUser, async (req, res) => {
+  // Remove a friend 
+  // Requires authentication
+
+  /* Params:
+  *  friendId - the id of the friend to remove
+  */
+
+  const { friendId } = req.params
+  try {
+    const friend = await User.findById(friendId)
+    if (!friend) {
+      // Friend user doesn't exist
+      res.status(404).json({ error: 'user-not-found' })
+      return
+    }
+
+    res.locals.user.friends = res.locals.user.friends.filter(id => id != friendId)
+    friend.friends = res.locals.user.friends.filter(id => id != res.locals.user._id)
+    await res.locals.user.save()
+    await friend.save()
+
+    emitToUser(res.locals.user._id, 'removeFriend', friendId)
+    emitToUser(friendId, 'removeFriend', res.locals.user._id)
+
+    res.json({ success: true })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: err })
+  }
+
 })
 
 module.exports = router

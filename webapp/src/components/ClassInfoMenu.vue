@@ -82,7 +82,7 @@
                 v-for="member in members" 
                 :key="member._id" 
                 :user="member"
-                :btnTypes="['add-friend']"
+                :btn-types="['add-friend']"
               />
             </v-list>
           </v-card-text>

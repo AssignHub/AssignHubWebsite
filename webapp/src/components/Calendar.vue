@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-card-title>
-      <span class="text-h3 mr-4">{{ month }} {{ year }}</span>
+      <span class="text-h3 mr-4">{{ monthHeader }}</span>
       <v-chip v-if="numPendingAssignments > 0">{{ numPendingAssignments }} pending assignments</v-chip>
       <v-spacer></v-spacer>
       <v-btn text>Week</v-btn>
@@ -97,11 +97,16 @@ export default {
   computed: {
     ...mapState([ 'assignments' ]),
     ...mapGetters({ classes: 'termClasses', numPendingAssignments: 'numPublicAssignments' }),
-    month() {
-      return this.months[this.daysOfWeek[0].date.getMonth()]
-    },
-    year() {
-      return this.curDate.getFullYear()
+    monthHeader() {
+      const begMonth = this.months[this.daysOfWeek[0].date.getMonth()]
+      const begYear = this.daysOfWeek[0].date.getFullYear()
+      const endMonth = this.months[this.daysOfWeek[this.daysOfWeek.length-1].date.getMonth()]
+      const endYear = this.daysOfWeek[this.daysOfWeek.length-1].date.getFullYear()
+
+      if (begMonth !== endMonth) {
+        return `${begMonth} ${begYear} - ${endMonth} ${endYear}`
+      }
+      return `${begMonth} ${begYear}`
     },
     daysOfWeek() {
       let curDateNum = this.curDate.getDate()

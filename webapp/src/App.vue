@@ -78,7 +78,6 @@ export default {
       this.$store.commit('setAuthUser', authUser)
     }).catch(err => {
       // Forbidden, user not signed in
-      console.log(err)
       this.$store.commit('setAuthUser', null)
     })
     

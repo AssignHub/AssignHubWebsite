@@ -10,7 +10,7 @@
       :value="term"
       @input="(term) => changeTerm(term)"
       hide-details
-      class="mx-2"
+      class="mx-4"
     ></v-select>
     <v-list dense>
       <v-list-item

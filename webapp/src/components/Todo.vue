@@ -9,7 +9,7 @@
           :assignment="a"
           :classes="classes"
           class="mx-2 mb-2"  
-          showDate
+          show-date
           :disabled="a.done"
           @click="toggleAssignment(a._id)"
           @mousedown="(e) => {if (e.which === 3) hideContextMenu()}"

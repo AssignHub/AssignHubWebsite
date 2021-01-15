@@ -29,7 +29,7 @@
         timeLabel="Time"
         :date.sync="date"
         :time.sync="time"
-        :isDisabled="loading"
+        :is-disabled="loading"
         class="mb-4"
       />
       <v-checkbox

@@ -15,6 +15,12 @@
           <v-list-item-title class="red--text">Remove</v-list-item-title>
         </v-list-item>
       </v-list>
+
+      <v-list v-else-if="contextMenu.type === CONTEXT_MENU_TYPES.removeFriend" class="py-0" dense>
+        <v-list-item @click="() => removeFriend(contextMenu.data.friendId)">
+          <v-list-item-title class="red--text">Remove friend</v-list-item-title>
+        </v-list-item>
+      </v-list>
     </v-menu>
 
     <CheckIn />
@@ -61,7 +67,7 @@ import InputAssignment from '@/components/InputAssignment'
 import AddAssignment from '@/components/AddAssignment'
 import Todo from '@/components/Todo'
 
-import { get, post, patch, getCurTerm } from '@/utils/utils'
+import { _delete } from '@/utils/utils'
 import { mapState, mapActions } from 'vuex'
 import { CONTEXT_MENU_TYPES } from '@/constants'
 
@@ -94,7 +100,17 @@ export default {
   },
 
   methods: {
-    ...mapActions([ 'populateData', 'removeAssignment' ]),
+    ...mapActions([ 'populateData', 'showError' ]),
+    removeAssignment(assignmentId) {
+      _delete(`/assignments/${assignmentId}`).catch(err => {
+        this.showError('There was a problem removing that assignment! Please try again later.')
+      })
+    },
+    removeFriend(friendId) {
+      _delete(`/friends/${friendId}`).catch(err => {
+        this.showError('There was a problem removing that friend! Please try again later.')
+      })
+    },
   },
 }
 </script>

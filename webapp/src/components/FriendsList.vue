@@ -8,20 +8,20 @@
       flat
     >
       <v-expansion-panel v-if="friendRequests.incoming.length > 0">
-        <v-expansion-panel-header disable-icon-rotate class="text-subtitle-2">
+        <v-expansion-panel-header disable-icon-rotate class="text-subtitle-2 px-4 py-4">
           Incoming friend requests
           <template v-slot:actions>
             <v-chip>{{ friendRequests.incoming.length }}</v-chip>  
           </template>  
         </v-expansion-panel-header>
-        <v-expansion-panel-content>
-          <v-list dense class="mx-n4">
+        <v-expansion-panel-content class="grey lighten-5 inner-shadow">
+          <v-list dense style="max-height: 400px;" class="grey lighten-5 mx-n4 mt-2 mb-n2 overflow-y-auto">
             <UserListItem 
               v-for="request in friendRequests.incoming"
               :key="request._id"
               :user="request.from"
-              :friendRequestId="request._id"
-              :btnTypes="['accept-friend-request', 'reject-friend-request']"
+              :friend-request-id="request._id"
+              :btn-types="['accept-friend-request', 'reject-friend-request']"
             />
           </v-list>
         </v-expansion-panel-content>
@@ -29,20 +29,20 @@
       </v-expansion-panel>
       
       <v-expansion-panel v-if="friendRequests.outgoing.length > 0">
-        <v-expansion-panel-header disable-icon-rotate class="text-subtitle-2">
+        <v-expansion-panel-header disable-icon-rotate class="text-subtitle-2 px-4 py-4">
           Outgoing friend requests
           <template v-slot:actions>
             <v-chip>{{ friendRequests.outgoing.length }}</v-chip>    
           </template>  
         </v-expansion-panel-header>
-        <v-expansion-panel-content>
-          <v-list dense class="mx-n4">
+        <v-expansion-panel-content class="grey lighten-5 inner-shadow">
+          <v-list dense style="max-height: 400px;" class="grey lighten-5 mx-n4 mt-2 mb-n2 overflow-y-auto">
             <UserListItem 
               v-for="request in friendRequests.outgoing"
               :key="request._id"
               :user="request.to"
-              :friendRequestId="request._id"
-              :btnTypes="['cancel-friend-request']"
+              :friend-request-id="request._id"
+              :btn-types="['cancel-friend-request']"
             />
           </v-list>
         </v-expansion-panel-content>
@@ -50,27 +50,19 @@
       </v-expansion-panel>
       
       <v-expansion-panel>
-        <v-expansion-panel-header :style="{ cursor: onlyFriendsPanel ? 'default' : 'pointer' }" class="text-subtitle-2" hide-actions>My friends</v-expansion-panel-header>
-        <v-expansion-panel-content class="px-0">
-          <v-list dense class="mx-n4">
-            <v-list-item v-for="(f, i) in friends" :key="i">
-              <v-tooltip right>
-                <template v-slot:activator="{ on, attrs }">
-                  <v-list-item-content
-                    v-bind="attrs" 
-                    v-on="on"
-                    style="display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;"
-                  >
-                    {{ f.firstName }} {{ f.lastName }}
-                  </v-list-item-content>
-                </template>
-                <span>{{ f.firstName }} {{ f.lastName }}</span>
-              </v-tooltip>
-              <v-list-item-icon>
-                <img :src="emojis[f.emojiIndex]" style="height: 30px;">
-              </v-list-item-icon>
-            </v-list-item>
+        <v-expansion-panel-header :style="{ cursor: onlyFriendsPanel ? 'default' : 'pointer' }" class="text-subtitle-2 px-4 py-4" hide-actions>My friends</v-expansion-panel-header>
+        <v-expansion-panel-content class="grey lighten-5 inner-shadow">
+          <v-list v-if="friends.length > 0" style="max-height: 400px;" dense class="grey lighten-5 mx-n4 mt-2 mb-n2 overflow-y-auto">
+            <UserListItem
+              v-for="f in friends" 
+              :key="f._id"
+              :user="f"
+              remove-friend-menu
+            />
           </v-list>
+          <div v-else class="text-center text-caption pt-4">
+            You have no friends :(
+          </div>
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
@@ -81,6 +73,14 @@
 <style scoped>
 .v-chip {
   cursor: pointer;
+}
+
+.inner-shadow {
+  box-shadow: inset 0px 0px 8px rgba(0, 0, 0, 0.25) !important;
+}
+
+.v-expansion-panel-header {
+  min-height: unset !important;
 }
 </style>
 
@@ -104,7 +104,7 @@ export default {
   },
 
   computed: {
-    ...mapState([ 'friends', 'emojis', 'friendRequests' ]),
+    ...mapState([ 'friends', 'friendRequests' ]),
     onlyFriendsPanel() {
       return this.friendRequests.incoming.length === 0 && this.friendRequests.outgoing.length === 0
     },

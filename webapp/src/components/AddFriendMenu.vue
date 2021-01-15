@@ -41,7 +41,7 @@
           v-for="user in filteredResults"
           :key="user._id"
           :user="user"
-          :btnTypes="['add-friend']"
+          :btn-types="['add-friend']"
         />
         <v-list-item v-for="n in 12" :key="n">
           wat
