@@ -44,6 +44,9 @@ app.use(cors({
 }))
 
 // Routes
+const generalRouter = require('./routes/general')
+app.use('/general', generalRouter)
+
 const authRouter = require('./routes/auth')
 app.use('/auth', authRouter)
 

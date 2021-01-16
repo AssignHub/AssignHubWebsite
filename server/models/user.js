@@ -6,14 +6,18 @@ const Moods = Object.freeze({
   Tired: 'tired',
   Smiling: 'smiling',
   Sunglasses: 'sunglasses',
+  None: '',
 })
 
 const userSchema = new mongoose.Schema({
+  timezoneOffset: { type: Number, default: 0 },
+
   // basicInfo
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
   email: { type: String, required: true },
   pic: { type: String, required: true },
+  mood: { type: String, enum: Object.values(Moods), default: '' },
   
   // Google OAuth
   accessToken: String,
@@ -31,8 +35,7 @@ const userSchema = new mongoose.Schema({
   }],
   hiddenAssignments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Assignment' }],
 
-  // Friends and mood
-  mood: { type: String, enum: Object.values(Moods) },
+  // Friends 
   friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 })
 
@@ -43,6 +46,7 @@ userSchema.virtual('basicInfo').get(function() {
     lastName: this.lastName,
     email: this.email,
     pic: this.pic,
+    mood: this.mood,
   }
 })
 

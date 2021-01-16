@@ -74,6 +74,9 @@ export default new Vuex.Store({
     setAuthUser(state, authUser) {
       state.authUser = authUser
     },
+    setMood(state, mood) {
+      state.authUser.mood = mood
+    },
 
     setTerms(state, terms) {
       state.terms = terms
@@ -170,7 +173,7 @@ export default new Vuex.Store({
       return Vue.gAuth.getAuthCode().then(authCode => {
         return post('/auth/sign-in', { authCode })
       }).then(() => {
-        return get('/auth/profile')
+        return get(`/auth/profile?timezoneOffset=${new Date().getTimezoneOffset()}`)
       }).then(authUser => {
         socketReconnect()
         commit('setAuthUser', authUser)
@@ -187,9 +190,23 @@ export default new Vuex.Store({
       })
     },
 
+    // Mood
+    changeMood({ state, commit, dispatch }, mood) {
+      const oldMood = state.authUser.mood
+      commit('setMood', mood)
+      console.log('wat')
+      return patch('/general/mood', { mood }).catch(err => {
+        commit('setMood', oldMood)
+        dispatch('showError', 'There was a problem changing your mood! Please try again later.')
+      })
+    },
+
+    // Populate data
     async populateData({ dispatch }) {
       await Promise.all([ dispatch('getClasses'), dispatch('getTerms'), dispatch('getFriends'), dispatch('getFriendRequests') ])
     },
+
+    // Terms
     async changeTerm({ commit, dispatch }, term) {
       commit('setTerm', term)
       await Promise.all([ dispatch('getAssignments'), dispatch('getPublicAssignments') ])

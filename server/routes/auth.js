@@ -8,8 +8,10 @@ require('dotenv').config()
 router.post('/sign-in', async (req, res) => {
   /* Body params:
   *  authCode - the authorization code for Google OAuth
+  *  timezoneOffset - the client's offset from UTC time
   */
   
+  const { authCode, timezoneOffset } = req.body
   try {
     // Get token data from authCode
     const tokenData = await _fetch('https://oauth2.googleapis.com/token', {
@@ -18,7 +20,7 @@ router.post('/sign-in', async (req, res) => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        code: req.body.authCode,
+        code: authCode,
         client_id: process.env.GOOGLE_CLIENT_ID,
         client_secret: process.env.GOOGLE_CLIENT_SECRET,
         grant_type: 'authorization_code',
@@ -29,6 +31,7 @@ router.post('/sign-in', async (req, res) => {
     // Find user and update info and tokens
     const profileData = await getProfile(tokenData.access_token)
     const userData = { 
+      timezoneOffset,
       firstName: profileData.given_name || 'null', 
       lastName: profileData.family_name || 'null', 
       email: profileData.email,
@@ -43,8 +46,8 @@ router.post('/sign-in', async (req, res) => {
       { new: true },
     )
     
-    // Create new account if no account exists for email
     if (!user) {
+      // Create new account if no account exists for email
       user = await new User(userData).save()
       console.log('New account created: ', profileData.email)
     }
@@ -70,6 +73,9 @@ router.post('/sign-out', (req, res) => {
 })
 
 router.get('/profile', getUser, (req, res) => {
+  // Get user info
+  // Requires authentication
+  
   res.json(res.locals.user.basicInfo)
 })
 

@@ -8,11 +8,22 @@
       <v-col cols="12" style="position: relative; height: 90px;">
         <div class="emoji-container">
           <v-row>
-            <v-col v-if="selectedEmoji" cols="auto" class="py-0">
-              <img class="emoji-selected" :src="emojis[selectedEmoji]" draggable="false">
+            <v-col v-if="!isEditing && authUser.mood" cols="auto" class="py-0" style="position: relative;">
+              <img class="emoji-selected" :src="EMOJIS[authUser.mood]" draggable="false">
+              <v-btn 
+                class="grey lighten-2" 
+                color="grey darken-3"
+                icon 
+                small
+                absolute
+                style="right: 10px; bottom: 10px;"
+                @click="isEditing = true"
+              >
+                <v-icon small>mdi-pencil</v-icon>
+              </v-btn>
             </v-col>
-            <v-col v-else v-for="(src, i) in emojis" :key="i" cols="auto" class="py-0">
-              <img class="emoji" :src="src" draggable="false" @click="emojiClicked(i)">
+            <v-col v-else v-for="(src, mood) in EMOJIS" :key="mood" cols="auto" class="py-0">
+              <img class="emoji" :src="src" draggable="false" @click="isEditing = false; changeMood(mood)">
             </v-col>
           </v-row>
         </div>
@@ -58,25 +69,25 @@
 </style>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
+import { EMOJIS } from '@/constants'
 
 export default {
   name: 'CheckIn',
 
   data() {
     return {
-      selectedEmoji: null,
+      EMOJIS,
+      isEditing: false,
     }
   },
 
   computed: {
-    ...mapState([ 'authUser', 'emojis' ])
+    ...mapState([ 'authUser' ])
   },
 
   methods: {
-    emojiClicked(i) {
-      this.selectedEmoji = i
-    }
+    ...mapActions([ 'changeMood' ]),
   },
 }
 </script>
