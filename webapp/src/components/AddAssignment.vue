@@ -10,6 +10,14 @@
         multiple
         class="mb-4"
       />
+      <v-select
+        label="Filter by"
+        v-model="filterBy"
+        :items="filterByItems"
+        outlined
+        hide-details
+        class="mb-4"
+      ></v-select>
 
       <v-card class="grey lighten-5 inner-shadow">
         <v-card-text v-if="filteredAssignments.length > 0" class="pt-2 pb-0 px-1">
@@ -63,25 +71,51 @@ export default {
   data() {
     return {
       curClasses: [],
+      filterBy: 'instructor',
+      filterByItems: [
+        { text: 'None', value: 'none' },
+        { text: 'Same instructor', value: 'instructor' }, 
+        { text: 'Same section', value: 'section' },
+      ],
     }
   },
 
   computed: {
     ...mapState([ 'publicAssignments' ]),
     ...mapGetters({ classes: 'termClasses' }),
+    curCourseIds() {
+      return this.curClasses.map(courseObjectId => {
+        return this.classes.find(c => c._id === courseObjectId).courseId
+      })
+    },
     filteredAssignments() {
-      if (this.curClasses.length === 0)
-        return this.publicAssignments.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
+      return this.publicAssignments.filter(a => {
+        if (this.curCourseIds.length > 0) {
+          if (this.curCourseIds.every(courseId => a.course.courseId !== courseId)) {
+            return false
+          }
+        }
 
-      let filteredAssignments = this.curClasses.map(courseObjectId => {
-        return this.publicAssignments.filter(a => a.course._id === courseObjectId)
-      }).flat().sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
-      return filteredAssignments
+        if (this.filterBy === 'none') return true
+        
+        let matchingClasses = this.classes.filter(c => c.courseId === a.course.courseId)
+        for (let _class of matchingClasses) {
+          if (this.filterBy === 'section' && a.course.sectionId === _class.sectionId) {
+            return true
+          } else if (this.filterBy === 'instructor' && this.instructorIsSame(a.course.instructor, _class.instructor)) {
+            return true
+          }  
+        }
+        return false
+      }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
     },
   },
 
   methods: {
     ...mapActions([ 'addAssignmentFromPublic', 'hidePublicAssignment' ]),
+    instructorIsSame(i1, i2) {
+      return i1.firstName === i2.firstName && i1.lastName === i2.lastName 
+    },
   },
 }
 </script>

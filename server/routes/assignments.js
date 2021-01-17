@@ -67,11 +67,11 @@ router.get('/public', getUser, getTerm, async (req, res) => {
     }).populate({
       path: 'course',
       match: { term: res.locals.term },
-      select: 'courseId'
+      select: 'courseId sectionId instructor'
     }).populate({
       path: 'creator',
       select: 'firstName lastName'
-    })).filter(a => {
+    }).lean()).filter(a => {
       return a.course && courseIds.includes(a.course.courseId)
     })
 

@@ -4,6 +4,7 @@ const { getUser } = require('../middleware/auth')
 const editJsonFile = require('edit-json-file')
 const cron = require('node-cron')
 const User = require('../models/user')
+const { emitToUser } = require('../websockets')
 
 // Set mood to '' if appropriate (checks at the 0th minute every hour)
 cron.schedule('0 * * * *', async () => {
@@ -47,6 +48,10 @@ router.patch('/mood', getUser, async (req, res) => {
     }
     res.locals.user.mood = mood
     await res.locals.user.save()
+
+    for (let id of res.locals.user.friends) {
+      emitToUser(id, 'setFriendMood', { friendId: res.locals.user._id, mood })
+    }
 
     res.json({ success: true })
   } catch (err) {

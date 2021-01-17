@@ -74,7 +74,7 @@ export default {
 
   async created() {
     // TODO: move this to vuex
-    await get(`/auth/profile?timezoneOffset=${new Date().getTimezoneOffset()}`).then(authUser => {
+    await get(`/auth/profile`).then(authUser => {
       this.$store.commit('setAuthUser', authUser)
     }).catch(err => {
       // Forbidden, user not signed in

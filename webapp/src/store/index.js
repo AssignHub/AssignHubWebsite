@@ -26,7 +26,16 @@ const getDefaultState = () => {
     classes: [],
 
     // Friends
-    friends: [],
+    friends: [
+      /*
+      {"mood":"","_id":"5ffcebd22c510123949ba4f6","firstName":"Agnes","lastName":"McCarthy","email":"js@gmail.com","pic":"https://lh3.googleusercontent.com/a-/AOh14GhxBdUGuOzoLbuYEJnjWV-7I4g7L8B7jGy9Jdw=s96-c"},
+      {"mood":"sad","_id":"5ffcebd22c510123949ba4f6","firstName":"Jake","lastName":"Chen","email":"jchen@gmail.com","pic":"https://lh3.googleusercontent.com/a-/AOh14GhxBdUGuOzoLbuYEJnjWV-7I4g7L8B7jGy9Jdw=s96-c"},
+      {"mood":"tired","_id":"5ffcebd22c510123949ba4f6","firstName":"Mr.","lastName":"Mundy","email":"mundy@gmail.com","pic":"https://lh3.googleusercontent.com/a-/AOh14GhxBdUGuOzoLbuYEJnjWV-7I4g7L8B7jGy9Jdw=s96-c"},
+      {"mood":"smiling","_id":"5ffcebd22c510123949ba4f6","firstName":"John","lastName":"Brook","email":"brookj@gmail.com","pic":"https://lh3.googleusercontent.com/a-/AOh14GhxBdUGuOzoLbuYEJnjWV-7I4g7L8B7jGy9Jdw=s96-c"},
+      {"mood":"sunglasses","_id":"5ffcebd22c510123949ba4f6","firstName":"Susan","lastName":"Clifford","email":"scliff@gmail.com","pic":"https://lh3.googleusercontent.com/a-/AOh14GhxBdUGuOzoLbuYEJnjWV-7I4g7L8B7jGy9Jdw=s96-c"},
+      {"mood":"sad","_id":"5ffcebd22c510123949ba4f6","firstName":"Agnes","lastName":"McCarthy","email":"mccag@gmail.com","pic":"https://lh3.googleusercontent.com/a-/AOh14GhxBdUGuOzoLbuYEJnjWV-7I4g7L8B7jGy9Jdw=s96-c"},
+      */
+    ],
     friendRequests: {
       incoming: [],
       outgoing: [],
@@ -156,6 +165,10 @@ export default new Vuex.Store({
     SOCKET_removeFriend(state, friendId) {
       state.friends = state.friends.filter(f => f._id !== friendId)
     },
+    SOCKET_setFriendMood(state, data) {
+      const { mood, friendId } = data
+      state.friends.find(f => f._id === friendId).mood = mood
+    },
   },
   actions: {
     // Error & info
@@ -171,9 +184,9 @@ export default new Vuex.Store({
     // Auth
     signInGoogle({ commit, dispatch }) {
       return Vue.gAuth.getAuthCode().then(authCode => {
-        return post('/auth/sign-in', { authCode })
+        return post('/auth/sign-in', { authCode, timezoneOffset: new Date().getTimezoneOffset() })
       }).then(() => {
-        return get(`/auth/profile?timezoneOffset=${new Date().getTimezoneOffset()}`)
+        return get(`/auth/profile`)
       }).then(authUser => {
         socketReconnect()
         commit('setAuthUser', authUser)
@@ -194,7 +207,6 @@ export default new Vuex.Store({
     changeMood({ state, commit, dispatch }, mood) {
       const oldMood = state.authUser.mood
       commit('setMood', mood)
-      console.log('wat')
       return patch('/general/mood', { mood }).catch(err => {
         commit('setMood', oldMood)
         dispatch('showError', 'There was a problem changing your mood! Please try again later.')

@@ -136,7 +136,7 @@ export default {
     getAssignmentsForDate(date) {
       let assignments = this.assignments.filter(a => {
         return compareDateDay(a.dueDate, date) === 0
-      }).sort((a, b) => a.dueDate - b.dueDate)
+      }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
       return assignments
     },
     getClassFromOffset(offset) {

@@ -1,7 +1,31 @@
-Home page shows how many people are enrolled in the same class and your classmates.
-- You can easily add friends from this list of classmates
-- otherwise, add friends by searching up name or email address
-- display profile pic + name + email in search results
+when publishing assignments use sockets to show new ones for people enrolled in those classes
 
-When user signs in for the first time in a day, prompt for mood and reset mood to null
-Allow user to change mood
+improve UI so stuff isn't cramped
+- for calendar, set a min width for columns and convert it to horizontal scroll once it overflows
+
+add a feedback form
+
+be able to edit assignments
+
+checkboxes to only display your instructor, or only your section
+
+be able to change color of a class
+
+be able to block a user's public assignments from showing up in your public assignment area
+
+add validation for body/query params
+
+option to set duedate as "due by class time"
+
+character limit on assignment name
+
+"Overdue" section of todo list
+
+when you click on a friend, it shows you how many classes you share
+
+FIXBUG: if you have two of the same course, it will only show in one of the colors
+- maybe just disallow adding courses with same courseid
+
+CHANGE database to name stuff "classes" instead of "courses"
+- remember to change frontend so that assignment.course becomes assignment.class
+- also change all the courseObjectIds

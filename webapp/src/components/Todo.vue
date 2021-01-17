@@ -78,7 +78,7 @@ export default {
     ...mapActions([ 'toggleAssignment' ]),
     sortByDateAndDone(arr) {
       return arr
-        .sort((a, b) => a.dueDate - b.dueDate)
+        .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
         .sort((a, b) => {
           if (a.done === b.done)
             return 0

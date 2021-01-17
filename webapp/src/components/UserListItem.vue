@@ -62,7 +62,7 @@
         </v-btn>
       </template>
     </v-list-item-action>
-    <v-list-item-action v-if="user.mood">
+    <v-list-item-action v-else-if="user.mood">
       <v-img :src="EMOJIS[user.mood]" width="30px" contain />
     </v-list-item-action>
   </v-list-item>
