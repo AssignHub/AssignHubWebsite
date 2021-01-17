@@ -113,7 +113,7 @@
 <script>
 import { get, post } from '@/utils/utils'
 import { CLASS_COLORS } from '@/constants'
-import { mapState, mapGetters } from 'vuex'
+import { mapState, mapGetters, mapActions } from 'vuex'
 
 import ColorSelect from '@/components/ColorSelect'
 
@@ -161,6 +161,7 @@ export default {
   },
 
   methods: {
+    ...mapActions([ 'showInfo', 'showError' ]),
     addClass() {
       this.loading = true
       
@@ -169,18 +170,20 @@ export default {
         sectionId: this.sectionNum,
         color: this.color,
       }).then(data => {
-        this.$store.dispatch('showInfo', `Successfully added "${this.courseId}"`)
+        this.showInfo(`Successfully added "${this.courseId}"`)
         this.resetForm()
         this.loading = false
       }).catch(err => {
         if (err === 'class-not-found') {
-          this.$store.dispatch('showError', 'The class you tried to add does not exist!')
+          this.showError('The class you tried to add does not exist!')
         } else if (err === 'class-not-lec') {
-          this.$store.dispatch('showError', 'The class you tried to add is not a Lecture section. Please try again.')
+          this.showError('The class you tried to add is not a Lecture section. Please try again.')
         } else if (err === 'already-in-class') {
-          this.$store.dispatch('showError', 'You are already in that class!')
+          this.showError('You are already in that class!')
+        } else if (err === 'same-course-id') {
+          this.showError(`You are already enrolled in another section for "${this.courseId}"!`)
         } else {
-          this.$store.dispatch('showError', 'Something went wrong when trying to add that class. Please try again later.')
+          this.showError('Something went wrong when trying to add that class. Please try again later.')
         }
         this.loading = false
       })

@@ -95,8 +95,8 @@ export default {
   },
 
   computed: {
-    ...mapState([ 'assignments' ]),
-    ...mapGetters({ classes: 'termClasses', numPendingAssignments: 'numPublicAssignments' }),
+    ...mapState([ 'assignments', 'numPendingAssignments' ]),
+    ...mapGetters({ classes: 'termClasses' }),
     monthHeader() {
       const begMonth = this.months[this.daysOfWeek[0].date.getMonth()]
       const begYear = this.daysOfWeek[0].date.getFullYear()

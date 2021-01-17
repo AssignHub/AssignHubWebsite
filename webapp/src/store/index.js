@@ -9,6 +9,10 @@ const getDefaultState = () => {
     error: '',
     info: '',
 
+    loading: {
+      publicAssignments: false,
+    },
+
     contextMenu: {
       show: false,
       type: -1,
@@ -23,19 +27,11 @@ const getDefaultState = () => {
     terms: [],
     assignments: [],
     publicAssignments: [],
+    numPendingAssignments: 0,
     classes: [],
 
     // Friends
-    friends: [
-      /*
-      {"mood":"","_id":"5ffcebd22c510123949ba4f6","firstName":"Agnes","lastName":"McCarthy","email":"js@gmail.com","pic":"https://lh3.googleusercontent.com/a-/AOh14GhxBdUGuOzoLbuYEJnjWV-7I4g7L8B7jGy9Jdw=s96-c"},
-      {"mood":"sad","_id":"5ffcebd22c510123949ba4f6","firstName":"Jake","lastName":"Chen","email":"jchen@gmail.com","pic":"https://lh3.googleusercontent.com/a-/AOh14GhxBdUGuOzoLbuYEJnjWV-7I4g7L8B7jGy9Jdw=s96-c"},
-      {"mood":"tired","_id":"5ffcebd22c510123949ba4f6","firstName":"Mr.","lastName":"Mundy","email":"mundy@gmail.com","pic":"https://lh3.googleusercontent.com/a-/AOh14GhxBdUGuOzoLbuYEJnjWV-7I4g7L8B7jGy9Jdw=s96-c"},
-      {"mood":"smiling","_id":"5ffcebd22c510123949ba4f6","firstName":"John","lastName":"Brook","email":"brookj@gmail.com","pic":"https://lh3.googleusercontent.com/a-/AOh14GhxBdUGuOzoLbuYEJnjWV-7I4g7L8B7jGy9Jdw=s96-c"},
-      {"mood":"sunglasses","_id":"5ffcebd22c510123949ba4f6","firstName":"Susan","lastName":"Clifford","email":"scliff@gmail.com","pic":"https://lh3.googleusercontent.com/a-/AOh14GhxBdUGuOzoLbuYEJnjWV-7I4g7L8B7jGy9Jdw=s96-c"},
-      {"mood":"sad","_id":"5ffcebd22c510123949ba4f6","firstName":"Agnes","lastName":"McCarthy","email":"mccag@gmail.com","pic":"https://lh3.googleusercontent.com/a-/AOh14GhxBdUGuOzoLbuYEJnjWV-7I4g7L8B7jGy9Jdw=s96-c"},
-      */
-    ],
+    friends: [],
     friendRequests: {
       incoming: [],
       outgoing: [],
@@ -49,9 +45,6 @@ export default new Vuex.Store({
     termClasses(state) {
       return state.classes.filter(c => c.term === state.term)
     },
-    numPublicAssignments(state) {
-      return state.publicAssignments.length
-    } 
   },
   mutations: {
     resetState(state) {
@@ -64,6 +57,10 @@ export default new Vuex.Store({
     setInfo(state, info) {
       state.info = info
     },
+    setLoading(state, data) {
+      const { key, value } = data
+      state.loading[key] = value
+    }, 
 
     showContextMenu(state, payload) {
       const { type, data, mouseEvent } = payload
@@ -107,6 +104,9 @@ export default new Vuex.Store({
     },
     setPublicAssignments(state, publicAssignments) {
       state.publicAssignments = publicAssignments
+    },
+    setNumPendingAssignments(state, num) {
+      state.numPendingAssignments = num
     },
     addAssignmentFromPublic(state, assignmentId) {
       const index = state.publicAssignments.findIndex(a => a._id === assignmentId)
@@ -252,7 +252,9 @@ export default new Vuex.Store({
     },
     getPublicAssignments({ state, commit, dispatch }) {
       commit('setPublicAssignments', [])
+      commit('setLoading', { key: 'publicAssignments', value: true })
       return get(`/assignments/public?term=${state.term}`).then(publicAssignments => {
+        commit('setLoading', { key: 'publicAssignments', value: false })
         commit('setPublicAssignments', publicAssignments)
       }).catch(err => {
         dispatch('showError', 'There was an problem fetching public assignments!')

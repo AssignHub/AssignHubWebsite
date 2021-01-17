@@ -61,11 +61,12 @@ router.post('/add-class', getUser, getTerm, async (req, res) => {
   *  color - the color, in hex format (e.g. #1fa3bc)
   */
   
+  const { courseId, sectionId, color } = req.body
   let section;
   try {
     const options = { term: res.locals.term }
-    section = await TROJAN.course(req.body.courseId, options).then(data => {
-      return data.courses[req.body.courseId].sections[req.body.sectionId]
+    section = await TROJAN.course(courseId, options).then(data => {
+      return data.courses[courseId].sections[sectionId]
     })
   } catch (err) {
     // If course ID is wrong 
@@ -89,15 +90,15 @@ router.post('/add-class', getUser, getTerm, async (req, res) => {
     // Find course, create new one if doesn't exist
     let course = await Course.findOne({ 
       term: res.locals.term,
-      courseId: req.body.courseId, 
-      sectionId: req.body.sectionId,
+      courseId: courseId, 
+      sectionId: sectionId,
     })
 
     if (!course) {
       const courseData = {
         term: res.locals.term,
-        courseId: req.body.courseId,
-        sectionId: req.body.sectionId,
+        courseId: courseId,
+        sectionId: sectionId,
         instructor: {
           firstName: section.instructor.first_name,
           lastName: section.instructor.last_name,
@@ -107,17 +108,28 @@ router.post('/add-class', getUser, getTerm, async (req, res) => {
       course = await new Course(courseData).save()
     }
 
-    if (res.locals.user.classes.filter(e => e.class.equals(course._id)).length > 0) {
+    await res.locals.user.populate({
+      path: 'classes.class',
+      select: 'courseId term'
+    }).execPopulate()
+
+    if (res.locals.user.classes.filter(e => e.class._id.equals(course._id)).length > 0) {
       // If user already enrolled in class
       res.status(400).json({ error: 'already-in-class' })
       return
     }
 
-    res.locals.user.classes.push({ class: course._id, color: req.body.color })
+    if (res.locals.user.classes.findIndex(e => e.class.term === res.locals.term && e.class.courseId === courseId) !== -1) {
+      // If user already enrolled in a class that has same courseId
+      res.status(400).json({ error: 'same-course-id' })
+      return
+    }
+
+    res.locals.user.classes.push({ class: course._id, color: color })
     await res.locals.user.save()
 
     const numMembers = await course.findMembers().lean().countDocuments()
-    emitToUser(res.locals.user._id, 'addClass', { ...course.toJSON(), color: req.body.color, numMembers })
+    emitToUser(res.locals.user._id, 'addClass', { ...course.toJSON(), color: color, numMembers })
 
     res.status(201).json({ success: true })
   } catch (err) {
@@ -172,9 +184,14 @@ router.delete('/classes/:courseObjectId', getUser, async (req, res) => {
 
     const toDelete = [] // Store assignments to delete forever (e.g. not public)
     res.locals.user.assignments = res.locals.user.assignments.filter(a => {
-      const remove = a.assignment.course == courseObjectId
-      if (remove && !a.assignment.public)
-        toDelete.push(a.assignment._id)
+      const remove = a.assignment.course.equals(courseObjectId)
+      if (remove) {
+        if (!a.assignment.public) {
+          toDelete.push(a.assignment._id)
+        } else {
+          res.locals.user.hiddenAssignments.push(a.assignment._id)
+        }
+      }
       return !remove
     })
 

@@ -1,6 +1,20 @@
 <template>
   <v-card>
-    <v-card-title>Add Crowdsourced Assignment</v-card-title>
+    <v-card-title>
+      <v-row no-gutters>
+        <v-col>
+          Add Crowdsourced Assignment
+        </v-col>
+        <v-col cols="auto">
+          <v-btn
+            icon
+            @click="getPublicAssignments"
+          >
+            <v-icon>mdi-sync</v-icon>
+          </v-btn>
+        </v-col>
+      </v-row>
+    </v-card-title>
     <v-card-text>
       <ClassSelect
         label="Sort by class"
@@ -41,8 +55,15 @@
             </v-col>
           </v-row>
         </v-card-text>
-        <v-card-text class="text-center" v-else>
-          No assignments to show!
+        <v-card-text v-else class="text-center">
+          <v-progress-circular
+            v-if="loading.publicAssignments"
+            color="primary"
+            indeterminate
+          ></v-progress-circular>
+          <span v-else>
+            No assignments to show!
+          </span>
         </v-card-text>
       </v-card>
     </v-card-text>
@@ -58,7 +79,7 @@
 <script>
 import AssignmentCard from '@/components/AssignmentCard'
 import ClassSelect from '@/components/ClassSelect'
-import { mapState, mapGetters, mapActions } from 'vuex'
+import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
 
 export default {
   name: 'AddAssignment',
@@ -81,7 +102,7 @@ export default {
   },
 
   computed: {
-    ...mapState([ 'publicAssignments' ]),
+    ...mapState([ 'publicAssignments', 'loading' ]),
     ...mapGetters({ classes: 'termClasses' }),
     curCourseIds() {
       return this.curClasses.map(courseObjectId => {
@@ -89,7 +110,7 @@ export default {
       })
     },
     filteredAssignments() {
-      return this.publicAssignments.filter(a => {
+      const filtered = this.publicAssignments.filter(a => {
         if (this.curCourseIds.length > 0) {
           if (this.curCourseIds.every(courseId => a.course.courseId !== courseId)) {
             return false
@@ -108,11 +129,15 @@ export default {
         }
         return false
       }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
+
+      this.setNumPendingAssignments(filtered.length)
+      return filtered
     },
   },
 
   methods: {
-    ...mapActions([ 'addAssignmentFromPublic', 'hidePublicAssignment' ]),
+    ...mapActions([ 'addAssignmentFromPublic', 'hidePublicAssignment', 'getPublicAssignments' ]),
+    ...mapMutations([ 'setNumPendingAssignments' ]),
     instructorIsSame(i1, i2) {
       return i1.firstName === i2.firstName && i1.lastName === i2.lastName 
     },

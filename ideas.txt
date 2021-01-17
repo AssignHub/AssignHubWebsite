@@ -1,13 +1,9 @@
-when publishing assignments use sockets to show new ones for people enrolled in those classes
-
 improve UI so stuff isn't cramped
 - for calendar, set a min width for columns and convert it to horizontal scroll once it overflows
 
 add a feedback form
 
 be able to edit assignments
-
-checkboxes to only display your instructor, or only your section
 
 be able to change color of a class
 
@@ -22,9 +18,6 @@ character limit on assignment name
 "Overdue" section of todo list
 
 when you click on a friend, it shows you how many classes you share
-
-FIXBUG: if you have two of the same course, it will only show in one of the colors
-- maybe just disallow adding courses with same courseid
 
 CHANGE database to name stuff "classes" instead of "courses"
 - remember to change frontend so that assignment.course becomes assignment.class

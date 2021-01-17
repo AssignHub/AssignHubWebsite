@@ -148,7 +148,7 @@ export default {
   },
 
   methods: {
-    ...mapActions([ 'showError', 'getAssignments' ]),
+    ...mapActions([ 'showError', 'getAssignments', 'getPublicAssignments' ]),
     to12Hr(time) {
       const [ hour, min ] = time.split(':')
       let newHour;
@@ -172,6 +172,7 @@ export default {
     removeClass(courseObjectId) {
       _delete(`/usc/classes/${courseObjectId}?term=${this.term}`).then(() => {
         this.getAssignments()
+        this.getPublicAssignments()
       }).catch(err => {
         this.showError('There was a problem removing that class! Please try again later.')
       })
