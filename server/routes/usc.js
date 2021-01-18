@@ -3,7 +3,7 @@ const router = express.Router()
 const cron = require('node-cron')
 const editJsonFile = require('edit-json-file')
 const TROJAN = require('trojan-course-api')
-const Course = require('../models/course')
+const Class = require('../models/class')
 const { getTerm } = require('../middleware/usc')
 const { getUser } = require('../middleware/auth')
 const { emitToUser } = require('../websockets')
@@ -87,25 +87,25 @@ router.post('/add-class', getUser, getTerm, async (req, res) => {
       return
     }
 
-    // Find course, create new one if doesn't exist
-    let course = await Course.findOne({ 
+    // Find class, create new one if doesn't exist
+    let _class = await Class.findOne({ 
       term: res.locals.term,
-      courseId: courseId, 
-      sectionId: sectionId,
-    })
+      courseId, 
+      sectionId,
+    }).lean()
 
-    if (!course) {
-      const courseData = {
+    if (!_class) {
+      const classData = {
         term: res.locals.term,
-        courseId: courseId,
-        sectionId: sectionId,
+        courseId,
+        sectionId,
         instructor: {
           firstName: section.instructor.first_name,
           lastName: section.instructor.last_name,
         },
         blocks: section.blocks
       }
-      course = await new Course(courseData).save()
+      _class = await new Class(classData).save()
     }
 
     await res.locals.user.populate({
@@ -113,7 +113,7 @@ router.post('/add-class', getUser, getTerm, async (req, res) => {
       select: 'courseId term'
     }).execPopulate()
 
-    if (res.locals.user.classes.filter(e => e.class._id.equals(course._id)).length > 0) {
+    if (res.locals.user.classes.filter(e => e.class._id.equals(_class._id)).length > 0) {
       // If user already enrolled in class
       res.status(400).json({ error: 'already-in-class' })
       return
@@ -125,11 +125,11 @@ router.post('/add-class', getUser, getTerm, async (req, res) => {
       return
     }
 
-    res.locals.user.classes.push({ class: course._id, color: color })
+    res.locals.user.classes.push({ class: _class._id, color: color })
     await res.locals.user.save()
 
-    const numMembers = await course.findMembers().lean().countDocuments()
-    emitToUser(res.locals.user._id, 'addClass', { ...course.toJSON(), color: color, numMembers })
+    const numMembers = await _class.findMembers().lean().countDocuments()
+    emitToUser(res.locals.user._id, 'addClass', { ..._class.toJSON(), color: color, numMembers })
 
     res.status(201).json({ success: true })
   } catch (err) {
@@ -165,26 +165,26 @@ router.get('/my-classes', getUser, async (req, res) => {
   }
 })
 
-router.delete('/classes/:courseObjectId', getUser, async (req, res) => {
+router.delete('/classes/:classId', getUser, async (req, res) => {
   // Deletes the requested class
   // Requires authentication
 
-  const { courseObjectId } = req.params
+  const { classId } = req.params
   try {
     // Remove class
-    const classIndex = res.locals.user.classes.findIndex(c => c.class == courseObjectId)
+    const classIndex = res.locals.user.classes.findIndex(c => c.class == classId)
     if (classIndex !== -1)
       res.locals.user.classes.splice(classIndex, 1)
     
     // Remove assignments
     await res.locals.user.populate({
       path: 'assignments.assignment',
-      select: 'course public'
+      select: 'class public'
     }).execPopulate()
 
     const toDelete = [] // Store assignments to delete forever (e.g. not public)
     res.locals.user.assignments = res.locals.user.assignments.filter(a => {
-      const remove = a.assignment.course.equals(courseObjectId)
+      const remove = a.assignment.class.equals(classId)
       if (remove) {
         if (!a.assignment.public) {
           toDelete.push(a.assignment._id)
@@ -201,7 +201,7 @@ router.delete('/classes/:courseObjectId', getUser, async (req, res) => {
     
     await res.locals.user.save()
 
-    emitToUser(res.locals.user._id, 'removeClass', courseObjectId)
+    emitToUser(res.locals.user._id, 'removeClass', classId)
 
     res.json({ success: true })
   } catch (err) {
@@ -210,14 +210,14 @@ router.delete('/classes/:courseObjectId', getUser, async (req, res) => {
   }
 })
 
-router.get('/classes/:courseObjectId/members', async (req, res) => {
+router.get('/classes/:classId/members', async (req, res) => {
   // Gets the members in this class
   // Requires authentication
 
-  const { courseObjectId } = req.params
+  const { classId } = req.params
   try {
-    const course = await Course.findById(courseObjectId)
-    const members = await course.findMembers()
+    const _class = await Class.findById(classId)
+    const members = await _class.findMembers()
       .lean()
       .select('firstName lastName email pic')
       .sort({ lastName: 1, firstName: 1, email: 1 })

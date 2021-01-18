@@ -169,8 +169,8 @@ export default {
         })
       }
     },
-    removeClass(courseObjectId) {
-      _delete(`/usc/classes/${courseObjectId}?term=${this.term}`).then(() => {
+    removeClass(classId) {
+      _delete(`/usc/classes/${classId}?term=${this.term}`).then(() => {
         this.getAssignments()
         this.getPublicAssignments()
       }).catch(err => {

@@ -47,11 +47,10 @@ export default {
 
   methods: {
     updateValue(value) {
-      console.log('class select value: ', value)
       this.$emit('input', value)
     },
     deselect(id) {
-      this.updateValue(this.value.filter(courseObjectId => courseObjectId !== id))
+      this.updateValue(this.value.filter(classId => classId !== id))
     },
   },
 }

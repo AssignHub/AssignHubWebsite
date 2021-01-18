@@ -146,8 +146,8 @@ export default new Vuex.Store({
     SOCKET_addClass(state, _class) {
       state.classes.push(_class)
     }, 
-    SOCKET_removeClass(state, courseObjectId) {
-      state.classes = state.classes.filter(c => c._id !== courseObjectId)
+    SOCKET_removeClass(state, classId) {
+      state.classes = state.classes.filter(c => c._id !== classId)
     },
     SOCKET_addFriendRequest(state, friendRequest) {
       if (friendRequest.type === 'outgoing') 

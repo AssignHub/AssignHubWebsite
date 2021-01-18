@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const courseSchema = new mongoose.Schema({
+const classSchema = new mongoose.Schema({
   term: { type: String, required: true },
   courseId: { type: String, required: true },
   sectionId: { type: String, required: true },
@@ -11,7 +11,7 @@ const courseSchema = new mongoose.Schema({
   blocks: { type: Array },
 })
 
-courseSchema.methods.findMembers = function(cb) {
+classSchema.methods.findMembers = function(cb) {
   return this.model('User').find({
     $expr: {
       $in: [ this._id, { $map: { input: '$classes', in: '$$this.class' } } ],
@@ -19,4 +19,4 @@ courseSchema.methods.findMembers = function(cb) {
   }, cb)
 }
 
-module.exports = mongoose.model('Course', courseSchema)
+module.exports = mongoose.model('Class', classSchema)

@@ -4,7 +4,7 @@ const express = require('express')
 const router = express.Router()
 const { io, socketClients, emitToUser } = require('../websockets')
 const Assignment = require('../models/assignment')
-const Course = require('../models/course')
+const Class = require('../models/class')
 const { getUser } = require('../middleware/auth')
 
 const { getTerm } = require('../middleware/usc') // TODO: replace when we get more schools
@@ -21,13 +21,13 @@ router.get('/mine', getUser, getTerm, async (req, res) => {
     await res.locals.user.populate({
       path: 'assignments.assignment',
       populate: {
-        path: 'course',
+        path: 'class',
         match: { term: res.locals.term },
         select: 'courseId',
       },
     }).execPopulate()
     const assignments = res.locals.user.assignments
-      .filter(a => a.assignment.course !== null)
+      .filter(a => a.assignment.class !== null)
       .map(a => {
         a = a.toJSON()
         const { _id, assignment, ...rest } = a
@@ -65,14 +65,14 @@ router.get('/public', getUser, getTerm, async (req, res) => {
       dueDate: { $gte: new Date().toISOString() },   
       _id: { $nin: excludedAssignmentIds }
     }).populate({
-      path: 'course',
+      path: 'class',
       match: { term: res.locals.term },
       select: 'courseId sectionId instructor'
     }).populate({
       path: 'creator',
       select: 'firstName lastName'
     }).lean()).filter(a => {
-      return a.course && courseIds.includes(a.course.courseId)
+      return a.class && courseIds.includes(a.class.courseId)
     })
 
     res.json(publicAssignments)
@@ -88,23 +88,23 @@ router.post('/create', getUser, async (req, res) => {
   // Requires authentication
 
   /* Body params:
-  *  courseObjectId - ObjectId of the course assignment is associated with
+  *  classId - ObjectId of the class the assignment is associated with
   *  name - name of assignment
   *  dueDate - due date of assignment
   *  public - whether assignment is public (shared with everybody in your class)
   */
-  const {courseObjectId, name, dueDate, public} = req.body
+  const {classId, name, dueDate, public} = req.body
 
   try {
-    const course = await Course.findById(courseObjectId)
+    const _class = await Class.findById(classId)
 
-    if (!course) {
-      res.status(400).json({ error: 'invalid-course' })
+    if (!_class) {
+      res.status(400).json({ error: 'invalid-class' })
       return
     }
 
     const assignment = await new Assignment({
-      creator: res.locals.user._id, course: courseObjectId, name, dueDate, public
+      creator: res.locals.user._id, class: classId, name, dueDate, public
     }).save()
 
     res.locals.user.assignments.push({assignment: assignment._id})
@@ -112,7 +112,7 @@ router.post('/create', getUser, async (req, res) => {
 
     // Socket communication
     const assignmentPopulated = await assignment.populate({
-      path: 'course',
+      path: 'class',
       select: 'courseId',
     }).execPopulate()
     emitToUser(res.locals.user._id, 'addAssignment', { ...assignmentPopulated.toJSON(), done: false })

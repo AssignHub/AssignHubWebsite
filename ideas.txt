@@ -18,7 +18,3 @@ character limit on assignment name
 "Overdue" section of todo list
 
 when you click on a friend, it shows you how many classes you share
-
-CHANGE database to name stuff "classes" instead of "courses"
-- remember to change frontend so that assignment.course becomes assignment.class
-- also change all the courseObjectIds

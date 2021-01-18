@@ -105,25 +105,25 @@ export default {
     ...mapState([ 'publicAssignments', 'loading' ]),
     ...mapGetters({ classes: 'termClasses' }),
     curCourseIds() {
-      return this.curClasses.map(courseObjectId => {
-        return this.classes.find(c => c._id === courseObjectId).courseId
+      return this.curClasses.map(classId => {
+        return this.classes.find(c => c._id === classId).courseId
       })
     },
     filteredAssignments() {
       const filtered = this.publicAssignments.filter(a => {
         if (this.curCourseIds.length > 0) {
-          if (this.curCourseIds.every(courseId => a.course.courseId !== courseId)) {
+          if (this.curCourseIds.every(courseId => a.class.courseId !== courseId)) {
             return false
           }
         }
 
         if (this.filterBy === 'none') return true
         
-        let matchingClasses = this.classes.filter(c => c.courseId === a.course.courseId)
+        let matchingClasses = this.classes.filter(c => c.courseId === a.class.courseId)
         for (let _class of matchingClasses) {
-          if (this.filterBy === 'section' && a.course.sectionId === _class.sectionId) {
+          if (this.filterBy === 'section' && a.class.sectionId === _class.sectionId) {
             return true
-          } else if (this.filterBy === 'instructor' && this.instructorIsSame(a.course.instructor, _class.instructor)) {
+          } else if (this.filterBy === 'instructor' && this.instructorIsSame(a.class.instructor, _class.instructor)) {
             return true
           }  
         }

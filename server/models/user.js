@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema({
 
   // Classes and assignments
   classes: [{
-    class: { type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true },
+    class: { type: mongoose.Schema.Types.ObjectId, ref: 'Class', required: true },
     color: { type: String, required: true },
   }],
   assignments: [{ 

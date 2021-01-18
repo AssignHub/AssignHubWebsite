@@ -7,7 +7,7 @@
     class="pa-0"
   >
     <div class="courseId pl-1">
-      {{ assignment.course.courseId }}
+      {{ assignment.class.courseId }}
     </div>
     <v-card-text>
       <v-row>
@@ -80,7 +80,7 @@ export default {
       return 'Created by ' + this.assignment.creator.firstName + ' ' + this.assignment.creator.lastName
     },
     color() {
-      const _class = this.classes.find(c => c.courseId === this.assignment.course.courseId)
+      const _class = this.classes.find(c => c.courseId === this.assignment.class.courseId)
       if (!_class)
         return 'white'
       return _class.color

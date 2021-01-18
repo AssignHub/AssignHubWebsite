@@ -66,7 +66,7 @@
         <v-spacer/>
         <v-btn
           text
-          @click="menu = false; dept = ''; courseNum = ''; sectionNum = '';"
+          @click="menu = false; resetForm()"
         >Close</v-btn>
         <v-btn
           :disabled="!enableAdd"
