@@ -4,10 +4,12 @@
     <v-card-text>
       <v-text-field
         v-model="name"
+        label="Assignment name"
         hide-details
         outlined  
         autocomplete="off" 
-        label="Assignment name"
+        counter
+        maxlength="50"
         class="mb-4"
         :disabled="loading"
       ></v-text-field>

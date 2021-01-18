@@ -13,8 +13,4 @@ add validation for body/query params
 
 option to set duedate as "due by class time"
 
-character limit on assignment name
-
-"Overdue" section of todo list
-
 when you click on a friend, it shows you how many classes you share
