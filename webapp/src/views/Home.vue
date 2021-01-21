@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid>
+  <div class="outer-container pa-4 grey lighten-3">
     <v-menu
       v-model="contextMenu.show"
       :position-x="contextMenu.x"
@@ -23,49 +23,49 @@
       </v-list>
     </v-menu>
 
-    <CheckIn />
+    <!--<CheckIn />-->
+    <div class="inner-container">
+      <div style="flex: 0 0 300px;" class="mr-4">
+        <ClassesList class="mb-4" />
+        <FriendsList />
+      </div>
+        
+      <div style="flex: 0 0 300px;" class="mr-4">
+        <Todo style="height: 100%;" />
+      </div>
 
-    <v-container fluid class="fill-height">
-      <v-row>
-        <v-col cols="12" md="2" class="py-0">
-          <v-row>
-            <v-col cols="12">
-              <ClassesList />
-            </v-col>
-            <v-col cols="12">
-              <FriendsList />
-            </v-col>
-          </v-row>
-        </v-col>
-        <v-col cols="3" md="2" class="py-0">
-          <Todo style="height: 100%;" />
-        </v-col>
-        <v-col class="py-0">
-          <v-row>
-            <v-col cols="12">
-              <Calendar class="mb-1" />
-            </v-col>
-            <v-col>
-              <InputAssignment />
-            </v-col>
-            <v-col>
-              <AddAssignment />
-            </v-col>
-          </v-row>
-        </v-col>
-      </v-row>
-    </v-container>
-  </v-container>
+      <div style="flex: 1 1 auto; display: flex; flex-flow: column;">
+        <Calendar class="mb-4" style="flex: 1 1 auto; min-height: 0" />
+        <AddInputAssignment style="flex: 0 0 auto;" />
+      </div>
+    </div>
+  </div>
 </template>
+
+<style scoped>
+.outer-container {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+  max-height: 100%;
+  width: 100%;
+  overflow: auto;
+}
+
+.inner-container {
+  flex: 1 1 auto;
+  display: flex;
+  min-height: 0;
+}
+</style>
 
 <script>
 import CheckIn from '@/components/CheckIn'
 import ClassesList from '@/components/ClassesList'
 import FriendsList from '@/components/FriendsList'
 import Calendar from '@/components/Calendar'
-import InputAssignment from '@/components/InputAssignment'
-import AddAssignment from '@/components/AddAssignment'
 import Todo from '@/components/Todo'
+import AddInputAssignment from '../components/AddInputAssignment.vue'
 
 import { _delete } from '@/utils/utils'
 import { mapState, mapActions } from 'vuex'
@@ -80,9 +80,8 @@ export default {
     ClassesList,
     FriendsList,
     Calendar,
-    InputAssignment,
-    AddAssignment,
     Todo,
+    AddInputAssignment,
   },
 
   mounted() {
@@ -92,6 +91,8 @@ export default {
   data() {
     return {
       CONTEXT_MENU_TYPES,
+      tab: 0,
+      showAddAssignment: false,
     }
   },
 

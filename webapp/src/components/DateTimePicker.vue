@@ -21,6 +21,7 @@
               v-bind="attrs"
               v-on="on"
               :disabled="isDisabled"
+              :dense="dense"
               :value="dateString"
             >
             </v-text-field>
@@ -36,6 +37,7 @@
         <TimePicker 
           :label="timeLabel"
           :disabled="isDisabled"
+          :dense="dense"
           :value="time"
           @input="(time) => $emit('update:time', time)"
         />
@@ -55,6 +57,7 @@ export default {
     dateLabel: {type: String, default: 'Pick date'},
     timeLabel: {type: String, default: 'Pick time'},
     isDisabled: {type: Boolean, default: false},
+    dense: {type: Boolean, default: false},
     date: {type: String},
     time: {type: String}
   },

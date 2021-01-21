@@ -10,6 +10,7 @@
     :clearable="clearable"
     :multiple="multiple"
     :disabled="disabled"
+    :dense="dense"
     :value="value"
     @input="updateValue"
   >
@@ -42,6 +43,7 @@ export default {
     label: {type: String, default: 'Class'},
     multiple: {type: Boolean, default: false},
     disabled: {type: Boolean, default: false},
+    dense: {type: Boolean, default: false},
     value: {},
   },
 

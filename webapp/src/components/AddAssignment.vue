@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card flat>
     <v-card-title>
       <v-row no-gutters>
         <v-col>
@@ -23,6 +23,7 @@
         clearable
         multiple
         class="mb-4"
+        dense
       />
       <v-select
         label="Filter by"
@@ -31,9 +32,10 @@
         outlined
         hide-details
         class="mb-4"
+        dense
       ></v-select>
 
-      <v-card class="grey lighten-5 inner-shadow">
+      <v-card class="grey lighten-5 inner-shadow" style="height: 300px; overflow-y: auto;">
         <v-card-text v-if="filteredAssignments.length > 0" class="pt-2 pb-0 px-1">
           <v-row no-gutters>
             <v-col 
@@ -55,7 +57,7 @@
             </v-col>
           </v-row>
         </v-card-text>
-        <v-card-text v-else class="text-center">
+        <v-card-text v-else class="text-center" style="position: absolute; top: 50%; transform: translate(0%, -50%);">
           <v-progress-circular
             v-if="loading.publicAssignments"
             color="primary"

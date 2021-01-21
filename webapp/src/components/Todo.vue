@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card style="overflow-y: scroll">
     <template v-for="(c, i) in dueCategories">
       <v-expand-transition :key="i">
         <div v-if="c.assignments.length > 0" :key="i">

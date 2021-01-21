@@ -1,6 +1,6 @@
 <template>
-  <v-card>
-    <v-card-title>Input Assignments</v-card-title>
+  <v-card flat>
+    <v-card-title>Input Assignment</v-card-title>
     <v-card-text>
       <v-text-field
         v-model="name"
@@ -12,6 +12,7 @@
         maxlength="50"
         class="mb-4"
         :disabled="loading"
+        dense
       ></v-text-field>
       <!--<v-textarea
         hide-details
@@ -25,6 +26,7 @@
         v-model="curClass" 
         :disabled="loading"
         class="mb-4"
+        dense
       />
       <DateTimePicker 
         dateLabel="Due date"
@@ -33,6 +35,7 @@
         :time.sync="time"
         :is-disabled="loading"
         class="mb-4"
+        dense
       />
       <v-checkbox
         v-model="doPublish"

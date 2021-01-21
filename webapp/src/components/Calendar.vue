@@ -1,18 +1,19 @@
 <template>
   <v-card>
-    <v-card-title>
-      <span class="text-h3 mr-4">{{ monthHeader }}</span>
-      <v-chip v-if="numPendingAssignments > 0">{{ numPendingAssignments }} pending assignments</v-chip>
-      <v-spacer></v-spacer>
-      <v-btn text>Week</v-btn>
-      <v-btn text>Month</v-btn>
-    </v-card-title>
-    <v-card-text class="pb-0">
-      <v-row>
-        <div class="col-day" v-for="(day, i) in daysOfWeek" :key="i" style="" :style="i !== 0 && 'border-left: solid; border-width: 1px;'">
+    <div class="outer-container">
+      <v-card-title style="flex: 0 1 auto;">
+        <span class="text-h3 mr-4">{{ monthHeader }}</span>
+        <v-chip v-if="numPendingAssignments > 0">{{ numPendingAssignments }} pending assignments</v-chip>
+      </v-card-title>
+      <div class="d-flex scrollbar-hidden" :class="scrollAmt > 0 && 'bottom-shadow'" style="flex: 0 0 auto; overflow-y: scroll">
+        <div class="col-day" :class="i !== 0 && 'left-border'" v-for="(day, i) in daysOfWeek" :key="i">
           <div class="text-center text-h5 mb-n2" :class="getClassFromOffset(day.offset)">{{ day.name }}</div>
           <div class="text-center text-h7" :class="getClassFromOffset(day.offset)">{{ day.date.getDate() }}</div>
-          <div class="assignment-container" style="height: 200px; overflow-y: auto;" @scroll="hideContextMenu">
+        </div>
+      </div>
+      <div v-scroll.self="onScroll" style="flex: 1 1 auto; overflow-y: scroll;" @scroll="hideContextMenu">
+        <div class="d-flex" style="min-height: 100%;">
+          <div class="col-day" :class="i !== 0 && 'left-border'" v-for="(day, i) in daysOfWeek" :key="i">
             <AssignmentCard
               v-for="(a, i) in getAssignmentsForDate(day.date)" 
               :key="i"
@@ -25,50 +26,53 @@
             />
           </div>
         </div>
-      </v-row>
-      <v-row style="position: relative; height: 50px;">
+      </div>
+      <div class="btn-row">
         <v-btn 
           icon
-          style="position: absolute; z-index: 5; left: 10px; top:50%; transform: translateY(-50%);"
+          class="ml-2"
+          style="align-self: center;"
           @click="prevWeek"
         >
           <v-icon>mdi-chevron-left</v-icon>
         </v-btn>
+        <v-spacer />
         <v-btn 
           icon
-          style="position: absolute; z-index: 5; right: 10px; top:50%; transform: translateY(-50%);"
+          class="mr-2"
+          style="align-self: center;"
           @click="nextWeek"
         >
           <v-icon>mdi-chevron-right</v-icon>
         </v-btn>
-      </v-row>
-    </v-card-text>
+      </div>
+    </div>
   </v-card>
 </template>
 
 <style scoped>
+.outer-container {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+}
+
+.left-border {
+  box-shadow: -1px 0px 0px 0px black;
+}
+
+.bottom-shadow {
+  box-shadow: 0px 5px 5px -5px gray;
+  z-index: 3;
+}
+
+.btn-row {
+  flex: 0 0 50px;
+  display: flex; 
+}
+
 .col-day {
   width: 14.28% !important;
-}
-
-.assignment-container {
-  scrollbar-width: thin;
-}
-
-.assignment-container::-webkit-scrollbar {
-  width: 6px;
-}
-
-.assignment-container::-webkit-scrollbar-track {
-  background: #f1f1f1; 
-}
-
-.assignment-container::-webkit-scrollbar-thumb {
-  background: #CCC; 
-}
-
-.assignment-container::-webkit-scrollbar-thumb:hover {
-  background: #888; 
 }
 </style>
 
@@ -91,6 +95,7 @@ export default {
       dayLength: 24 * 60 * 60 * 1000,
       weekOffset: 0,
       curDate: new Date(),
+      scrollAmt: 0,
     }
   },
 
@@ -159,6 +164,9 @@ export default {
         data: { assignmentId: id },
         mouseEvent: e,
       })
+    },
+    onScroll(e) {
+      this.scrollAmt = e.target.scrollTop
     },
   },
 }

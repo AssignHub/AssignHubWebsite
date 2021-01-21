@@ -45,7 +45,7 @@
       </v-menu>
     </v-app-bar>
 
-    <v-main>
+    <v-main style="height: 0vh;">
       <router-view />
     </v-main>
   </v-app>
@@ -54,6 +54,41 @@
 <style>
 html {
   overflow-y: auto !important;
+  
+}
+
+* {
+  scrollbar-width: thin;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+}
+
+::-webkit-scrollbar-thumb {
+  background: #CCC; 
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #888; 
+}
+
+.scrollbar-hidden {
+  overflow-y: scroll;
+  scrollbar-color: white white;
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  visibility: hidden !important;
+}
+
+.scrollbar-hidden::-webkit-scrollbar-track {
+  visibility: hidden !important;
 }
 </style>
 
