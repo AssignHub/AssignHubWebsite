@@ -1,10 +1,11 @@
 <template>
-  <v-card ref="friendsListCard">
+  <v-card style="display: flex; flex-flow: column;">
     <!--<v-card-title class="pb-0">My Friends</v-card-title>-->
     <v-expansion-panels 
       accordion
       mandatory
       flat
+      style="flex: 1 1 auto; display: flex; flex-flow: column;"
     >
       <v-expansion-panel v-if="friendRequests.incoming.length > 0">
         <v-expansion-panel-header disable-icon-rotate class="text-subtitle-2 px-4 py-4">
@@ -49,8 +50,7 @@
       </v-expansion-panel>
       
       <v-expansion-panel>
-        <v-expansion-panel-header 
-          ref="friendsListHeader"
+        <v-expansion-panel-header
           :style="{ cursor: onlyFriendsPanel ? 'default' : 'pointer' }" 
           class="text-subtitle-2 px-4 py-4" 
           disable-icon-rotate 
@@ -89,8 +89,23 @@
   box-shadow: inset 0px 0px 8px rgba(0, 0, 0, 0.25) !important;
 }
 
+.v-item--active {
+  flex: 1 1 auto !important;
+}
+
+.v-expansion-panel {
+  flex: 0 0 auto;
+  display: flex;
+  flex-flow: column;
+}
+
 .v-expansion-panel-header {
   min-height: unset !important;
+  flex: 0 0 auto;
+}
+
+.v-expansion-panel-content {
+  flex: 1 1 auto;
 }
 </style>
 
@@ -105,31 +120,6 @@ export default {
   components: {
     AddFriendMenu,
     UserListItem
-  },
-
-  mounted() {
-    this.recalculateExpansionContentHeight()
-  },
-
-  watch: {
-    friendRequests: {
-      deep: true,
-      handler() {
-        this.recalculateExpansionContentHeight()
-      },
-    },
-    '$refs.friendsListCard.$el.clientHeight': {
-      handler() {
-        // TODO: this doesn't work atm
-        console.log('change')
-      },
-    }
-  },
-
-  data() {
-    return {
-      expansionContentHeight: '0px',
-    }
   },
 
   computed: {
@@ -157,23 +147,6 @@ export default {
         }
       })
     },
-    expansionContentStyle() {
-      return { height: this.expansionContentHeight }
-    },
-  },
-
-  methods: {
-    recalculateExpansionContentHeight() {
-      let headerCount = 1
-      if (this.friendRequests.incoming.length > 0) headerCount++
-      if (this.friendRequests.outgoing.length > 0) headerCount++
-
-      const cardHeight = this.$refs.friendsListCard.$el.clientHeight 
-      const headerHeight = this.$refs.friendsListHeader.$el.clientHeight
-      const btnHeight = 36 // TODO: replace this with not hardcoded value
-
-      this.expansionContentHeight = (cardHeight - headerCount * headerHeight - btnHeight) + 'px'
-    }
   },
 }
 </script>
