@@ -1,42 +1,38 @@
+<!-- Icons are from here: https://icons8.com/icon/set/face/emoji -->
 <template>
-  <v-container>
-    <v-row justify="center">
-      <v-col cols="12">
-        <div class="text-center text-h3">How are you doing today, {{ authUser.firstName }}?</div>
-      </v-col>
-      <!-- Icons are from here: https://icons8.com/icon/set/face/emoji -->
-      <v-col cols="12" style="position: relative; height: 90px;">
-        <div class="emoji-container">
-          <v-row>
-            <v-col v-if="!isEditing && authUser.mood" cols="auto" class="py-0" style="position: relative;">
-              <img class="emoji-selected" :src="EMOJIS[authUser.mood]" draggable="false">
-              <v-btn 
-                class="grey lighten-2" 
-                color="grey darken-3"
-                icon 
-                small
-                absolute
-                style="right: 10px; bottom: 10px;"
-                @click="isEditing = true"
-              >
-                <v-icon small>mdi-pencil</v-icon>
-              </v-btn>
-            </v-col>
-            <v-col v-else v-for="(src, mood) in EMOJIS" :key="mood" cols="auto" class="py-0">
-              <img class="emoji" :src="src" draggable="false" @click="isEditing = false; changeMood(mood)">
-            </v-col>
-          </v-row>
+  <v-card class="pa-4">
+    <v-expand-transition>
+      <div v-if="!emojiSelected">
+        <div class="text-center text-h6 mb-2">How are you doing today, {{ authUser.firstName }}?</div>
+        <div class="emoji-container" style="height: 50px;">
+          <div v-for="(src, mood) in EMOJIS" :key="mood" style="flex: 0 1 auto;">
+            <img class="emoji" :src="src" draggable="false" @click="isEditing = false; changeMood(mood)">
+          </div>
         </div>
-      </v-col>
-    </v-row>
-  </v-container>
+      </div>
+    </v-expand-transition>
+
+    <v-expand-transition class="transition-fast-in-fast-out">
+      <div v-if="emojiSelected" style="display: flex; align-items: center;">
+        <div class="text-h6 mr-2 name-selected">{{ authUser.firstName }} {{ authUser.lastName }}</div>
+        <img class="emoji-selected" :src="EMOJIS[authUser.mood]" draggable="false">
+        <v-btn 
+          absolute icon 
+          right 
+          class="edit-btn"
+          @click="isEditing = true"
+        >
+          <v-icon>mdi-pencil</v-icon>
+        </v-btn>
+      </div>
+    </v-expand-transition>
+  </v-card>
 </template>
 
 <style scoped>
 .emoji-container {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+  display: flex;
+  justify-content: space-between;
 }
 
 .emoji {
@@ -47,13 +43,13 @@
   -o-user-select: none;
 
   cursor: pointer;
-  height: 64px;
+  height: 40px;
   opacity: 0.7;
   transition: height .1s, opacity .1s;
 }
 
 .emoji:hover {
-  height: 70px;
+  height: 45px;
   opacity: 1;
 }
 
@@ -64,7 +60,25 @@
   -webkit-user-select: none;
   -o-user-select: none;
 
-  height: 70px;
+  height: 30px;
+}
+
+.name-selected {
+  flex: 1 1 auto; 
+  text-overflow: ellipsis; 
+  overflow: hidden; 
+  white-space: nowrap;
+}
+
+.edit-btn {
+  width: 30px; 
+  height: 30px;
+  opacity: 0;
+}
+
+.edit-btn:hover {
+  opacity: 1;
+  background-color: rgba(255, 255, 255, .5);
 }
 </style>
 
@@ -83,7 +97,10 @@ export default {
   },
 
   computed: {
-    ...mapState([ 'authUser' ])
+    ...mapState([ 'authUser' ]),
+    emojiSelected() {
+      return !this.isEditing && this.authUser.mood
+    }
   },
 
   methods: {

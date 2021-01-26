@@ -10,6 +10,7 @@
   >
     <template v-slot:activator="{ on, attrs }">
       <v-btn
+        :style="btnStyle"
         text
         block
         class="grey lighten-2 add-btn"
@@ -119,6 +120,10 @@ import ColorSelect from '@/components/ColorSelect'
 
 export default {
   name: 'AddClassMenu',
+
+  props: {
+    btnStyle: { type: String, default: '' },
+  },
 
   components: {
     ColorSelect,

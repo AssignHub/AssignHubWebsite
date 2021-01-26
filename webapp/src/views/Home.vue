@@ -1,5 +1,5 @@
 <template>
-  <div class="outer-container pa-4 grey lighten-3">
+  <div class="outer-container pa-4 grey lighten-4">
     <v-menu
       v-model="contextMenu.show"
       :position-x="contextMenu.x"
@@ -8,7 +8,7 @@
       transition="false"
     >
       <v-list v-if="contextMenu.type === CONTEXT_MENU_TYPES.assignment" class="py-0" dense>
-        <v-list-item @click="">
+        <v-list-item @click="() => {}">
           <v-list-item-title>Edit</v-list-item-title>
         </v-list-item>
         <v-list-item @click="() => removeAssignment(contextMenu.data.assignmentId)">
@@ -22,19 +22,18 @@
         </v-list-item>
       </v-list>
     </v-menu>
-
-    <!--<CheckIn />-->
     <div class="inner-container">
-      <div style="flex: 0 0 300px;" class="mr-4">
-        <ClassesList class="mb-4" />
-        <FriendsList />
+      <div style="flex: 0 0 300px; min-width: 0; display: flex; flex-flow: column" class="mr-4">
+        <CheckIn class="mb-4" style="flex: 0 1 auto;"/>
+        <ClassesList class="mb-4" style="flex: 1 1 300px; min-height: 0;" />
+        <FriendsList style="flex: 1 1 300px; min-height: 0;"/>
       </div>
         
       <div style="flex: 0 0 300px;" class="mr-4">
         <Todo style="height: 100%;" />
       </div>
 
-      <div style="flex: 1 1 auto; display: flex; flex-flow: column;">
+      <div style="flex: 1 1 auto; display: flex; flex-flow: column; min-width: 0;">
         <Calendar class="mb-4" style="flex: 1 1 auto; min-height: 0" />
         <AddInputAssignment style="flex: 0 0 auto;" />
       </div>
@@ -68,7 +67,7 @@ import Todo from '@/components/Todo'
 import AddInputAssignment from '../components/AddInputAssignment.vue'
 
 import { _delete } from '@/utils/utils'
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapMutations, mapActions } from 'vuex'
 import { CONTEXT_MENU_TYPES } from '@/constants'
 
 // TODO: socket stuff (add assignments, etc.)
@@ -92,15 +91,16 @@ export default {
     return {
       CONTEXT_MENU_TYPES,
       tab: 0,
-      showAddAssignment: false,
+      checkInDialog: true,
     }
   },
 
   computed: {
-    ...mapState([ 'contextMenu' ]),
+    ...mapState([ 'authUser', 'contextMenu' ]),
   },
 
   methods: {
+    ...mapMutations([ 'hideContextMenu' ]),
     ...mapActions([ 'populateData', 'showError' ]),
     removeAssignment(assignmentId) {
       _delete(`/assignments/${assignmentId}`).catch(err => {

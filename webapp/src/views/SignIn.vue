@@ -2,14 +2,15 @@
   <v-container fluid class="px-0 px-sm-4 fill-height gradient-background">
     <v-row justify="center" class="fill-height">
       <v-col cols="12" sm="auto" class="top-center">
-        <v-img src="@/assets/logo.png" width="300px" contain class="mx-auto"></v-img>
-        <v-card color="">
-          <v-card-title>Sign In</v-card-title>
+        <v-card color="" class="px-16 pb-4 pt-10">
           <v-card-text class="text-center">
+            <v-img src="@/assets/logo.png" width="300px" transition="scale-transition" contain class="mx-auto mb-10"></v-img>
             <ButtonWithImage 
-              :src="require('@/assets/google_logo.svg')"
+              :src="require('@/assets/google_logo_white.svg')"
               text="Continue with Google"
               class="mb-2"
+              dark
+              color="#5D75BC"
               @click="signInGoogle"
             />
             <div class="text-caption">
@@ -28,7 +29,7 @@
 }
 
 .gradient-background {
-  background: radial-gradient(#c7ddff, #5e9cff);
+  background: radial-gradient(#fff, #cfcfcf);
 }
 </style>
 

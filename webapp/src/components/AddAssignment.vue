@@ -72,12 +72,6 @@
   </v-card>
 </template>
 
-<style scoped>
-.inner-shadow {
-  box-shadow: inset 0px 0px 8px rgba(0, 0, 0, 0.25) !important;
-}
-</style>
-
 <script>
 import AssignmentCard from '@/components/AssignmentCard'
 import ClassSelect from '@/components/ClassSelect'

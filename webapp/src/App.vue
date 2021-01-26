@@ -4,6 +4,7 @@
     <AutoSnackbar color="info" :text="info" />
 
     <v-app-bar
+      v-if="authUser"
       app
       color="white darken-2"
       dark
@@ -57,6 +58,11 @@ html {
   
 }
 
+.inner-shadow {
+  box-shadow: inset 0px 0px 8px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* Scrollbar stuff */
 * {
   scrollbar-width: thin;
 }

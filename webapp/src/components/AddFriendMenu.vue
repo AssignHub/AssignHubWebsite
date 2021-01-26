@@ -10,6 +10,7 @@
   >
     <template v-slot:activator="{ on, attrs }">
       <v-btn
+        :style="btnStyle"
         text
         block
         class="add-btn grey lighten-2"
@@ -43,9 +44,6 @@
           :user="user"
           :btn-types="['add-friend']"
         />
-        <v-list-item v-for="n in 12" :key="n">
-          wat
-        </v-list-item>
       </v-list>
       <div v-else class="text-center pa-4" style="height: 200px; background-color: white;">
         No users found.
@@ -68,6 +66,10 @@ import { mapState } from 'vuex'
 
 export default {
   name: 'AddFriendMenu',
+
+  props: {
+    btnStyle: { type: String, default: '' },
+  },
 
   components: {
     UserListItem,

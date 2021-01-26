@@ -1,8 +1,7 @@
 <template>
-  <v-card>
+  <v-card ref="friendsListCard">
     <!--<v-card-title class="pb-0">My Friends</v-card-title>-->
     <v-expansion-panels 
-      v-model="expansionItem"
       accordion
       mandatory
       flat
@@ -14,8 +13,8 @@
             <v-chip small>{{ friendRequests.incoming.length }}</v-chip>  
           </template>  
         </v-expansion-panel-header>
-        <v-expansion-panel-content class="grey lighten-5 inner-shadow">
-          <v-list dense style="max-height: 400px;" class="grey lighten-5 mx-n4 mt-2 mb-n2 overflow-y-auto">
+        <v-expansion-panel-content class="grey lighten-5 inner-shadow" :style="expansionContentStyle">
+          <v-list dense class="grey lighten-5 mx-n4 mt-2 mb-n2 overflow-y-auto">
             <UserListItem 
               v-for="request in friendRequests.incoming"
               :key="request._id"
@@ -35,8 +34,8 @@
             <v-chip small>{{ friendRequests.outgoing.length }}</v-chip>    
           </template>  
         </v-expansion-panel-header>
-        <v-expansion-panel-content class="grey lighten-5 inner-shadow">
-          <v-list dense style="max-height: 400px;" class="grey lighten-5 mx-n4 mt-2 mb-n2 overflow-y-auto">
+        <v-expansion-panel-content class="grey lighten-5 inner-shadow" :style="expansionContentStyle">
+          <v-list dense class="grey lighten-5 mx-n4 mt-2 mb-n2 overflow-y-auto">
             <UserListItem 
               v-for="request in friendRequests.outgoing"
               :key="request._id"
@@ -50,14 +49,20 @@
       </v-expansion-panel>
       
       <v-expansion-panel>
-        <v-expansion-panel-header :style="{ cursor: onlyFriendsPanel ? 'default' : 'pointer' }" class="text-subtitle-2 px-4 py-4" disable-icon-rotate :hide-actions="sortedFriends.length === 0">
+        <v-expansion-panel-header 
+          ref="friendsListHeader"
+          :style="{ cursor: onlyFriendsPanel ? 'default' : 'pointer' }" 
+          class="text-subtitle-2 px-4 py-4" 
+          disable-icon-rotate 
+          :hide-actions="sortedFriends.length === 0"
+        >
           My friends
           <template v-slot:actions>
             <v-chip v-if="sortedFriends.length > 0" small :style="{ cursor: onlyFriendsPanel ? 'default' : 'pointer' }">{{ sortedFriends.length }}</v-chip>    
           </template>  
         </v-expansion-panel-header>
-        <v-expansion-panel-content class="grey lighten-5 inner-shadow">
-          <v-list v-if="sortedFriends.length > 0" style="max-height: 400px;" dense class="grey lighten-5 mx-n4 mt-2 mb-n2 overflow-y-auto">
+        <v-expansion-panel-content class="grey lighten-5 inner-shadow" :style="expansionContentStyle">
+          <v-list v-if="sortedFriends.length > 0" dense class="grey lighten-5 mx-n4 mt-2 mb-n2 overflow-y-auto">
             <UserListItem
               v-for="f in sortedFriends" 
               :key="f._id"
@@ -65,13 +70,13 @@
               remove-friend-menu
             />
           </v-list>
-          <div v-else class="text-center text-caption pt-4">
+          <div v-else class="text-center text-caption pt-8">
             You have no friends :(
           </div>
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
-    <AddFriendMenu />
+    <AddFriendMenu btn-style="flex: 0 0 auto;" />
   </v-card>
 </template>
 
@@ -102,9 +107,28 @@ export default {
     UserListItem
   },
 
+  mounted() {
+    this.recalculateExpansionContentHeight()
+  },
+
+  watch: {
+    friendRequests: {
+      deep: true,
+      handler() {
+        this.recalculateExpansionContentHeight()
+      },
+    },
+    '$refs.friendsListCard.$el.clientHeight': {
+      handler() {
+        // TODO: this doesn't work atm
+        console.log('change')
+      },
+    }
+  },
+
   data() {
     return {
-      expansionItem: 2,
+      expansionContentHeight: '0px',
     }
   },
 
@@ -133,6 +157,23 @@ export default {
         }
       })
     },
+    expansionContentStyle() {
+      return { height: this.expansionContentHeight }
+    },
+  },
+
+  methods: {
+    recalculateExpansionContentHeight() {
+      let headerCount = 1
+      if (this.friendRequests.incoming.length > 0) headerCount++
+      if (this.friendRequests.outgoing.length > 0) headerCount++
+
+      const cardHeight = this.$refs.friendsListCard.$el.clientHeight 
+      const headerHeight = this.$refs.friendsListHeader.$el.clientHeight
+      const btnHeight = 36 // TODO: replace this with not hardcoded value
+
+      this.expansionContentHeight = (cardHeight - headerCount * headerHeight - btnHeight) + 'px'
+    }
   },
 }
 </script>
