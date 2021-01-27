@@ -5,16 +5,15 @@
       accordion
       mandatory
       flat
-      style="flex: 1 1 auto; display: flex; flex-flow: column;"
     >
       <v-expansion-panel v-if="friendRequests.incoming.length > 0">
-        <v-expansion-panel-header disable-icon-rotate class="text-subtitle-2 px-4 py-4">
+        <v-expansion-panel-header disable-icon-rotate class="text-subtitle-2 pa-4">
           Incoming friend requests
           <template v-slot:actions>
             <v-chip small>{{ friendRequests.incoming.length }}</v-chip>  
           </template>  
         </v-expansion-panel-header>
-        <v-expansion-panel-content class="grey lighten-5 inner-shadow" :style="expansionContentStyle">
+        <v-expansion-panel-content class="grey lighten-5 inner-shadow">
           <v-list dense class="grey lighten-5 mx-n4 mt-2 mb-n2 overflow-y-auto">
             <UserListItem 
               v-for="request in friendRequests.incoming"
@@ -29,13 +28,13 @@
       </v-expansion-panel>
       
       <v-expansion-panel v-if="friendRequests.outgoing.length > 0">
-        <v-expansion-panel-header disable-icon-rotate class="text-subtitle-2 px-4 py-4">
+        <v-expansion-panel-header disable-icon-rotate class="text-subtitle-2 pa-4">
           Outgoing friend requests
           <template v-slot:actions>
             <v-chip small>{{ friendRequests.outgoing.length }}</v-chip>    
           </template>  
         </v-expansion-panel-header>
-        <v-expansion-panel-content class="grey lighten-5 inner-shadow" :style="expansionContentStyle">
+        <v-expansion-panel-content class="grey lighten-5 inner-shadow">
           <v-list dense class="grey lighten-5 mx-n4 mt-2 mb-n2 overflow-y-auto">
             <UserListItem 
               v-for="request in friendRequests.outgoing"
@@ -52,7 +51,7 @@
       <v-expansion-panel>
         <v-expansion-panel-header
           :style="{ cursor: onlyFriendsPanel ? 'default' : 'pointer' }" 
-          class="text-subtitle-2 px-4 py-4" 
+          class="text-subtitle-2 pa-4" 
           disable-icon-rotate 
           :hide-actions="sortedFriends.length === 0"
         >
@@ -61,7 +60,7 @@
             <v-chip v-if="sortedFriends.length > 0" small :style="{ cursor: onlyFriendsPanel ? 'default' : 'pointer' }">{{ sortedFriends.length }}</v-chip>    
           </template>  
         </v-expansion-panel-header>
-        <v-expansion-panel-content class="grey lighten-5 inner-shadow" :style="expansionContentStyle">
+        <v-expansion-panel-content class="grey lighten-5 inner-shadow">
           <v-list v-if="sortedFriends.length > 0" dense class="grey lighten-5 mx-n4 mt-2 mb-n2 overflow-y-auto">
             <UserListItem
               v-for="f in sortedFriends" 
@@ -93,10 +92,18 @@
   flex: 1 1 auto !important;
 }
 
+.v-expansion-panels {
+  flex: 1 1 auto; 
+  display: flex; 
+  flex-flow: column; 
+  min-height: 0;
+}
+
 .v-expansion-panel {
   flex: 0 0 auto;
   display: flex;
   flex-flow: column;
+  min-height: 0;
 }
 
 .v-expansion-panel-header {
@@ -106,6 +113,11 @@
 
 .v-expansion-panel-content {
   flex: 1 1 auto;
+  min-height: 0;
+}
+
+.v-list {
+  max-height: 100%;
 }
 </style>
 

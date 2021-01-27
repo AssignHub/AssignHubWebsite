@@ -15,7 +15,10 @@
           hide-details
           class="mx-4 white"
         ></v-select>
-        <v-list dense class="grey lighten-5 mx-2 pb-0 overflow-y-auto" style="flex: 1 1 auto;">
+        <div v-if="classes.length === 0" class="text-center text-caption pt-6 px-2">
+          You are not in any classes.
+        </div>
+        <v-list v-else dense class="grey lighten-5 mx-2 pb-0 overflow-y-auto" style="flex: 1 1 auto;">
           <v-list-item
             v-for="_class in classes"
             :key="_class._id"

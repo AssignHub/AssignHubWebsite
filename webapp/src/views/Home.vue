@@ -22,18 +22,19 @@
         </v-list-item>
       </v-list>
     </v-menu>
+    
     <div class="inner-container">
-      <div style="flex: 0 0 300px; min-width: 0; display: flex; flex-flow: column" class="mr-4">
+      <div style="flex: 1 0 200px; min-width: 0; display: flex; flex-flow: column" class="mr-4">
         <CheckIn class="mb-4" style="flex: 0 1 auto;"/>
         <ClassesList class="mb-4" style="flex: 1 1 300px; min-height: 0;" />
         <FriendsList style="flex: 1 1 300px; min-height: 0;"/>
       </div>
         
-      <div style="flex: 0 0 300px;" class="mr-4">
+      <div style="flex: 1 0 200px;" class="mr-4">
         <Todo style="height: 100%;" />
       </div>
 
-      <div style="flex: 1 1 auto; display: flex; flex-flow: column; min-width: 0;">
+      <div style="flex: 10 0 300px; display: flex; flex-flow: column; min-width: 0;">
         <Calendar class="mb-4" style="flex: 1 1 auto; min-height: 0" />
         <AddInputAssignment style="flex: 0 0 auto;" />
       </div>
@@ -46,7 +47,6 @@
   display: flex;
   flex-flow: column;
   height: 100%;
-  max-height: 100%;
   width: 100%;
   overflow: auto;
 }
@@ -54,7 +54,7 @@
 .inner-container {
   flex: 1 1 auto;
   display: flex;
-  min-height: 0;
+  min-height: 600px;
 }
 </style>
 

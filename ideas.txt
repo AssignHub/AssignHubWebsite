@@ -1,6 +1,4 @@
-improve UI so stuff isn't cramped
-- for calendar, set a min width for columns and convert it to horizontal scroll once it overflows
-- maybe use fullscreen dialogs for mobile 
+maybe use fullscreen dialogs for mobile 
 
 add a feedback form
 

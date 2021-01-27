@@ -5,25 +5,27 @@
         <span class="text-h3 mr-4">{{ monthHeader }}</span>
         <v-chip v-if="numPendingAssignments > 0">{{ numPendingAssignments }} pending assignments</v-chip>
       </v-card-title>
-      <div class="d-flex scrollbar-hidden" :class="scrollAmt > 0 && 'bottom-shadow'" style="flex: 0 0 auto; overflow-y: scroll">
-        <div class="col-day" :class="i !== 0 && 'left-border'" v-for="(day, i) in daysOfWeek" :key="i">
-          <div class="text-center text-h5 mb-n2" :class="getClassFromOffset(day.offset)">{{ day.name }}</div>
-          <div class="text-center text-h7" :class="getClassFromOffset(day.offset)">{{ day.date.getDate() }}</div>
-        </div>
-      </div>
-      <div v-scroll.self="onScroll" style="flex: 1 1 auto; overflow-y: scroll;" @scroll="hideContextMenu">
-        <div class="d-flex" style="min-height: 100%;">
+      <div style="overflow-x: auto; flex: 1 1 auto; display: flex; flex-flow: column;">
+        <div class="calendar-middle d-flex scrollbar-hidden" :class="scrollAmt > 0 && 'bottom-shadow'" style="flex: 0 0 auto; overflow-y: scroll">
           <div class="col-day" :class="i !== 0 && 'left-border'" v-for="(day, i) in daysOfWeek" :key="i">
-            <AssignmentCard
-              v-for="(a, i) in getAssignmentsForDate(day.date)" 
-              :key="i"
-              class="mb-2 mx-2"
-              :assignment="a"
-              :disabled="a.done"
-              @click="toggleAssignment(a._id)"
-              @mousedown="(e) => {if (e.which === 3) hideContextMenu()}"
-              @contextmenu="(e) => showAssignmentMenu(e, a._id)"
-            />
+            <div class="text-center text-h5 mb-n2" :class="getClassFromOffset(day.offset)">{{ day.name }}</div>
+            <div class="text-center text-h7" :class="getClassFromOffset(day.offset)">{{ day.date.getDate() }}</div>
+          </div>
+        </div>
+        <div class="calendar-middle" v-scroll.self="onScroll" style="flex: 1 1 auto; overflow-y: scroll;" @scroll="hideContextMenu">
+          <div class="d-flex" style="min-height: 100%;">
+            <div class="col-day" :class="i !== 0 && 'left-border'" v-for="(day, i) in daysOfWeek" :key="i">
+              <AssignmentCard
+                v-for="(a, i) in getAssignmentsForDate(day.date)" 
+                :key="i"
+                class="mb-2 mx-2"
+                :assignment="a"
+                :disabled="a.done"
+                @click="toggleAssignment(a._id)"
+                @mousedown="(e) => {if (e.which === 3) hideContextMenu()}"
+                @contextmenu="(e) => showAssignmentMenu(e, a._id)"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -55,6 +57,11 @@
   display: flex;
   flex-flow: column;
   height: 100%;
+  overflow-x: auto;
+}
+
+.calendar-middle {
+  min-width: 600px;
 }
 
 .left-border {
@@ -149,7 +156,7 @@ export default {
         return 'primary--text'
       else if (offset > 0)
         return 'text--primary'
-      return ''
+      return 'grey--text'
     },
     nextWeek() {
       this.weekOffset++

@@ -92,7 +92,7 @@ router.post('/add-class', getUser, getTerm, async (req, res) => {
       term: res.locals.term,
       courseId, 
       sectionId,
-    }).lean()
+    })
 
     if (!_class) {
       const classData = {
