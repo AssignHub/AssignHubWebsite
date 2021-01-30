@@ -3,6 +3,8 @@ const router = express.Router()
 const User = require('../models/user')
 const { _fetch, getProfile, getExpireDate } = require('../utils/utils')
 const { getUser } = require('../middleware/auth')
+const editJsonFile = require('edit-json-file')
+const { escapeRegExp } = require('../utils/utils')
 require('dotenv').config()
 
 router.post('/sign-in', async (req, res) => {
@@ -30,6 +32,23 @@ router.post('/sign-in', async (req, res) => {
 
     // Find user and update info and tokens
     const profileData = await getProfile(tokenData.access_token)
+    
+    // Restrict emails
+    const allowedEmails = editJsonFile(`${__dirname}/../config/general.json`).toObject().allowedEmails
+    let emailAllowed = false
+    for (let email of allowedEmails) {
+      const regex = escapeRegExp(email).replace(/\\\*/g, '.*')
+      if (profileData.email.match(`^${regex}$`)) {
+        emailAllowed = true
+        break
+      }
+    }
+    if (!emailAllowed) {
+      res.status(403).json({ error: 'email-not-allowed' })
+      return
+    }
+
+    // Find user if exists
     const userData = { 
       timezoneOffset,
       firstName: profileData.given_name || 'null', 

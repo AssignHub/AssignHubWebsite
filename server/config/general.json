@@ -1,3 +1,6 @@
 {
-  "morningHour": 6
+  "morningHour": 6,
+  "allowedEmails": [
+    "*usc.edu"
+  ]
 }

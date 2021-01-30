@@ -2,7 +2,7 @@
   <v-card style="display: flex; flex-flow: column;">
     <div class="text-subtitle-2 pa-4" style="flex: 0 0 auto;">To-do</div>
     <div style="overflow-y: auto; flex: 1 1 auto;" class="inner-shadow grey lighten-5 pt-2">
-      <div v-if="listEmpty" class="text-center text-caption pt-6">
+      <div v-if="listEmpty" class="text-center text-caption pt-6 px-4">
         Your to-do list is empty. Create an assignment to get started!
       </div>
       <div v-else>

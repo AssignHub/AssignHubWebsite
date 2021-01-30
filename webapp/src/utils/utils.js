@@ -2,7 +2,7 @@ import Vue from 'vue'
 import store from '@/store'
 import { socket } from '@/main'
 
-const serverURL = 'http://localhost:3000'
+export const serverURL = 'http://localhost:3000'
 
 export const createUUID = () => {
   var dt = new Date().getTime();

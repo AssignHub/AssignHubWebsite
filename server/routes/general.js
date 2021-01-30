@@ -8,7 +8,6 @@ const { emitToUser } = require('../websockets')
 
 // Set mood to '' if appropriate (checks at the 0th minute every hour)
 cron.schedule('0 * * * *', async () => {
-  console.log('RUNNING MOOD CHECK!!', new Date().toLocaleTimeString())
   const morningHour = editJsonFile(`${__dirname}/../config/general.json`).toObject().morningHour
   const curUTCHour = new Date().getUTCHours()
   const users = await User.find({
@@ -24,13 +23,10 @@ cron.schedule('0 * * * *', async () => {
       ],
     },
   })
-  console.log('MORNINGHOUR: ', morningHour, ', curUTCHour: ', curUTCHour, ', timezoneoffset/60: ', 480/60)
-  console.log('GOT USERS: ', users)
   users.forEach(user => {
     user.mood = ''
     user.save()
   })
-  console.log('FINISHED')
 })
 
 router.patch('/mood', getUser, async (req, res) => {

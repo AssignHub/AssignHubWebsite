@@ -191,7 +191,11 @@ export default new Vuex.Store({
         socketReconnect()
         commit('setAuthUser', authUser)
       }).catch((err) => {
-        dispatch('showError', 'There was an problem trying to sign in! Please try again later.')
+        if (err === 'email-not-allowed') {
+          dispatch('showError', 'Only @usc.edu emails are accepted at the moment. Please try again.')
+        } else {
+          dispatch('showError', 'There was an problem trying to sign in! Please try again later.')
+        }
       })
     },
     signOut({ commit, dispatch }) {
