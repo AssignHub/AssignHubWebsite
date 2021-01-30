@@ -2,7 +2,7 @@ import Vue from 'vue'
 import store from '@/store'
 import { socket } from '@/main'
 
-export const serverURL = 'http://localhost:3000'
+export const serverURL = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : '/api'
 
 export const createUUID = () => {
   var dt = new Date().getTime();
