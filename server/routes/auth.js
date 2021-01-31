@@ -26,7 +26,7 @@ router.post('/sign-in', async (req, res) => {
         client_id: process.env.GOOGLE_CLIENT_ID,
         client_secret: process.env.GOOGLE_CLIENT_SECRET,
         grant_type: 'authorization_code',
-        redirect_uri: 'http://localhost:8080'
+        redirect_uri: process.env.TESTING ? 'http://localhost:8080' : 'http://ec2-18-222-214-49.us-east-2.compute.amazonaws.com',
       })
     })
 

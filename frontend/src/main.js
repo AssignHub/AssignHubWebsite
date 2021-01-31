@@ -5,7 +5,7 @@ import store from './store'
 import vuetify from './plugins/vuetify'
 import VueSocketIO from 'vue-socket.io'
 import SocketIO from 'socket.io-client'
-import { serverURL } from '@/utils/utils'
+import { socketURL } from '@/utils/utils'
 
 Vue.config.productionTip = false
 
@@ -18,10 +18,10 @@ const gauthOptions = {
 Vue.use(GAuth, gauthOptions)
 
 // Socket.io
-export const socket = SocketIO(serverURL, { withCredentials: true })
+export const socket = SocketIO(socketURL, { path: '/sockets', withCredentials: true })
 
 Vue.use(new VueSocketIO({
-  debug: true,
+  debug: process.env.NODE_ENV === 'development',
   connection: socket,
   vuex: {
     store,
