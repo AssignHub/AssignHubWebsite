@@ -6,6 +6,16 @@ const mongoose = require('mongoose')
 const cors = require('cors')
 require('dotenv').config()
 
+// Log timestamps
+const log = console.log
+console.log = (...args) => {
+  log(`[${new Date().toLocaleString()}]`, ...args)
+}
+const errLog = console.error
+console.error = (...args) => {
+  errLog(`[${new Date().toLocaleString()}]`, ...args)
+}
+
 // Redis initialization
 const RedisStore = require('connect-redis')(session)
 const redisClient = require('./redis')
