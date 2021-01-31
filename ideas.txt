@@ -1,7 +1,5 @@
 maybe use fullscreen dialogs for mobile 
 
-add a feedback form
-
 be able to edit assignments
 
 be able to change color of a class
@@ -13,3 +11,7 @@ add validation for body/query params
 option to set duedate as "due by class time"
 
 when you click on a friend, it shows you how many classes you share
+
+display "Do you want to merge this assignment with otherAssignment"? when the words in the assignment are similar
+
+Move something to a "finished" section when it is checked off
