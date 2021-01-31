@@ -81,7 +81,7 @@ router.post('/add-class', getUser, getTerm, async (req, res) => {
       return
     }
 
-    if (section.type !== 'Lec') {
+    if (!section.type.includes('Lec')) {
       // If not a lecture section
       res.status(400).json({ error: 'class-not-lec' })
       return

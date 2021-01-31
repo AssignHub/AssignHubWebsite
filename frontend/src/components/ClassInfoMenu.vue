@@ -28,7 +28,7 @@
             </v-row>
           </v-card-title>
           <v-card-text>
-            <div><v-icon class="mr-1">mdi-clipboard-account</v-icon>{{ _class.instructor.firstName + ' ' + _class.instructor.lastName }}</div>
+            <div><v-icon class="mr-1">mdi-clipboard-account</v-icon>{{ instructorName }}</div>
             <div><v-icon class="mr-1">mdi-clock</v-icon>{{ blocksString }}</div>
           </v-card-text>
           <v-card-actions>
@@ -137,6 +137,9 @@ export default {
   computed: {
     ...mapState([ 'authUser' ]),
     blocksString() {
+      if (!this._class.blocks)
+        return 'N/A'
+
       const daysString = this._class.blocks.map(block => {
         return block.day === 'H' ? 'TH' : block.day
         //return this.dayOfWeekFromAbbr(block.day)
@@ -144,6 +147,11 @@ export default {
       const { start, end } = this._class.blocks[0]
       const timeString = this.to12Hr(start) + ' - ' + this.to12Hr(end)
       return daysString + ' | ' + timeString
+    },
+    instructorName() {
+      if (!this._class.instructor)
+        return 'N/A'
+      return this._class.instructor.firstName + ' ' + this._class.instructor.lastName
     },
   },
 
