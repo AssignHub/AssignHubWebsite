@@ -1,6 +1,7 @@
 <template>
   <v-card flat>
-    <v-card-title>Input Assignment</v-card-title>
+    <v-card-title v-if="!editing">Input Assignment</v-card-title>
+    <v-card-title v-else>Edit Assignment</v-card-title>
     <v-card-text>
       <v-text-field
         v-model="name"
@@ -38,6 +39,7 @@
         dense
       />
       <v-checkbox
+        v-if="!editing"
         v-model="doPublish"
         label="Publish"
         class="mt-0"
@@ -52,7 +54,7 @@
           @click="submit"
           :disabled="!enableSubmit"
           :loading="loading"
-        >Submit</v-btn>
+        >{{ editing ? 'Update' : 'Submit'}}</v-btn>
       </v-card-actions>
     </v-card-text>
   </v-card>
@@ -61,22 +63,43 @@
 <script>
 import ClassSelect from '@/components/ClassSelect'
 import DateTimePicker from '@/components/DateTimePicker'
-import { get, post, patch } from '@/utils/utils.js'
+import { post, getTimeString, getDateString } from '@/utils/utils.js'
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
   name: 'InputAssignment',
+
+  props: {
+    editing: { type: Boolean, default: false },
+    assignment: { type: Object, default: null },
+  },
 
   components: {
     ClassSelect,
     DateTimePicker,
   },
 
+  watch: {
+    editing: {
+      immediate: true,
+      handler() {
+        if (this.editing && this.assignment) {
+          this.name = this.assignment.name
+          this.curClass = this.assignment.class._id
+          
+          const date = new Date(this.assignment.dueDate)
+          this.date = getDateString(date)
+          this.time = getTimeString(date)
+        }
+      },
+    },
+  },
+
   data() {
     return {
       name: '',
       curClass: '',
-      date: new Date().toISOString().substr(0, 10),
+      date: getDateString(new Date()),
       time: '23:59',
       doPublish: false,
       loading: false,
@@ -91,25 +114,41 @@ export default {
   },
 
   methods: {
-    ...mapActions([ 'showError' ]),
+    ...mapActions([ 'showError', 'updateAssignment' ]),
     submit() {
       let classId = this.curClass
       let dueDate = Date.parse(this.date + 'T' + this.time)
-      let assignment = {
-        classId,
-        name: this.name,
-        dueDate,
-        public: this.doPublish,
-      }
       
-      this.loading = true
-      post('/assignments/create', assignment).then(() => {
-        this.resetForm()
-        this.loading = false
-      }).catch(err => {
-        this.showError('There was a problem creating that assignment! Please try again later.')
-        this.loading = false
-      })
+      if (this.editing) {
+        let updatedAssignment = {
+          assignmentId: this.assignment._id,
+          class: classId,
+          name: this.name,
+          dueDate
+        }
+
+        this.loading = true
+        this.updateAssignment(updatedAssignment).then(() => {
+          this.$emit('doneEditing')
+          this.loading = false
+        })
+      } else { 
+        let assignment = {
+          classId,
+          name: this.name,
+          dueDate,
+          public: this.doPublish,
+        }
+        
+        this.loading = true
+        post('/assignments/create', assignment).then(() => {
+          this.resetForm()
+          this.loading = false
+        }).catch(err => {
+          this.showError('There was a problem creating that assignment! Please try again later.')
+          this.loading = false
+        })
+      } 
     },
     resetForm() {
       this.name = ''

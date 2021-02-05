@@ -1,7 +1,5 @@
 maybe use fullscreen dialogs for mobile 
 
-be able to edit assignments
-
 be able to change color of a class
 
 be able to block a user's public assignments from showing up in your public assignment area
@@ -15,3 +13,5 @@ when you click on a friend, it shows you how many classes you share
 display "Do you want to merge this assignment with otherAssignment"? when the words in the assignment are similar
 
 Move something to a "finished" section when it is checked off
+
+fix bug with multiple instructors (convert instructors to array)

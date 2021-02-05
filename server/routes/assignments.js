@@ -2,7 +2,7 @@
 
 const express = require('express')
 const router = express.Router()
-const { io, socketClients, emitToUser } = require('../websockets')
+const { emitToUser } = require('../websockets')
 const Assignment = require('../models/assignment')
 const Class = require('../models/class')
 const { getUser } = require('../middleware/auth')
@@ -159,7 +159,7 @@ router.post('/public/:assignmentId/hide', getUser, async (req, res) => {
   }
 })
 
-router.patch('/:assignmentId/toggle', getUser, async (req, res) => {
+router.post('/:assignmentId/toggle', getUser, async (req, res) => {
   // Toggle the done state of assignment
   // Requires authentication
 
@@ -174,6 +174,39 @@ router.patch('/:assignmentId/toggle', getUser, async (req, res) => {
     await res.locals.user.save()
 
     res.json({ success: true })    
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: err })
+  }
+})
+
+router.patch('/:assignmentId', getUser, async (req, res) => {
+  // Updates the assignment, creating a new private assignment if assignment was previously public
+  // Requires authentication
+
+  const { assignmentId } = req.params
+  try {
+    const index = res.locals.user.assignments.findIndex(a => a.assignment == assignmentId)
+    if (index === -1) {
+      res.status(400).json({ error: 'No such assignment' })
+      return
+    }
+    
+    const assignment = await Assignment.findById(assignmentId).lean()
+    if (!assignment.public) {
+      await Assignment.findByIdAndUpdate(assignmentId, req.body)
+    } else {
+      const { _id, ...oldAssignmentData } = assignment
+      const newAssignment = await new Assignment({
+        ...oldAssignmentData,
+        ...req.body,
+        public: false,
+      }).save()
+      res.locals.user.assignments[index].assignment = newAssignment._id
+      await res.locals.user.save()
+    }
+
+    res.json({ _id: res.locals.user.assignments[index].assignment })    
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: err })

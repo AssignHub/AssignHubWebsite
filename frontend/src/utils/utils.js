@@ -102,3 +102,11 @@ export const setNumDigits = (num, numDigits) => {
   numString = (extraDigits > 0 ? '0'.repeat(extraDigits) : '') + numString
   return numString  
 }
+
+export const getDateString = (date) => {
+  return date.getFullYear() + '-' + setNumDigits(date.getMonth() + 1, 2) + '-' + setNumDigits(date.getDate(), 2)
+}
+
+export const getTimeString = (date) => {
+  return setNumDigits(date.getHours(), 2) + ':' + setNumDigits(date.getMinutes(), 2)
+}

@@ -45,6 +45,8 @@ export default new Vuex.Store({
     termClasses(state) {
       return state.classes.filter(c => c.term === state.term)
     },
+    assignmentById: (state) => (assignmentId) => state.assignments.find(a => a._id === assignmentId),
+    classById: (state) => (classId) => state.classes.find(c => c._id === classId),
   },
   mutations: {
     resetState(state) {
@@ -101,6 +103,15 @@ export default new Vuex.Store({
     toggleAssignment(state, assignmentId) {
       const index = state.assignments.findIndex(a => a._id === assignmentId)
       state.assignments[index].done = !state.assignments[index].done 
+    },
+    updateAssignment(state, payload) {
+      const { assignmentId, updatedData } = payload
+      const index = state.assignments.findIndex(a => a._id === assignmentId)
+      const oldData = state.assignments[index]
+      Vue.set(state.assignments, index, {
+        ...oldData,
+        ...updatedData
+      })
     },
     setPublicAssignments(state, publicAssignments) {
       state.publicAssignments = publicAssignments
@@ -266,10 +277,31 @@ export default new Vuex.Store({
     },
     toggleAssignment({ commit, dispatch }, assignmentId) {
       commit('toggleAssignment', assignmentId)
-      return patch(`/assignments/${assignmentId}/toggle`).catch(err => {
+      return post(`/assignments/${assignmentId}/toggle`).catch(err => {
         // Toggle back to original state if error
         commit('toggleAssignment', assignmentId)
         dispatch('showError', 'There was an problem toggling that assignment! Please try again later.')
+      })
+    },
+    updateAssignment({ commit, dispatch, getters }, payload) {
+      const { assignmentId, ...assignmentData } = payload
+      return patch(`/assignments/${assignmentId}`, {
+        ...assignmentData
+      }).then(data => {
+        commit('updateAssignment', {
+          assignmentId,
+          updatedData: {
+            ...assignmentData,
+            class: {
+              _id: assignmentData.class,
+              courseId: getters.classById(assignmentData.class).courseId
+            },
+            _id: data._id,
+          },
+        })
+        dispatch('showInfo', 'Assignment updated.')
+      }).catch(err => {
+        dispatch('showError', 'There was an problem editing that assignment! Please try again later.')
       })
     },
     addAssignmentFromPublic({ state, commit, dispatch }, assignmentId) {

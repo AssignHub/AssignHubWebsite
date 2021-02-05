@@ -8,7 +8,7 @@
       transition="false"
     >
       <v-list v-if="contextMenu.type === CONTEXT_MENU_TYPES.assignment" class="py-0" dense>
-        <v-list-item @click="() => {}">
+        <v-list-item @click.stop="editDialog = true; hideContextMenu()">
           <v-list-item-title>Edit</v-list-item-title>
         </v-list-item>
         <v-list-item @click="() => removeAssignment(contextMenu.data.assignmentId)">
@@ -22,6 +22,20 @@
         </v-list-item>
       </v-list>
     </v-menu>
+
+    <v-dialog
+      v-if="contextMenu.data"
+      v-model="editDialog"
+      max-width="400"
+    >
+      <v-card>
+        <InputAssignment 
+          editing
+          :assignment="assignmentById(contextMenu.data.assignmentId)"
+          @doneEditing="editDialog = false"
+        />
+      </v-card>
+    </v-dialog>
     
     <div class="inner-container">
       <div style="flex: 1 0 200px; min-width: 0; display: flex; flex-flow: column" class="mr-4">
@@ -64,13 +78,13 @@ import ClassesList from '@/components/ClassesList'
 import FriendsList from '@/components/FriendsList'
 import Calendar from '@/components/Calendar'
 import Todo from '@/components/Todo'
-import AddInputAssignment from '../components/AddInputAssignment.vue'
+import AddInputAssignment from '../components/AddInputAssignment'
+import InputAssignment from '../components/InputAssignment'
 
 import { _delete } from '@/utils/utils'
-import { mapState, mapMutations, mapActions } from 'vuex'
+import { mapGetters, mapState, mapMutations, mapActions } from 'vuex'
 import { CONTEXT_MENU_TYPES } from '@/constants'
 
-// TODO: socket stuff (add assignments, etc.)
 export default {
   name: 'Home',
   
@@ -81,6 +95,7 @@ export default {
     Calendar,
     Todo,
     AddInputAssignment,
+    InputAssignment,
   },
 
   mounted() {
@@ -91,15 +106,17 @@ export default {
     return {
       CONTEXT_MENU_TYPES,
       tab: 0,
-      checkInDialog: true,
+      editDialog: false,
     }
   },
 
   computed: {
     ...mapState([ 'authUser', 'contextMenu' ]),
+    ...mapGetters([ 'assignmentById' ]),
   },
 
   methods: {
+    
     ...mapMutations([ 'hideContextMenu' ]),
     ...mapActions([ 'populateData', 'showError' ]),
     removeAssignment(assignmentId) {
