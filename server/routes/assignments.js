@@ -202,6 +202,7 @@ router.patch('/:assignmentId', getUser, async (req, res) => {
         ...req.body,
         public: false,
       }).save()
+      res.locals.user.hiddenAssignments.push(_id)
       res.locals.user.assignments[index].assignment = newAssignment._id
       await res.locals.user.save()
     }

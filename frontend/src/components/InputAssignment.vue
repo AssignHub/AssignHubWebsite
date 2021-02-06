@@ -80,7 +80,7 @@ export default {
   },
 
   watch: {
-    editing: {
+    assignment: {
       immediate: true,
       handler() {
         if (this.editing && this.assignment) {
