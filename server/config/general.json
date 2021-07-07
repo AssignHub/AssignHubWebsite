@@ -1,6 +1,7 @@
 {
   "morningHour": 6,
   "allowedEmails": [
-    "*usc.edu"
+    "*usc.edu",
+    "*berkeley.edu"
   ]
 }

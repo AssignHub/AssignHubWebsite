@@ -7,7 +7,7 @@ const Assignment = require('../models/assignment')
 const Class = require('../models/class')
 const { getUser } = require('../middleware/auth')
 
-const { getTerm } = require('../middleware/usc') // TODO: replace when we get more schools
+const { getTerm } = require('../middleware/general')
 
 router.get('/mine', getUser, getTerm, async (req, res) => {
   // Get all user's assignments for the current term

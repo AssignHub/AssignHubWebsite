@@ -17,6 +17,7 @@ const userSchema = new mongoose.Schema({
   lastName: { type: String, required: true },
   email: { type: String, required: true },
   pic: { type: String, required: true },
+  school: { type: String, required: true },
   mood: { type: String, enum: Object.values(Moods), default: '' },
   
   // Google OAuth

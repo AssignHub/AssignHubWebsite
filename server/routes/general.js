@@ -1,33 +1,7 @@
 const router = require('express').Router()
 const { Moods } = require('../models/user')
 const { getUser } = require('../middleware/auth')
-const editJsonFile = require('edit-json-file')
-const cron = require('node-cron')
-const User = require('../models/user')
 const { emitToUser } = require('../websockets')
-
-// Set mood to '' if appropriate (checks at the 0th minute every hour)
-cron.schedule('0 * * * *', async () => {
-  const morningHour = editJsonFile(`${__dirname}/../config/general.json`).toObject().morningHour
-  const curUTCHour = new Date().getUTCHours()
-  const users = await User.find({
-    $expr: {
-      $eq: [ 
-        morningHour, 
-        { 
-          $subtract: [
-            curUTCHour, 
-            { $divide: ['$timezoneOffset', 60] } 
-          ] 
-        } 
-      ],
-    },
-  })
-  users.forEach(user => {
-    user.mood = ''
-    user.save()
-  })
-})
 
 router.patch('/mood', getUser, async (req, res) => {
   // Set the mood of current user

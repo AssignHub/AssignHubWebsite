@@ -50,12 +50,14 @@ router.post('/sign-in', async (req, res) => {
     }
 
     // Find user if exists
+    const school = profileData.email.match(/(?:[.@](.+?))+\..+/)[1]
     const userData = { 
       timezoneOffset,
       firstName: profileData.given_name || 'null', 
       lastName: profileData.family_name || 'null', 
       email: profileData.email,
       pic: profileData.picture,
+      school: school,
       accessToken: tokenData.access_token,
       refreshToken: tokenData.refresh_token,
       accessTokenExpireDate: getExpireDate(tokenData.expires_in), 

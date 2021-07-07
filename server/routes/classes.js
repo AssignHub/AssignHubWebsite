@@ -1,54 +1,19 @@
 const express = require('express')
 const router = express.Router()
-const cron = require('node-cron')
-const editJsonFile = require('edit-json-file')
-const TROJAN = require('trojan-course-api')
-const Class = require('../models/class')
-const { getTerm } = require('../middleware/usc')
-const { getUser } = require('../middleware/auth')
-const { emitToUser } = require('../websockets')
-const Assignment = require('../models/assignment')
-require('../utils/object_utils')
+const reqlib = require('app-root-path').require
+const Class = reqlib('/models/class')
+const Assignment = reqlib('/models/assignment')
+const { getTerm } = reqlib('/middleware/general')
+const { getUser } = reqlib('/middleware/auth')
+const { emitToUser } = reqlib('/websockets')
+const { getSchoolMiddleware, getSchoolUtilFunction } = reqlib('/schools/dispatcher')
 
-// Cache terms daily with cron
-const writeTermsToJson = async () => {
-  console.log('========================================')
-  console.log('-----------Updating USC Terms-----------')
-  console.log('========================================')
-  try {
-    const terms = await TROJAN.terms().then(data => {
-      return data.terms.map(term => { 
-        term = '' + term
-        const year = term.substring(0, 4)
-        const seasons = ['Spring', 'Summer', 'Fall']
-        const season = seasons[term.substring(4) - 1]
-        return { term, text: `${season} ${year}` }
-      })
-    })
-    let jsonFile = editJsonFile(`${__dirname}/../config/usc.json`)
-    jsonFile.set('terms', terms)
-    jsonFile.save()
-  } catch (err) {
-    console.error(err)
-  }
-}
-
-const getTerms = () => {
-  return editJsonFile(`${__dirname}/../config/usc.json`).toObject().terms
-}
-
-writeTermsToJson()
-cron.schedule('0 0 * * *', () => {
-  writeTermsToJson()
-})
-
-// Routes
 router.get('/terms', (req, res) => {
-  let terms = getTerms()
+  let terms = getSchoolUtilFunction(res, 'getTerms')()
   res.json(terms)
 })
 
-router.post('/add-class', getUser, getTerm, async (req, res) => {
+router.post('/add-class', getUser, getTerm, getSchoolMiddleware('addClass'), async (req, res) => {
   // Requires authentication
 
   /* Query params:
@@ -56,57 +21,14 @@ router.post('/add-class', getUser, getTerm, async (req, res) => {
   */
 
   /* Body params:
-  *  courseId - the class's course id (e.g. BUAD-304)
-  *  sectionId - the class's section id (e.g. 12345)
+  *  IS UNIQUE TO EACH SCHOOL, check a school's specific middleware for more details
   *  color - the color, in hex format (e.g. #1fa3bc)
   */
-  
-  const { courseId, sectionId, color } = req.body
-  let section;
-  try {
-    const options = { term: res.locals.term }
-    section = await TROJAN.course(courseId, options).then(data => {
-      return data.courses[courseId].sections[sectionId]
-    })
-  } catch (err) {
-    // If course ID is wrong 
-    res.status(404).json({ error: 'class-not-found' })
-    return
-  }
+
+  const { color } = req.body
 
   try {
-    if (!section) {
-      // If section number is wrong
-      res.status(404).json({ error: 'class-not-found' })
-      return
-    }
-
-    if (!section.type.includes('Lec')) {
-      // If not a lecture section
-      res.status(400).json({ error: 'class-not-lec' })
-      return
-    }
-
-    // Find class, create new one if doesn't exist
-    let _class = await Class.findOne({ 
-      term: res.locals.term,
-      courseId, 
-      sectionId,
-    })
-
-    if (!_class) {
-      const classData = {
-        term: res.locals.term,
-        courseId,
-        sectionId,
-        instructor: {
-          firstName: section.instructor.first_name,
-          lastName: section.instructor.last_name,
-        },
-        blocks: section.blocks
-      }
-      _class = await new Class(classData).save()
-    }
+    const _class = res.locals.class
 
     await res.locals.user.populate({
       path: 'classes.class',
@@ -141,7 +63,7 @@ router.post('/add-class', getUser, getTerm, async (req, res) => {
 router.get('/my-classes', getUser, async (req, res) => {
   // Requires authentication
   try {
-    let terms = getTerms().map(t => t.term)
+    let terms = getSchoolUtilFunction(res, 'getTerms')().map(t => t.term)
 
     await res.locals.user.populate({
       path: 'classes.class',
