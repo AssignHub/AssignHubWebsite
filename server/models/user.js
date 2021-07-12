@@ -47,6 +47,7 @@ userSchema.virtual('basicInfo').get(function() {
     lastName: this.lastName,
     email: this.email,
     pic: this.pic,
+    school: this.school,
     mood: this.mood,
   }
 })

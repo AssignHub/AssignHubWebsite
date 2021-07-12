@@ -1,16 +1,16 @@
 {
   "terms": [
     {
-      "term": "20202",
-      "text": "Summer 2020"
-    },
-    {
-      "term": "20203",
-      "text": "Fall 2020"
-    },
-    {
       "term": "20211",
       "text": "Spring 2021"
+    },
+    {
+      "term": "20212",
+      "text": "Summer 2021"
+    },
+    {
+      "term": "20213",
+      "text": "Fall 2021"
     }
   ]
 }

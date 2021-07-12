@@ -4,10 +4,10 @@ const classSchema = new mongoose.Schema({
   term: { type: String, required: true },
   courseId: { type: String, required: true },
   sectionId: { type: String, required: true },
-  instructor: { 
+  instructors: [{ 
     firstName: { type: String },
     lastName: { type: String },
-  },
+  }],
   blocks: { type: Array },
 })
 

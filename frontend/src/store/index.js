@@ -239,7 +239,7 @@ export default new Vuex.Store({
       await Promise.all([ dispatch('getAssignments'), dispatch('getPublicAssignments') ])
     }, 
     getTerms({ commit, dispatch }) {
-      return get('/usc/terms').then(terms => {
+      return get('/classes/terms').then(terms => {
         commit('setTerms', terms)
         return dispatch('changeTerm', getCurTerm())
       }).catch(err => {
@@ -249,7 +249,7 @@ export default new Vuex.Store({
 
     // Classes
     getClasses({ commit, dispatch }) {
-      return get(`/usc/my-classes`).then(classes => {
+      return get(`/classes/mine`).then(classes => {
         commit('setClasses', classes)
       }).catch(err => {
         dispatch('showError', 'There was an problem fetching your classes!')

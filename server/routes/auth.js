@@ -57,7 +57,7 @@ router.post('/sign-in', async (req, res) => {
       lastName: profileData.family_name || 'null', 
       email: profileData.email,
       pic: profileData.picture,
-      school: school,
+      school,
       accessToken: tokenData.access_token,
       refreshToken: tokenData.refresh_token,
       accessTokenExpireDate: getExpireDate(tokenData.expires_in), 

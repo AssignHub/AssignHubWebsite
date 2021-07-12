@@ -1,5 +1,6 @@
 const TROJAN = require('trojan-course-api')
-const Class = require('../models/class')
+const reqlib = require('app-root-path').require
+const Class = reqlib('/models/class')
 
 exports.addClass = async (req, res, next) => {
   // getTerm must be called before this middleware
@@ -25,8 +26,8 @@ exports.addClass = async (req, res, next) => {
         return data.courses[courseId].sections[sectionId]
       }).catch(err => {
         // If course ID is wrong 
-        res.status(404).json({ error: 'class-not-found' })
-        return
+        //res.status(404).json({ error: 'class-not-found' })
+        return false
       })
 
       if (!section) {
@@ -41,14 +42,28 @@ exports.addClass = async (req, res, next) => {
         return
       }
 
+      let instructors = []
+      if (section.instructor) {
+        if (section.instructor.hasOwnProperty('length')) {
+          // instructor prop is an array of multiple instructors
+          section.instructor.forEach(instructor => instructors.push({
+            firstName: instructor.first_name,
+            lastName: instructor.last_name,
+          }))
+        } else {
+          // instructor prop contains a single instructor
+          instructors.push({
+            firstName: section.instructor.first_name,
+            lastName: section.instructor.last_name,
+          })
+        }
+      }
+
       const classData = {
         term: res.locals.term,
         courseId,
         sectionId,
-        instructor: {
-          firstName: section.instructor.first_name,
-          lastName: section.instructor.last_name,
-        },
+        instructors,
         blocks: section.blocks
       }
       res.locals.class = await new Class(classData).save()

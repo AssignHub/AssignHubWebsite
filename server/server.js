@@ -34,7 +34,7 @@ app.use(express.json())
 const sessionMiddleware = session({
   secret: process.env.SESSION_SECRET,
   cookie: {
-    secure: false, // TODO: Change when actually in the server
+    secure: process.env.TESTING ? false : true, // TODO: verify this doesn't screw stuff up
   },
   store: new RedisStore({ host: 'localhost', port: 6379, client: redisClient }),
   resave: false,
@@ -60,8 +60,8 @@ app.use('/general', generalRouter)
 const authRouter = require('./routes/auth')
 app.use('/auth', authRouter)
 
-const uscRouter = require('./routes/usc')
-app.use('/usc', uscRouter)
+const classesRouter = require('./routes/classes')
+app.use('/classes', classesRouter)
 
 const assignmentsRouter = require('./routes/assignments')
 app.use('/assignments', assignmentsRouter)
@@ -87,3 +87,6 @@ io.use(sharedSession(sessionMiddleware))
 /*io.use((socket, next) => {
   sessionMiddleware(socket.request, {}, next)
 })*/
+
+// Start Tasks
+require('./scheduler').scheduleTasks()

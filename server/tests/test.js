@@ -1,4 +1,11 @@
-const nodemailer = require('nodemailer')
+const TROJAN = require('trojan-course-api')
+TROJAN.courses('ENGR', { term: 20213 }).then(data => {
+  console.log(data)
+})
+
+
+
+/*const nodemailer = require('nodemailer')
 require('dotenv').config()
 
 const transporter = nodemailer.createTransport({
@@ -20,4 +27,4 @@ transporter.sendMail({
   } else {
     console.log('Email sent! ', info.response)
   }
-})
+})*/

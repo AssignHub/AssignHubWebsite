@@ -8,12 +8,12 @@ const { getUser } = reqlib('/middleware/auth')
 const { emitToUser } = reqlib('/websockets')
 const { getSchoolMiddleware, getSchoolUtilFunction } = reqlib('/schools/dispatcher')
 
-router.get('/terms', (req, res) => {
+router.get('/terms', getUser, (req, res) => {
   let terms = getSchoolUtilFunction(res, 'getTerms')()
   res.json(terms)
 })
 
-router.post('/add-class', getUser, getTerm, getSchoolMiddleware('addClass'), async (req, res) => {
+router.post('/add', getUser, getTerm, getSchoolMiddleware('addClass'), async (req, res) => {
   // Requires authentication
 
   /* Query params:
@@ -41,7 +41,7 @@ router.post('/add-class', getUser, getTerm, getSchoolMiddleware('addClass'), asy
       return
     }
 
-    if (res.locals.user.classes.findIndex(e => e.class.term === res.locals.term && e.class.courseId === courseId) !== -1) {
+    if (res.locals.user.classes.findIndex(e => e.class.term === res.locals.term && e.class.courseId === _class.courseId) !== -1) {
       // If user already enrolled in a class that has same courseId
       res.status(400).json({ error: 'same-course-id' })
       return
@@ -60,7 +60,7 @@ router.post('/add-class', getUser, getTerm, getSchoolMiddleware('addClass'), asy
   }
 })
 
-router.get('/my-classes', getUser, async (req, res) => {
+router.get('/mine', getUser, async (req, res) => {
   // Requires authentication
   try {
     let terms = getSchoolUtilFunction(res, 'getTerms')().map(t => t.term)
@@ -87,7 +87,7 @@ router.get('/my-classes', getUser, async (req, res) => {
   }
 })
 
-router.delete('/classes/:classId', getUser, async (req, res) => {
+router.delete('/:classId', getUser, async (req, res) => {
   // Deletes the requested class
   // Requires authentication
 
@@ -132,7 +132,7 @@ router.delete('/classes/:classId', getUser, async (req, res) => {
   }
 })
 
-router.get('/classes/:classId/members', async (req, res) => {
+router.get('/:classId/members', async (req, res) => {
   // Gets the members in this class
   // Requires authentication
 

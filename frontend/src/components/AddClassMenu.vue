@@ -39,7 +39,6 @@
           label="Course Number"
           placeholder="eg. 101, 304"
           v-model="courseNum"
-          type="number"
           autocomplete="off"
           outlined
           dense
@@ -153,7 +152,7 @@ export default {
       return this.dept && this.courseNum && this.sectionNum
     },
     courseId() {
-      return this.dept.toUpperCase() + '-' + this.courseNum
+      return this.dept.toUpperCase() + '-' + this.courseNum.toUpperCase()
     },
     colors() {
       let colors = [...CLASS_COLORS]
@@ -170,7 +169,7 @@ export default {
     addClass() {
       this.loading = true
       
-      post(`/usc/add-class?term=${this.term}`, {
+      post(`/classes/add?term=${this.term}`, {
         courseId: this.courseId,
         sectionId: this.sectionNum,
         color: this.color,

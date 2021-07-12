@@ -1,6 +1,6 @@
 const cron = require('node-cron')
 const editJsonFile = require('edit-json-file')
-const User = require('../models/user')
+const User = require('./models/user')
 const usc = require('./schools/usc')
 
 exports.scheduleTasks = () => {

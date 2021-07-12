@@ -28,7 +28,7 @@
             </v-row>
           </v-card-title>
           <v-card-text>
-            <div><v-icon class="mr-1">mdi-clipboard-account</v-icon>{{ instructorName }}</div>
+            <div><v-icon class="mr-1">mdi-clipboard-account</v-icon>{{ instructorNames }}</div>
             <div><v-icon class="mr-1">mdi-clock</v-icon>{{ blocksString }}</div>
           </v-card-text>
           <v-card-actions>
@@ -148,10 +148,10 @@ export default {
       const timeString = this.to12Hr(start) + ' - ' + this.to12Hr(end)
       return daysString + ' | ' + timeString
     },
-    instructorName() {
-      if (!this._class.instructor)
+    instructorNames() {
+      if (!this._class.instructors || this._class.instructors.length === 0)
         return 'N/A'
-      return this._class.instructor.firstName + ' ' + this._class.instructor.lastName
+      return this._class.instructors.map(({ firstName, lastName }) => `${firstName} ${lastName}`).join(', ')
     },
   },
 
@@ -172,13 +172,13 @@ export default {
     getMembers() {
       if (!this.gotMembers) {
         this.gotMembers = true
-        get(`/usc/classes/${this._class._id}/members`).then(members => {
+        get(`/classes/${this._class._id}/members`).then(members => {
           this.members = members
         })
       }
     },
     removeClass(classId) {
-      _delete(`/usc/classes/${classId}?term=${this.term}`).then(() => {
+      _delete(`/classes/${classId}?term=${this.term}`).then(() => {
         this.getAssignments()
         this.getPublicAssignments()
       }).catch(err => {

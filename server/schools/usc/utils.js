@@ -3,7 +3,7 @@ const TROJAN = require('trojan-course-api')
 const appRoot = require('app-root-path')
 
 // Cache terms daily with cron
-exports.writeTermsToJson = async () => {
+exports.writeTermsToConfig = async () => {
   console.log('========================================')
   console.log('-----------Updating USC Terms-----------')
   console.log('========================================')
