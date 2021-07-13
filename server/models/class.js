@@ -8,7 +8,12 @@ const classSchema = new mongoose.Schema({
     firstName: { type: String },
     lastName: { type: String },
   }],
-  blocks: { type: Array },
+  blocks: [{
+    day: { type: String },
+    start: { type: String },
+    end: { type: String },
+    location: { type: String }
+  }],
 })
 
 classSchema.methods.findMembers = function(cb) {

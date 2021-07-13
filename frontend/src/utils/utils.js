@@ -73,17 +73,17 @@ export const fetchMethod = (method, route, body={}) => {
   })
 }
 
-export const getCurTerm = () => {
+export const getCurTerm = (terms) => {
   // Get current month and determine whether currently in spring, summer, or fall
   // 1 = spring, 2 = summer, 3 = fall
   let month = new Date().getMonth()
   let year = new Date().getFullYear()
   if (inRange(month, 0, 4))
-    return year + '1'
+    return terms.find(t => t.text.toLowerCase().includes('spring'))
   else if (inRange(month, 5, 6))
-    return year + '2'
+    return terms.find(t => t.text.toLowerCase().includes('summer'))
   else
-    return year + '3'
+    return terms.find(t => t.text.toLowerCase().includes('fall'))
 }
 
 export const stringReplaceByIndex = (origString, replaceString, beg, end) => {
