@@ -53,7 +53,7 @@ router.post('/add', getUser, getTerm, getSchoolMiddleware('addClass'), async (re
     const numMembers = await _class.findMembers().lean().countDocuments()
     emitToUser(res.locals.user._id, 'addClass', { ..._class.toJSON(), color: color, numMembers })
 
-    res.status(201).json({ success: true })
+    res.status(201).json({ courseId: _class.courseId })
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: err })

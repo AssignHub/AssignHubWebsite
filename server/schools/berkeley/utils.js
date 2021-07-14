@@ -1,3 +1,6 @@
+const reqlib = require('app-root-path').require
+const { inRange } = reqlib('utils/utils')
+
 exports.getTerms = () => {
   let month = new Date().getMonth()
   let year = new Date().getFullYear()
@@ -25,4 +28,5 @@ exports.getTerms = () => {
       term,
     })
   }
+  return terms
 }

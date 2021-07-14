@@ -3,12 +3,15 @@ exports.getSchoolMiddleware = (middlewareName) => {
 
   return (req, res, next) => {
     try {
-      const school = res.locals.user.school
+      let school = res.locals.user.school
       if (!school) {
         res.status(400).json({ error: 'no-school' })
         return
       }
-      require(`./${res.locals.user.school}`).middleware[middlewareName](req, res, next)
+      // TODO: REMOVE THIS TEST CODE
+      if (school === 'gmail') school = 'berkeley'
+
+      require(`./${school}`).middleware[middlewareName](req, res, next)
     } catch (err) {
       console.error(err)
       res.status(500).json({ error: err })
@@ -20,12 +23,15 @@ exports.getSchoolUtilFunction = (res, funcName) => {
   // returns the util function `funcName` for the user's respective school
   
   try {
-    const school = res.locals.user.school
+    let school = res.locals.user.school
     if (!school) {
       res.status(400).json({ error: 'no-school' })
       return
     }
-    return require(`./${res.locals.user.school}`).utils[funcName]
+    // TODO: REMOVE THIS TEST CODE
+    if (school === 'gmail') school = 'berkeley'
+
+    return require(`./${school}`).utils[funcName]
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: err })

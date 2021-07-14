@@ -42,4 +42,9 @@ const escapeRegExp = (string)=> {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 }
 
-module.exports = { _fetch, getProfile, getAccessToken, getExpireDate, escapeRegExp }
+const inRange = (val, a, b) => {
+  // Checks if val is in between a and b
+  return a <= val && val <= b
+} 
+
+module.exports = { _fetch, getProfile, getAccessToken, getExpireDate, escapeRegExp, inRange }
