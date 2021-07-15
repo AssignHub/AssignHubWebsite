@@ -1,7 +1,21 @@
 <template>
   <v-card>
     <div class="outer-container">
-      <v-card-title class="text-subtitle-2" style="flex: 0 0 auto;">My Classes</v-card-title>
+      <v-container style="flex: 0 0 auto;" class="pa-0">
+        <v-row align="center">
+          <v-col cols="auto" class="pr-0">
+            <v-card-title class="text-subtitle-2">My Classes</v-card-title>
+          </v-col>
+          <v-spacer />
+          <v-col cols="auto" class="pl-0 pr-7">
+            <img
+              height="20"
+              :src="schoolLogo"
+              style="vertical-align: middle;"
+            />
+          </v-col>
+        </v-row>
+      </v-container>
       <div class="grey lighten-5 inner-shadow py-4 inner-container" style="flex: 1 1 auto; min-height: 0;">
         <v-select
           style="flex: 0 0 auto;"
@@ -78,8 +92,16 @@ export default {
   },
 
   computed: {
-    ...mapState([ 'term', 'terms' ]),
+    ...mapState([ 'authUser', 'term', 'terms' ]),
     ...mapGetters({ classes: 'termClasses' }),
+    schoolLogo() {
+      // Return school logo path if it exists
+      try {
+        return require(`@/assets/school_specific/${this.authUser.school}/logo.png`)
+      } catch (e) {
+        return ''
+      }
+    },
   },
 
   methods: {

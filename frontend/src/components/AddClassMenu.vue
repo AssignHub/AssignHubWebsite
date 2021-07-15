@@ -7,6 +7,8 @@
     :close-on-content-click="false"
     :close-on-click="false"
     v-model="menu"
+    min-width="300px"
+    max-width="300px"
   >
     <template v-slot:activator="{ on, attrs }">
       <v-btn
@@ -18,7 +20,7 @@
         v-on="on"
       >+ Add Class</v-btn>
     </template>
-    <component :is="`${school}AddClassMenu`" :colors="colors" @close="menu = false" style="width: 250px;" />
+    <component :is="`${school}AddClassMenu`" :colors="colors" @close="menu = false" />
   </v-menu>
 </template>
 
