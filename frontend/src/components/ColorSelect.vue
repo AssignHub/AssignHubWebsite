@@ -10,6 +10,7 @@
     :value="value"
     @input="(val) => $emit('input', val)"
     style="width: 80px;"
+    :disabled="disabled"
   >
     <template v-slot:selection="{ item }">
       <div :style="`height: 20px; width: 20px; border-radius: 50%; background-color: ${item}`">
@@ -29,6 +30,7 @@ export default {
   props: {
     value: { type: String, required: true },
     colors: { type: Array, default: null },
+    disabled: { type: Boolean, default: false },
     attrs: Object,
   },
 }

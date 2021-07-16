@@ -41,7 +41,7 @@
         :disabled="loading"
       ></v-text-field>
 
-      <ColorSelect class="white" v-model="color" :colors="colors" />
+      <ColorSelect :disabled="loading" class="white" v-model="color" :colors="colors" />
     </v-card-text>
     <v-card-actions>
       <v-spacer/>

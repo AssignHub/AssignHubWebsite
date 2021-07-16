@@ -95,7 +95,7 @@
         </div>
       </v-expand-transition>
 
-      <ColorSelect class="white" v-model="color" :colors="colors" />
+      <ColorSelect :disabled="loading" class="white" v-model="color" :colors="colors" />
 
       <v-expand-transition>
         <div 
