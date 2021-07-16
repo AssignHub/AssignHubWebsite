@@ -14,7 +14,7 @@
               @click="signInGoogle"
             />
             <div class="text-caption">
-              Make sure to use your USC email address to sign in!
+              Make sure to use your school email address to sign in!
             </div>
           </v-card-text>
         </v-card>
