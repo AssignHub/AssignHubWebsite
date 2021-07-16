@@ -67,7 +67,7 @@ router.get('/public', getUser, getTerm, async (req, res) => {
     }).populate({
       path: 'class',
       match: { term: res.locals.term },
-      select: 'courseId sectionId instructor'
+      select: 'courseId sectionId instructors'
     }).populate({
       path: 'creator',
       select: 'firstName lastName'

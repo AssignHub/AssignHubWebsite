@@ -119,7 +119,7 @@ export default {
         for (let _class of matchingClasses) {
           if (this.filterBy === 'section' && a.class.sectionId === _class.sectionId) {
             return true
-          } else if (this.filterBy === 'instructor' && this.instructorIsSame(a.class.instructor, _class.instructor)) {
+          } else if (this.filterBy === 'instructor' && this.sameInstructors(a.class.instructors, _class.instructors)) {
             return true
           }  
         }
@@ -134,8 +134,17 @@ export default {
   methods: {
     ...mapActions([ 'addAssignmentFromPublic', 'hidePublicAssignment', 'getPublicAssignments' ]),
     ...mapMutations([ 'setNumPendingAssignments' ]),
-    instructorIsSame(i1, i2) {
-      return i1.firstName === i2.firstName && i1.lastName === i2.lastName 
+    sameInstructors(i1, i2) {
+      if (i1.length !== i2.length) {
+        return false
+      } else {
+        for (let i = 0; i < i1.length; i++) {
+          if (i1[i].firstName !== i2[i].firstName || i1[i].lastName !== i2[i].lastName) {
+            return false
+          }
+        }
+        return true
+      }
     },
   },
 }
