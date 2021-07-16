@@ -203,7 +203,7 @@ export default new Vuex.Store({
         commit('setAuthUser', authUser)
       }).catch((err) => {
         if (err === 'email-not-allowed') {
-          dispatch('showError', 'Only @usc.edu emails are accepted at the moment. Please try again.')
+          dispatch('showError', 'Could not sign in using that email address! Make sure you are using your school email address to sign in.')
         } else {
           dispatch('showError', 'There was an problem trying to sign in! Please try again later.')
         }

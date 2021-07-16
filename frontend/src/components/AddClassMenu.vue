@@ -82,8 +82,7 @@ export default {
     ...mapState([ 'authUser' ]),
     ...mapGetters({ classes: 'termClasses' }),
     school() {
-      // TODO: remove this TESTING stuff
-      return this.authUser.school === 'gmail' ? 'berkeley' : this.authUser.school
+      return this.authUser.school
     },
     colors() {
       let colors = [...CLASS_COLORS]

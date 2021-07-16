@@ -8,8 +8,6 @@ exports.getSchoolMiddleware = (middlewareName) => {
         res.status(400).json({ error: 'no-school' })
         return
       }
-      // TODO: REMOVE THIS TEST CODE
-      if (school === 'gmail') school = 'berkeley'
 
       require(`./${school}`).middleware[middlewareName](req, res, next)
     } catch (err) {
@@ -28,8 +26,6 @@ exports.getSchoolUtilFunction = (res, funcName) => {
       res.status(400).json({ error: 'no-school' })
       return
     }
-    // TODO: REMOVE THIS TEST CODE
-    if (school === 'gmail') school = 'berkeley'
 
     return require(`./${school}`).utils[funcName]
   } catch (err) {
