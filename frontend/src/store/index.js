@@ -122,7 +122,7 @@ export default new Vuex.Store({
     addAssignmentFromPublic(state, assignmentId) {
       const index = state.publicAssignments.findIndex(a => a._id === assignmentId)
       const assignment = state.publicAssignments.splice(index, 1)[0]
-      assignment.done = false
+      Vue.set(assignment, 'done', false)
       state.assignments.push(assignment)
     },
     insertAssignment(state, data) {

@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 exports.getSchoolMiddleware = (middlewareName) => {
   // returns the middleware function `middlewareName` for the user's respective school
 
@@ -7,6 +9,10 @@ exports.getSchoolMiddleware = (middlewareName) => {
       if (!school) {
         res.status(400).json({ error: 'no-school' })
         return
+      }
+
+      if (process.env.TESTING) {
+        if (school === 'gmail') school = 'usc'
       }
 
       require(`./${school}`).middleware[middlewareName](req, res, next)
@@ -25,6 +31,10 @@ exports.getSchoolUtilFunction = (res, funcName) => {
     if (!school) {
       res.status(400).json({ error: 'no-school' })
       return
+    }
+
+    if (process.env.TESTING) {
+      if (school === 'gmail') school = 'usc'
     }
 
     return require(`./${school}`).utils[funcName]

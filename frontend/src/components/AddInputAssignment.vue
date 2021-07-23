@@ -13,7 +13,7 @@
       </v-btn>
     </div>
     <v-expand-transition>
-      <v-tabs-items v-model="tab" v-if="show">
+      <v-tabs-items v-model="tab" v-show="show">
         <v-tab-item class="pa-1 mx-auto">
           <InputAssignment class="mx-auto" style="max-width: 400px;" />
         </v-tab-item>

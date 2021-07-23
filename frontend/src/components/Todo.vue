@@ -16,17 +16,17 @@
               <v-card-text class="pa-0 pb-1">
                 <transition-group name="list-fade">
                   <div v-for="a in c.assignments" :key="a._id">
-                  <AssignmentCard
-                    
-                    :assignment="a"
-                    :classes="classes"
-                    class="mx-2 mb-2"
-                    show-date
-                    :disabled="a.done"
-                    @click="toggleAssignment(a._id)"
-                    @mousedown="(e) => {if (e.which === 3) hideContextMenu()}"
-                    @contextmenu="(e) => showAssignmentMenu(e, a._id)"
-                  />
+                    <AssignmentCard
+                      
+                      :assignment="a"
+                      :classes="classes"
+                      class="mx-2 mb-2"
+                      show-date
+                      :disabled="a.done"
+                      @click="toggleAssignment(a._id)"
+                      @mousedown="(e) => {if (e.which === 3) hideContextMenu()}"
+                      @contextmenu="(e) => showAssignmentMenu(e, a._id)"
+                    />
                   </div>
                 </transition-group>
               </v-card-text>
@@ -69,6 +69,7 @@ export default {
     return {
       dayLength: 24 * 60 * 60 * 1000,
       curDate: new Date(),
+      console,
     }
   },
 

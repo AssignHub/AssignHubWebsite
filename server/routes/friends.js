@@ -102,6 +102,7 @@ router.post('/create-request', getUser, async (req, res) => {
 
 
     const request = await new FriendRequest({
+      timestamp: new Date(),
       from: res.locals.user._id, 
       to: userId,
     }).save()
