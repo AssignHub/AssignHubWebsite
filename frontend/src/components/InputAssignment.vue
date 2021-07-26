@@ -11,7 +11,7 @@
         autocomplete="off" 
         counter
         maxlength="50"
-        class="mb-4"
+        class="mb-2"
         :disabled="loading"
         dense
       ></v-text-field>
@@ -26,7 +26,7 @@
         :classes="classes" 
         v-model="curClass" 
         :disabled="loading"
-        class="mb-4"
+        class="mb-2"
         dense
       />
       <DateTimePicker 
@@ -35,9 +35,62 @@
         :date.sync="date"
         :time.sync="time"
         :is-disabled="loading"
-        class="mb-4"
+        class="mb-2"
         dense
       />
+      <v-btn
+        text
+        small
+        class="mb-2"
+        color="blue darken-1"
+        @click="showMore = !showMore"
+        :disabled="loading"
+      >
+        More
+        <v-icon v-if="!showMore">mdi-chevron-down</v-icon>
+        <v-icon v-else>mdi-chevron-up</v-icon>
+      </v-btn>
+      <v-expand-transition>
+        <div v-if="showMore">
+          <div class="flex-row mb-2">
+            <v-text-field
+              v-model="name"
+              label="Assignment proof URL (optional)"
+              hide-details
+              outlined  
+              autocomplete="off"
+              :disabled="loading"
+              dense
+            ></v-text-field>
+            <v-btn 
+              icon 
+              small
+              class="ml-2"
+            >
+              <v-icon>mdi-help-circle</v-icon>
+            </v-btn>
+          </div>
+          <div class="flex-row mb-2">
+            <v-text-field
+              v-model="name"
+              label="Assignment submission URL (optional)"
+              hide-details
+              outlined  
+              autocomplete="off"
+              :disabled="loading"
+              dense
+            ></v-text-field>
+            <v-btn 
+              icon 
+              small
+              class="ml-2"
+            >
+              <v-icon>mdi-help-circle</v-icon>
+            </v-btn>
+          </div>
+        </div>
+      </v-expand-transition>
+
       <v-checkbox
         v-if="!editing"
         v-model="doPublish"
@@ -59,6 +112,14 @@
     </v-card-text>
   </v-card>
 </template>
+
+<style scoped>
+  .flex-row {
+    display: flex; 
+    flex-direction: row; 
+    align-items: center;
+  }
+</style>
 
 <script>
 import ClassSelect from '@/components/ClassSelect'
@@ -103,6 +164,7 @@ export default {
       time: '23:59',
       doPublish: false,
       loading: false,
+      showMore: false,
     }
   },
 
