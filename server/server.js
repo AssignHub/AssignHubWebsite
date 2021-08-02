@@ -72,7 +72,8 @@ app.use('/friends', friendsRouter)
 // Server
 const server = app.listen(3000, () => console.log('Server listening on port 3000'))
 
-const io = require('./websockets').initialize(server, {
+// Socket.io
+const io = require('./websockets').init(server, {
   path: '/sockets',
   cors: {
     origin: 'http://localhost:8080',
@@ -90,3 +91,6 @@ io.use(sharedSession(sessionMiddleware))
 
 // Start Tasks
 require('./scheduler').scheduleTasks()
+
+// Discord bot
+require('./discord_bot').init()

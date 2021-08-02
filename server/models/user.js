@@ -10,6 +10,7 @@ const Moods = Object.freeze({
 })
 
 const userSchema = new mongoose.Schema({
+  lastSignIn: { type: Date },
   timezoneOffset: { type: Number, default: 0 },
 
   // basicInfo

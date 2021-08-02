@@ -6,6 +6,7 @@ const { getUser } = require('../middleware/auth')
 const editJsonFile = require('edit-json-file')
 const { escapeRegExp } = require('../utils/utils')
 const { sendMail } = require('../mailer')
+const discordBot = require('../discord_bot')
 require('dotenv').config()
 
 router.post('/sign-in', async (req, res) => {
@@ -52,6 +53,7 @@ router.post('/sign-in', async (req, res) => {
     // Find user if exists
     const school = profileData.email.match(/(?:[.@](.+?))+\..+/)[1]
     const userData = { 
+      lastSignIn: new Date(),
       timezoneOffset,
       firstName: profileData.given_name || 'null', 
       lastName: profileData.family_name || 'null', 
@@ -72,11 +74,7 @@ router.post('/sign-in', async (req, res) => {
       // Create new account if no account exists for email
       user = await new User(userData).save()
       console.log('New account created: ', profileData.email)
-      sendMail({
-        to: process.env.DEV_EMAIL,
-        subject: 'New account was created!',
-        text: `${profileData.given_name} ${profileData.family_name} (${profileData.email}) has joined AssignHub!`
-      })
+      discordBot.sendMessage(`:wave: ${profileData.given_name} ${profileData.family_name} (${profileData.email}) has joined AssignHub!`)
     }
     
     // Start authenticated session

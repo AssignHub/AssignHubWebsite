@@ -31,7 +31,7 @@ exports.emitToUser = (userId, message, data) => {
   }
 }
 
-exports.initialize = (server, options={}) => {
+exports.init = (server, options={}) => {
   io = require('socket.io')(server, options) 
 
   io.on('connection', socket => {
