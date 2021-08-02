@@ -16,11 +16,9 @@
               <v-card-text class="pa-0 pb-1">
                 <transition-group name="list-fade">
                   <div v-for="a in c.assignments" :key="a._id">
-                    <AssignmentCard
-                      
+                    <AssignmentWithMenu
                       :assignment="a"
                       :classes="classes"
-                      class="mx-2 mb-2"
                       show-date
                       :disabled="a.done"
                       @click="toggleAssignment(a._id)"
@@ -53,7 +51,7 @@
 </style>
 
 <script>
-import AssignmentCard from '@/components/AssignmentCard'
+import AssignmentWithMenu from '@/components/AssignmentWithMenu'
 import { compareDateDay } from '@/utils/utils.js'
 import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
 import { CONTEXT_MENU_TYPES } from '@/constants'
@@ -62,7 +60,7 @@ export default {
   name: 'Todo',
 
   components: {
-    AssignmentCard,
+    AssignmentWithMenu,
   },
 
   data() {

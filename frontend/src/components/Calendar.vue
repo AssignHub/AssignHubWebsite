@@ -15,10 +15,9 @@
         <div class="calendar-middle" v-scroll.self="onScroll" style="flex: 1 1 auto; overflow-y: scroll;" @scroll="hideContextMenu">
           <div class="d-flex" style="min-height: 100%;">
             <div class="col-day" :class="i !== 0 && 'left-border'" v-for="(day, i) in daysOfWeek" :key="i">
-              <AssignmentCard
+              <AssignmentWithMenu
                 v-for="(a, i) in getAssignmentsForDate(day.date)" 
                 :key="i"
-                class="mb-2 mx-2"
                 :assignment="a"
                 :disabled="a.done"
                 @click="toggleAssignment(a._id)"
@@ -84,7 +83,7 @@
 </style>
 
 <script>
-import AssignmentCard from '@/components/AssignmentCard'
+import AssignmentWithMenu from '@/components/AssignmentWithMenu'
 import { compareDateDay } from '@/utils/utils.js'
 import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
 import { CONTEXT_MENU_TYPES } from '@/constants'
@@ -93,7 +92,7 @@ export default {
   name: 'Calendar',
 
   components: {
-    AssignmentCard,
+    AssignmentWithMenu,
   },
 
   data() {
