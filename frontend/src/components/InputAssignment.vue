@@ -54,7 +54,7 @@
         <div v-if="showMore">
           <div class="flex-row mb-2">
             <v-text-field
-              v-model="name"
+              v-model="proofUrl"
               label="Assignment proof URL (optional)"
               hide-details
               outlined  
@@ -62,17 +62,25 @@
               :disabled="loading"
               dense
             ></v-text-field>
-            <v-btn 
-              icon 
-              small
-              class="ml-2"
-            >
-              <v-icon>mdi-help-circle</v-icon>
-            </v-btn>
+            <v-tooltip top>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn 
+                  icon 
+                  small
+                  class="ml-2"
+                  v-bind="attrs"
+                  v-on="on"
+                  v-on:click.stop.prevent
+                >
+                  <v-icon>mdi-help-circle</v-icon>
+                </v-btn>
+              </template>
+              <span>Provide a link to where you found this assignment on Canvas, Blackboard, etc.</span>
+            </v-tooltip>
           </div>
           <div class="flex-row mb-2">
             <v-text-field
-              v-model="name"
+              v-model="submissionUrl"
               label="Assignment submission URL (optional)"
               hide-details
               outlined  
@@ -80,13 +88,20 @@
               :disabled="loading"
               dense
             ></v-text-field>
-            <v-btn 
-              icon 
-              small
-              class="ml-2"
-            >
-              <v-icon>mdi-help-circle</v-icon>
-            </v-btn>
+            <v-tooltip top>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn 
+                  icon 
+                  small
+                  class="ml-2"
+                  v-bind="attrs"
+                  v-on="on"
+                >
+                  <v-icon>mdi-help-circle</v-icon>
+                </v-btn>
+              </template>
+              <span>Provide a link to the place where this assignment should be submitted</span>
+            </v-tooltip>
           </div>
         </div>
       </v-expand-transition>
@@ -162,9 +177,12 @@ export default {
       curClass: '',
       date: getDateString(new Date()),
       time: '23:59',
+      proofUrl: '',
+      submissionUrl: '',
       doPublish: false,
       loading: false,
       showMore: false,
+      console,
     }
   },
 
@@ -186,7 +204,9 @@ export default {
           assignmentId: this.assignment._id,
           class: classId,
           name: this.name,
-          dueDate
+          dueDate,
+          proofUrl: this.proofUrl,
+          submissionUrl: this.submissionUrl,
         }
 
         this.loading = true
@@ -199,6 +219,8 @@ export default {
           classId,
           name: this.name,
           dueDate,
+          proofUrl: this.proofUrl,
+          submissionUrl: this.submissionUrl,
           public: this.doPublish,
         }
         
@@ -218,6 +240,8 @@ export default {
       //this.date = new Date().toISOString().substr(0, 10)
       //this.time = '23:59'
       this.doPublish = false
+      this.proofUrl = ''
+      this.submissionUrl = ''
     },
   },
 }

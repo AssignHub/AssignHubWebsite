@@ -91,9 +91,11 @@ router.post('/create', getUser, async (req, res) => {
   *  classId - ObjectId of the class the assignment is associated with
   *  name - name of assignment
   *  dueDate - due date of assignment
+  *  proofUrl - url where you can find the assignment
+  *  submissionUrl - url where you can submit the assignment
   *  public - whether assignment is public (shared with everybody in your class)
   */
-  const {classId, name, dueDate, public} = req.body
+  const {classId, name, dueDate, proofUrl, submissionUrl, public} = req.body
 
   try {
     const _class = await Class.findById(classId)
@@ -104,7 +106,13 @@ router.post('/create', getUser, async (req, res) => {
     }
 
     const assignment = await new Assignment({
-      creator: res.locals.user._id, class: classId, name, dueDate, public
+      creator: res.locals.user._id, 
+      class: classId, 
+      name, 
+      dueDate,
+      proofUrl,
+      submissionUrl, 
+      public
     }).save()
 
     res.locals.user.assignments.push({assignment: assignment._id})
