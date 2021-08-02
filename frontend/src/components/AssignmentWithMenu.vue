@@ -40,7 +40,7 @@
       <v-card-actions>
         <v-spacer />
         <v-btn text @click="show = false">Close</v-btn>
-        <v-btn color="primary" @click="toggleAssignment(assignment._id)">Mark as done</v-btn>
+        <v-btn :color="assignment.done ? '' : 'primary'" @click="toggle">{{ assignment.done ? 'Unmark as done' : 'Mark as done' }}</v-btn>
       </v-card-actions>
     </v-card>
   </v-menu>
@@ -82,6 +82,10 @@ export default {
 
   methods: {
     ...mapActions([ 'toggleAssignment' ]),
+    toggle() {
+      this.show = false
+      this.toggleAssignment(this.assignment._id)
+    },
   },
 }
 </script>
