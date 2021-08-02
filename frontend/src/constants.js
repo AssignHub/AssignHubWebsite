@@ -1,4 +1,4 @@
-export const CLASS_COLORS = [
+export const CLASS_COLORS = Object.freeze([
   '#E57373', 
   //'#F06292', 
   '#BA68C8', 
@@ -18,13 +18,13 @@ export const CLASS_COLORS = [
   //'#A1887F',
   '#90A4AE',
   //'#E0E0E0',
-]
+])
 
-export const CONTEXT_MENU_TYPES = {
+export const CONTEXT_MENU_TYPES = Object.freeze({
   assignment: 0,
   class: 1,
   removeFriend: 2,
-}
+})
 
 export const MOODS = Object.freeze({
   Crying: 'crying',
@@ -41,3 +41,28 @@ export const EMOJIS = Object.freeze({
   [MOODS.Smiling]: require('@/assets/smiling.png'),
   [MOODS.Sunglasses]: require('@/assets/sunglasses.png'),
 })
+
+export const DAYS_OF_WEEK = Object.freeze([
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+])
+
+export const MONTHS = Object.freeze([
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+])

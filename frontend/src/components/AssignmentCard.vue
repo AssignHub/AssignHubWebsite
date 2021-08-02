@@ -65,6 +65,8 @@ export default {
     showCreator: {type: Boolean, default: false},
   },
 
+  emits: ['click', 'add', 'remove'],
+
   computed: {
     ...mapGetters({ classes: 'termClasses' }),
     dueDate() {
