@@ -25,7 +25,7 @@
           item-text="text"
           item-value="term"
           :value="term"
-          @input="(term) => changeTerm(term)"
+          @input="_changeTerm"
           hide-details
           class="mx-4 white"
         ></v-select>
@@ -106,6 +106,10 @@ export default {
 
   methods: {
     ...mapActions([ 'changeTerm' ]),
+    _changeTerm(term) {
+      window.localStorage.setItem('term', term)
+      this.changeTerm(term)
+    },
   },
 }
 </script>

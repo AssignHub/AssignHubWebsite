@@ -241,7 +241,11 @@ export default new Vuex.Store({
     getTerms({ commit, dispatch }) {
       return get('/classes/terms').then(terms => {
         commit('setTerms', terms)
-        return dispatch('changeTerm', getCurTerm(terms).term)
+        let curTerm = window.localStorage.getItem('term')
+        if (!curTerm || !terms.find(t => t.term == curTerm)) {
+          curTerm = getCurTerm(terms).term
+        }
+        return dispatch('changeTerm', curTerm)
       }).catch(err => {
         dispatch('showError', 'There was an problem fetching your school\'s terms!')
       })
