@@ -34,7 +34,7 @@ app.use(express.json())
 const sessionMiddleware = session({
   secret: process.env.SESSION_SECRET,
   cookie: {
-    secure: process.env.NODE_ENV === 'development' ? false : true, // TODO: verify this doesn't screw stuff up
+    secure: false, // TODO: verify this doesn't screw stuff up
   },
   store: new RedisStore({ host: 'localhost', port: 6379, client: redisClient }),
   resave: false,
