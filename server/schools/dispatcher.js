@@ -11,7 +11,7 @@ exports.getSchoolMiddleware = (middlewareName) => {
         return
       }
 
-      if (process.env.TESTING) {
+      if (process.env.NODE_ENV === 'development') {
         if (school === 'gmail') school = 'usc'
       }
 
@@ -33,7 +33,7 @@ exports.getSchoolUtilFunction = (res, funcName) => {
       return
     }
 
-    if (process.env.TESTING) {
+    if (process.env.NODE_ENV === 'development') {
       if (school === 'gmail') school = 'usc'
     }
 

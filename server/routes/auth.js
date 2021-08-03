@@ -28,7 +28,7 @@ router.post('/sign-in', async (req, res) => {
         client_id: process.env.GOOGLE_CLIENT_ID,
         client_secret: process.env.GOOGLE_CLIENT_SECRET,
         grant_type: 'authorization_code',
-        redirect_uri: process.env.TESTING ? 'http://localhost:8080' : 'https://assignhub.app',
+        redirect_uri: process.env.NODE_ENV === 'development' ? 'http://localhost:8080' : 'https://assignhub.app',
       })
     })
 
@@ -45,7 +45,7 @@ router.post('/sign-in', async (req, res) => {
         break
       }
     }
-    if (!process.env.TESTING && !emailAllowed) {
+    if (process.env.NODE_ENV !== 'development' && !emailAllowed) {
       res.status(403).json({ error: 'email-not-allowed' })
       return
     }

@@ -48,7 +48,7 @@ exports.sendMessage = (message) => {
 }
 
 exports.getDefaultChannel = () => {
-  if (process.env.TESTING) {
+  if (process.env.NODE_ENV === 'development') {
     return 'assignhub-bot-dev'
   } else {
     return 'assignhub-bot'
