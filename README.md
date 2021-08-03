@@ -23,4 +23,4 @@ A live demo of the website can be found here: [DEMO](https://assignhub.github.io
 1. `cd frontend`
 2. `sudo npm run build`
 ### Backend
-1. `NODE_ENV=production sudo pm2 restart server`
+1. `sudo pm2 restart server`

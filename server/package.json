@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "devStart": "nodemon server.js",
-    "start": "NODE_ENV=production sudo pm2 start server.js"
+    "start": "sudo pm2 start server.js"
   },
   "nodemonConfig": {
     "ignore": "*.json"
