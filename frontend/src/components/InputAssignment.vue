@@ -38,92 +38,103 @@
         class="mb-2"
         dense
       />
-      <v-btn
-        text
-        small
-        class="mb-2"
-        color="blue darken-1"
-        @click="showMore = !showMore"
-        :disabled="loading"
-      >
-        More
-        <v-icon v-if="!showMore">mdi-chevron-down</v-icon>
-        <v-icon v-else>mdi-chevron-up</v-icon>
-      </v-btn>
-      <v-expand-transition>
-        <div v-if="showMore">
-          <div class="flex-row mb-2">
-            <v-text-field
-              v-model="proofUrl"
-              label="Assignment proof URL (optional)"
-              hide-details
-              outlined  
-              autocomplete="off"
-              :disabled="loading"
-              dense
-            ></v-text-field>
-            <v-tooltip top>
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn 
-                  icon 
-                  small
-                  class="ml-2"
-                  v-bind="attrs"
-                  v-on="on"
-                  v-on:click.stop.prevent
-                >
-                  <v-icon>mdi-help-circle</v-icon>
-                </v-btn>
-              </template>
-              <span>Provide a link to where you found this assignment on Canvas, Blackboard, etc.</span>
-            </v-tooltip>
-          </div>
-          <div class="flex-row mb-2">
-            <v-text-field
-              v-model="submissionUrl"
-              label="Assignment submission URL (optional)"
-              hide-details
-              outlined  
-              autocomplete="off"
-              :disabled="loading"
-              dense
-            ></v-text-field>
-            <v-tooltip top>
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn 
-                  icon 
-                  small
-                  class="ml-2"
-                  v-bind="attrs"
-                  v-on="on"
-                >
-                  <v-icon>mdi-help-circle</v-icon>
-                </v-btn>
-              </template>
-              <span>Provide a link to the place where this assignment should be submitted</span>
-            </v-tooltip>
-          </div>
-        </div>
-      </v-expand-transition>
-
-      <v-checkbox
-        v-if="!editing"
-        v-model="doPublish"
-        label="Publish"
-        class="mt-0"
-        hint="Let others use this assignment"
-        persistent-hint
-        :disabled="loading"
-      >
-      </v-checkbox>
-      <v-card-actions class="pa-0">
-        <v-spacer></v-spacer>
+      <div v-if="!editing">
         <v-btn
-          @click="submit"
-          :disabled="!enableSubmit"
-          :loading="loading"
-        >{{ editing ? 'Update' : 'Submit'}}</v-btn>
-      </v-card-actions>
+          text
+          small
+          class="mb-2"
+          color="blue darken-1"
+          @click="showMore = !showMore"
+          :disabled="loading"
+        >
+          More
+          <v-icon v-if="!showMore">mdi-chevron-down</v-icon>
+          <v-icon v-else>mdi-chevron-up</v-icon>
+        </v-btn>
+        <v-expand-transition>
+          <div v-if="showMore">
+            <div class="flex-row mb-2">
+              <v-text-field
+                v-model="proofUrl"
+                label="Assignment proof URL (optional)"
+                hide-details
+                outlined  
+                autocomplete="off"
+                :disabled="loading"
+                dense
+              ></v-text-field>
+              <v-tooltip top>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn 
+                    icon 
+                    small
+                    class="ml-2"
+                    v-bind="attrs"
+                    v-on="on"
+                    v-on:click.stop.prevent
+                  >
+                    <v-icon>mdi-help-circle</v-icon>
+                  </v-btn>
+                </template>
+                <span>Provide a link to where you found this assignment on Canvas, Blackboard, etc.</span>
+              </v-tooltip>
+            </div>
+            <div class="flex-row mb-2">
+              <v-text-field
+                v-model="submissionUrl"
+                label="Assignment submission URL (optional)"
+                hide-details
+                outlined  
+                autocomplete="off"
+                :disabled="loading"
+                dense
+              ></v-text-field>
+              <v-tooltip top>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn 
+                    icon 
+                    small
+                    class="ml-2"
+                    v-bind="attrs"
+                    v-on="on"
+                  >
+                    <v-icon>mdi-help-circle</v-icon>
+                  </v-btn>
+                </template>
+                <span>Provide a link to the place where this assignment should be submitted</span>
+              </v-tooltip>
+            </div>
+          </div>
+        </v-expand-transition>
+
+        <v-checkbox
+          v-model="doPublish"
+          label="Publish"
+          class="mt-0"
+          hint="Let others use this assignment"
+          persistent-hint
+          :disabled="loading"
+        >
+        </v-checkbox>
+        <v-card-actions class="pa-0">
+          <v-spacer></v-spacer>
+          <v-btn
+            @click="submit"
+            :disabled="!enableSubmit"
+            :loading="loading"
+          >Submit</v-btn>
+        </v-card-actions>
+      </div>
+      <div v-else>
+        <div v-if="assignment.proofUrl">
+          <v-icon class="mr-1">mdi-clipboard-check</v-icon>
+          <a :href="assignment.proofUrl" target="_blank">Proof</a>
+        </div>
+        <div v-if="assignment.submissionUrl">
+          <v-icon class="mr-1">mdi-file-upload</v-icon>
+          <a :href="assignment.submissionUrl" target="_blank">Submit here</a>
+        </div>
+      </div>
     </v-card-text>
   </v-card>
 </template>
@@ -141,6 +152,7 @@ import ClassSelect from '@/components/ClassSelect'
 import DateTimePicker from '@/components/DateTimePicker'
 import { post, getTimeString, getDateString } from '@/utils/utils.js'
 import { mapGetters, mapActions } from 'vuex'
+import { DAYS_OF_WEEK, MONTHS } from '@/constants'
 
 export default {
   name: 'InputAssignment',
@@ -162,10 +174,13 @@ export default {
         if (this.editing && this.assignment) {
           this.name = this.assignment.name
           this.curClass = this.assignment.class._id
+          this.proofUrl = this.assignment.proofUrl
+          this.submissionUrl = this.assignment.submissionUrl
           
           const date = new Date(this.assignment.dueDate)
           this.date = getDateString(date)
           this.time = getTimeString(date)
+
         }
       },
     },
@@ -190,6 +205,15 @@ export default {
     ...mapGetters({ classes: 'termClasses' }),
     enableSubmit() {
       return this.name && this.curClass && this.date && this.time
+    },
+    dueDate() {
+      return new Date(this.assignment.dueDate)
+    },
+    dateString() {
+      return `${DAYS_OF_WEEK[this.dueDate.getDay()]}, ${MONTHS[this.dueDate.getMonth()]} ${this.dueDate.getDate()}`
+    },
+    timeString() {
+      return this.dueDate.toLocaleTimeString([], {timeStyle: 'short'})
     },
   },
 

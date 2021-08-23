@@ -47,6 +47,7 @@ export default new Vuex.Store({
     },
     assignmentById: (state) => (assignmentId) => state.assignments.find(a => a._id === assignmentId),
     classById: (state) => (classId) => state.classes.find(c => c._id === classId),
+    classColorById: (state) => (classId) => state.classes.find(c => c._id === classId).color
   },
   mutations: {
     resetState(state) {

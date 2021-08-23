@@ -1,9 +1,10 @@
 <template>
-  <v-menu
+  <v-dialog
     v-model="show"
-    transition="slide-y-transition"
+    transition="fade-transition"
     bottom
     offset-x
+    width="500"
     :close-on-content-click="false"
   >
     <template v-slot:activator="{ on, attrs }">
@@ -13,6 +14,66 @@
         v-on="on"
       />
     </template>
+    <v-card style="width: 500px;">
+      <v-card-title>
+        <TextEdit v-model="tempAssignmentData.name" class="text-h6"/>
+      </v-card-title>
+      <v-card-text>
+        <table>
+          <tr>
+            <td>Class</td>
+            <td>
+              <v-chip small :color="classColor">
+                {{ tempAssignmentData.class.courseId }}
+              </v-chip>
+            </td>
+          </tr>
+          <tr>
+            <td>Due</td>
+            <td>{{ `${dateString} at ${timeString}` }}</td>
+          </tr>
+          <tr>
+            <td>Proof</td>
+            <td>
+              <v-tooltip right>
+                <template v-slot:activator="{ on, attrs }">
+                  <a 
+                    :href="tempAssignmentData.proofUrl" 
+                    target="_blank"
+                    v-bind="attrs"
+                    v-on="on"
+                  >{{ tempAssignmentData.proofUrl }}</a>
+                </template>
+                <span>Right-click to edit</span>
+              </v-tooltip>
+            </td>
+          </tr>
+          <tr>
+            <td>Submit</td>
+            <td>
+              <v-tooltip right>
+                <template v-slot:activator="{ on, attrs }">
+                  <a 
+                    :href="tempAssignmentData.submissionUrl" 
+                    target="_blank"
+                    v-bind="attrs"
+                    v-on="on"
+                  >{{ tempAssignmentData.submissionUrl }}</a>
+                </template>
+                <span>Right-click to edit</span>
+              </v-tooltip>      
+            </td>
+          </tr>
+        </table>
+        <v-row>
+          <v-spacer />
+          <v-btn
+            color="primary"
+          >Mark as done</v-btn>
+        </v-row>
+      </v-card-text>
+    </v-card>
+    <!--
     <v-card style="width: 300px;">
       <v-card-title>
         <v-row no-gutters>
@@ -42,33 +103,73 @@
         <v-btn text @click="show = false">Close</v-btn>
         <v-btn :color="assignment.done ? '' : 'primary'" @click="toggle">{{ assignment.done ? 'Unmark as done' : 'Mark as done' }}</v-btn>
       </v-card-actions>
-    </v-card>
-  </v-menu>
+    </v-card>-->
+  </v-dialog>
 </template>
 
+<style scoped>
+  table {
+    border-spacing: 20px 10px;
+    margin: 0px -20px;
+  }
+
+  td {
+    white-space: nowrap;
+  }
+  
+  td:last-child {
+    width: 100%;
+  }
+</style>
+
 <script>
-import { mapActions } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import AssignmentCard from '@/components/AssignmentCard'
+import InputAssignment from '@/components/InputAssignment'
+import TextEdit from '@/components/TextEdit'
 import { DAYS_OF_WEEK, MONTHS } from '@/constants'
 
 export default {
   name: 'AssignmentMenu',
 
   components: {
-    AssignmentCard
+    AssignmentCard,
+    InputAssignment,
+    TextEdit,
   },
 
   props: {
     assignment: {type: Object, required: true},
   },
 
+  created() {
+    console.log(this.assignment)
+    this.tempAssignmentData = { ...this.assignment }
+  },
+
+  watch: {
+    show: {
+      immediate: true,
+      handler(show) {
+        if (show) {
+          this.tempAssignmentData = { ...this.assignment }
+        }
+      },
+    },
+  },
+
   data() {
     return {
       show: false,
+      tempAssignmentData: null,
     }
   },
 
   computed: {
+    ...mapGetters(['classColorById']),
+    classColor() {
+      return this.classColorById(this.tempAssignmentData.class._id)
+    },
     dueDate() {
       return new Date(this.assignment.dueDate)
     },
