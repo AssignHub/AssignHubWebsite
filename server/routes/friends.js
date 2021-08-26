@@ -105,6 +105,7 @@ router.post('/create-request', getUser, async (req, res) => {
       timestamp: new Date(),
       from: res.locals.user._id, 
       to: userId,
+      lastReminded: new Date()
     }).save()
 
     const toUser = await User.findById(userId, 'firstName lastName email pic').lean()
