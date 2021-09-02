@@ -15,13 +15,6 @@
         :disabled="loading"
         dense
       ></v-text-field>
-      <!--<v-textarea
-        hide-details
-        outlined  
-        autocomplete="off" 
-        label="Description (optional)"
-        class="mb-4"
-      ></v-textarea>-->
       <ClassSelect
         :classes="classes" 
         v-model="curClass" 
@@ -38,75 +31,16 @@
         class="mb-2"
         dense
       />
+      <v-textarea
+        hide-details
+        outlined  
+        autocomplete="off" 
+        label="Description (optional)"
+        class="mb-4"
+        no-resize
+        rows="3"
+      ></v-textarea>
       <div v-if="!editing">
-        <v-btn
-          text
-          small
-          class="mb-2"
-          color="blue darken-1"
-          @click="showMore = !showMore"
-          :disabled="loading"
-        >
-          More
-          <v-icon v-if="!showMore">mdi-chevron-down</v-icon>
-          <v-icon v-else>mdi-chevron-up</v-icon>
-        </v-btn>
-        <v-expand-transition>
-          <div v-if="showMore">
-            <div class="flex-row mb-2">
-              <v-text-field
-                v-model="proofUrl"
-                label="Assignment proof URL (optional)"
-                hide-details
-                outlined  
-                autocomplete="off"
-                :disabled="loading"
-                dense
-              ></v-text-field>
-              <v-tooltip top>
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn 
-                    icon 
-                    small
-                    class="ml-2"
-                    v-bind="attrs"
-                    v-on="on"
-                    v-on:click.stop.prevent
-                  >
-                    <v-icon>mdi-help-circle</v-icon>
-                  </v-btn>
-                </template>
-                <span>Provide a link to where you found this assignment on Canvas, Blackboard, etc.</span>
-              </v-tooltip>
-            </div>
-            <div class="flex-row mb-2">
-              <v-text-field
-                v-model="submissionUrl"
-                label="Assignment submission URL (optional)"
-                hide-details
-                outlined  
-                autocomplete="off"
-                :disabled="loading"
-                dense
-              ></v-text-field>
-              <v-tooltip top>
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn 
-                    icon 
-                    small
-                    class="ml-2"
-                    v-bind="attrs"
-                    v-on="on"
-                  >
-                    <v-icon>mdi-help-circle</v-icon>
-                  </v-btn>
-                </template>
-                <span>Provide a link to the place where this assignment should be submitted</span>
-              </v-tooltip>
-            </div>
-          </div>
-        </v-expand-transition>
-
         <v-checkbox
           v-model="doPublish"
           label="Publish"
@@ -124,16 +58,6 @@
             :loading="loading"
           >Submit</v-btn>
         </v-card-actions>
-      </div>
-      <div v-else>
-        <div v-if="assignment.proofUrl">
-          <v-icon class="mr-1">mdi-clipboard-check</v-icon>
-          <a :href="assignment.proofUrl" target="_blank">Proof</a>
-        </div>
-        <div v-if="assignment.submissionUrl">
-          <v-icon class="mr-1">mdi-file-upload</v-icon>
-          <a :href="assignment.submissionUrl" target="_blank">Submit here</a>
-        </div>
       </div>
     </v-card-text>
   </v-card>
@@ -174,8 +98,7 @@ export default {
         if (this.editing && this.assignment) {
           this.name = this.assignment.name
           this.curClass = this.assignment.class._id
-          this.proofUrl = this.assignment.proofUrl
-          this.submissionUrl = this.assignment.submissionUrl
+          this.description = this.assignment.description
           
           const date = new Date(this.assignment.dueDate)
           this.date = getDateString(date)
@@ -192,8 +115,7 @@ export default {
       curClass: '',
       date: getDateString(new Date()),
       time: '23:59',
-      proofUrl: '',
-      submissionUrl: '',
+      description: '',
       doPublish: false,
       loading: false,
       showMore: false,
@@ -229,8 +151,7 @@ export default {
           class: classId,
           name: this.name,
           dueDate,
-          proofUrl: this.proofUrl,
-          submissionUrl: this.submissionUrl,
+          description: this.description,
         }
 
         this.loading = true
@@ -243,8 +164,7 @@ export default {
           classId,
           name: this.name,
           dueDate,
-          proofUrl: this.proofUrl,
-          submissionUrl: this.submissionUrl,
+          description: this.description,
           public: this.doPublish,
         }
         
@@ -264,8 +184,7 @@ export default {
       //this.date = new Date().toISOString().substr(0, 10)
       //this.time = '23:59'
       this.doPublish = false
-      this.proofUrl = ''
-      this.submissionUrl = ''
+      this.description = ''
     },
   },
 }

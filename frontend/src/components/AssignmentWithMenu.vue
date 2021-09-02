@@ -22,7 +22,7 @@
         <table>
           <tr>
             <td>Class</td>
-            <td>
+            <td class="pa-2">
               <v-chip small :color="classColor">
                 {{ tempAssignmentData.class.courseId }}
               </v-chip>
@@ -30,48 +30,31 @@
           </tr>
           <tr>
             <td>Due</td>
-            <td>{{ `${dateString} at ${timeString}` }}</td>
+            <td class="black--text pa-2">{{ `${dateString} at ${timeString}` }}</td>
           </tr>
           <tr>
-            <td>Proof</td>
+            <td>Description</td>
             <td>
-              <v-tooltip right>
-                <template v-slot:activator="{ on, attrs }">
-                  <a 
-                    :href="tempAssignmentData.proofUrl" 
-                    target="_blank"
-                    v-bind="attrs"
-                    v-on="on"
-                  >{{ tempAssignmentData.proofUrl }}</a>
-                </template>
-                <span>Right-click to edit</span>
-              </v-tooltip>
-            </td>
-          </tr>
-          <tr>
-            <td>Submit</td>
-            <td>
-              <v-tooltip right>
-                <template v-slot:activator="{ on, attrs }">
-                  <a 
-                    :href="tempAssignmentData.submissionUrl" 
-                    target="_blank"
-                    v-bind="attrs"
-                    v-on="on"
-                  >{{ tempAssignmentData.submissionUrl }}</a>
-                </template>
-                <span>Right-click to edit</span>
-              </v-tooltip>      
+              <TextEdit 
+                v-model="tempAssignmentData.description" 
+                class="pa-2"
+                placeholder="Empty" 
+                showBorderOnEdit
+              />
             </td>
           </tr>
         </table>
-        <v-row>
-          <v-spacer />
-          <v-btn
-            color="primary"
-          >Mark as done</v-btn>
-        </v-row>
       </v-card-text>
+      <v-card-actions>
+        <v-spacer />
+        <v-btn
+          text
+          color="error"
+        >Delete</v-btn>
+        <v-btn
+          color="primary"
+        >Mark as done</v-btn>
+      </v-card-actions>
     </v-card>
     <!--
     <v-card style="width: 300px;">
@@ -109,12 +92,16 @@
 
 <style scoped>
   table {
-    border-spacing: 20px 10px;
+    border-spacing: 20px 0px;
     margin: 0px -20px;
   }
 
   td {
     white-space: nowrap;
+  }
+
+  td:nth-child(1) {
+    text-align: right;
   }
   
   td:last-child {

@@ -91,11 +91,10 @@ router.post('/create', getUser, async (req, res) => {
   *  classId - ObjectId of the class the assignment is associated with
   *  name - name of assignment
   *  dueDate - due date of assignment
-  *  proofUrl - url where you can find the assignment
-  *  submissionUrl - url where you can submit the assignment
+  *  description - description of assignment (optional)
   *  public - whether assignment is public (shared with everybody in your class)
   */
-  const {classId, name, dueDate, proofUrl, submissionUrl, public} = req.body
+  const {classId, name, dueDate, description, public} = req.body
 
   try {
     const _class = await Class.findById(classId)
@@ -110,8 +109,7 @@ router.post('/create', getUser, async (req, res) => {
       class: classId, 
       name, 
       dueDate,
-      proofUrl,
-      submissionUrl, 
+      description,
       public
     }).save()
 
