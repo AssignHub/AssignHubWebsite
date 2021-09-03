@@ -14,6 +14,7 @@ const classSchema = new mongoose.Schema({
     end: { type: String },
     location: { type: String }
   }],
+  asynchronous: { type: Boolean },
 })
 
 classSchema.methods.findMembers = function(cb) {

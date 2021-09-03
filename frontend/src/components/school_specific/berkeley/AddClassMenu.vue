@@ -40,58 +40,68 @@
             :disabled="loading"
           ></v-text-field>
 
-          <v-container class="pa-0">
-            <v-row>
-              <v-col cols="6" class="pr-1">
-                <TimePicker
-                  label="Start time"
-                  v-model="startTime"
-                  class="white mb-2"
-                  dense
-                />
-              </v-col>
-              <v-col cols="6" class="pl-1">
-                <TimePicker
-                  label="End time"
-                  v-model="endTime"
-                  class="white mb-2"
-                  dense
-                />
-              </v-col>
-            </v-row>
-          </v-container>
+          <v-switch
+            v-model="asynchronous"
+            label="Asynchronous"
+            class="mt-0"
+          ></v-switch>
 
-          <v-checkbox
-            v-model="days"
-            label="Monday"
-            value="M"
-            hide-details
-          ></v-checkbox>
-          <v-checkbox
-            v-model="days"
-            label="Tuesday"
-            value="T"
-            hide-details
-          ></v-checkbox>
-          <v-checkbox
-            v-model="days"
-            label="Wednesday"
-            value="W"
-            hide-details
-          ></v-checkbox>
-          <v-checkbox
-            v-model="days"
-            label="Thursday"
-            value="H"
-            hide-details
-          ></v-checkbox>
-          <v-checkbox
-            v-model="days"
-            label="Friday"
-            value="F"
-            hide-details
-            class="mb-4"
-          ></v-checkbox>
+          <v-expand-transition>
+            <div v-if="!asynchronous">
+              <v-container class="pa-0">
+                <v-row>
+                  <v-col cols="6" class="pr-1">
+                    <TimePicker
+                      label="Start time"
+                      v-model="startTime"
+                      class="white mb-2"
+                      dense
+                    />
+                  </v-col>
+                  <v-col cols="6" class="pl-1">
+                    <TimePicker
+                      label="End time"
+                      v-model="endTime"
+                      class="white mb-2"
+                      dense
+                    />
+                  </v-col>
+                </v-row>
+              </v-container>
+
+              <v-checkbox
+                v-model="days"
+                label="Monday"
+                value="M"
+                hide-details
+              ></v-checkbox>
+              <v-checkbox
+                v-model="days"
+                label="Tuesday"
+                value="T"
+                hide-details
+              ></v-checkbox>
+              <v-checkbox
+                v-model="days"
+                label="Wednesday"
+                value="W"
+                hide-details
+              ></v-checkbox>
+              <v-checkbox
+                v-model="days"
+                label="Thursday"
+                value="H"
+                hide-details
+              ></v-checkbox>
+              <v-checkbox
+                v-model="days"
+                label="Friday"
+                value="F"
+                hide-details
+                class="mb-4"
+              ></v-checkbox>
+            </div>
+          </v-expand-transition>
         </div>
       </v-expand-transition>
 
@@ -168,6 +178,7 @@ export default {
       sectionId: '',
       courseId: '',
       instructor: '',
+      asynchronous: false,
       days: [],
       startTime: '',
       endTime: '',
@@ -184,8 +195,14 @@ export default {
       if (this.state === this.states.ADD_CLASS || this.state === this.states.CLASS_DOES_NOT_EXIST) {
         return this.sectionId && this.color
       } else if (this.state === this.states.CREATE_CLASS) {
-        return this.sectionId && this.color && this.instructor && this.days.length > 0 && this.startTime && this.endTime && this.color 
+        return this.sectionId && this.color && this.instructor && this.timeComplete && this.color 
       }
+    },
+    timeComplete() {
+      // Whether the time section of the complete form has been filled out
+      if (this.asynchronous) return true
+
+      return this.days.length > 0 && this.startTime && this.endTime
     },
   },
   
@@ -208,13 +225,17 @@ export default {
     },
     createClass() {
       //this.loading = true
-      const blocks = this.getBlocksFormatted()
-      const instructors = [this.getInstructorFormatted()]
+      const blocks = this.asynchronous ? [] : this.getBlocksFormatted()
+      const instructor = this.getInstructorFormatted()
+      if (!instructor) return
+
+      const instructors = [instructor]
       post(`/classes/add?term=${this.term}`, {
         sectionId: this.sectionId,
         courseId: this.courseId,
         blocks,
         instructors,
+        asynchronous: this.asynchronous,
         color: this.color,
       }).then(data => {
         this.showInfo(`Successfully added "${data.courseId}"`)
@@ -222,7 +243,7 @@ export default {
         this.loading = false
         this.state = this.states.ADD_CLASS
       }).catch(err => {
-        this.handleErrros(err)
+        this.handleErrors(err)
         this.loading = false
       })
       
@@ -237,7 +258,7 @@ export default {
       })
     },
     getInstructorFormatted() {
-      const splitPoint = this.instructor.lastIndexOf(' ')
+      const splitPoint = this.instructor.trim().lastIndexOf(' ')
       if (splitPoint === -1) {
         this.showError('Please enter your instructor\'s first and last name')
         return null
@@ -265,6 +286,7 @@ export default {
       this.days = []
       this.startTime = ''
       this.endTime = ''
+      this.asynchronous = false
 
       this.state = this.states.ADD_CLASS
     },
