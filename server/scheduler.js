@@ -1,6 +1,8 @@
 const cron = require('node-cron')
 const editJsonFile = require('edit-json-file')
 const User = require('./models/user')
+const FriendRequest = require('./models/friend_request')
+const mailer = require('./mailer')
 const usc = require('./schools/usc')
 const appRoot = require('app-root-path')
 
@@ -34,22 +36,20 @@ exports.scheduleTasks = () => {
     usc.utils.writeTermsToConfig()
   })
 
-  cron.schedule('* * * * *', async () => {
+  // email friend request reminder after a certain time period
+  cron.schedule('30 12 * * *', async () => {
     const curr = new Date()
-    const delayMilli = 1000*60*60*24*editJsonFile(`${appRoot}/config/general.json`).toObject().requestEmailDelay
+    const delayMilli = 1000*60*60*24*editJsonFile(`${appRoot}/config/general.json`).toObject().requestEmailDelay // Number of days to wait before emailing
     const requests = await FriendRequest.find({
-      // check if timestamp is within a 
-      // just check is lastReminded exists otherwise send email
       lastReminded: {
         $lt: curr.getTime() - delayMilli
       }
     })
 
     requests.forEach(request => {
-      // mail to each friend
+      // mail to each friend from request
       request.lastReminded = curr
       request.save()
-      console.log(request.lastReminded)
       findUser(request.to).then((toUsers) => {
         to = toUsers[0]
         findUser(request.from).then((fromUsers) => {
