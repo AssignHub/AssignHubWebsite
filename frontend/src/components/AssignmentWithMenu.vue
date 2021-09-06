@@ -22,24 +22,48 @@
         <table>
           <tr>
             <td>Class</td>
-            <td class="pa-2">
+            <td>
               <v-chip small :color="classColor">
                 {{ tempAssignmentData.class.courseId }}
               </v-chip>
             </td>
           </tr>
           <tr>
-            <td>Due</td>
-            <td class="black--text pa-2">{{ `${dateString} at ${timeString}` }}</td>
+            <td>
+              <div class="pt-2">Due</div>
+            </td>
+            <td>
+              <DateTimePickerDialog
+                :date.sync="tempAssignmentData.date"
+                :time.sync="tempAssignmentData.time"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <TextEdit
+                    :value="`${dateString} at ${timeString}`"
+                    class="pa-2"
+                    cursor="pointer"
+                    showHover
+                    readonly
+                    @focus="showDateSelector"
+                    v-bind="attrs"
+                    v-on="on"
+                  />
+                </template>
+              </DateTimePickerDialog>
+            </td>
           </tr>
           <tr>
-            <td>Description</td>
+            <td>
+              <div class="pt-2">Description</div>
+            </td>
             <td>
               <TextEdit 
                 v-model="tempAssignmentData.description" 
                 class="pa-2"
                 placeholder="Empty" 
                 showBorderOnEdit
+                showHover
+                textarea
               />
             </td>
           </tr>
@@ -56,37 +80,6 @@
         >Mark as done</v-btn>
       </v-card-actions>
     </v-card>
-    <!--
-    <v-card style="width: 300px;">
-      <v-card-title>
-        <v-row no-gutters>
-          <v-col class="mr-2">
-            <div>{{ assignment.name }}</div>
-          </v-col>
-          <v-col align-self="center" cols="auto">
-            <v-btn icon @click="">
-              <v-icon>mdi-pencil</v-icon>
-            </v-btn>
-          </v-col>
-        </v-row>
-      </v-card-title>
-      <v-card-text>
-        <div class="black--text"><v-icon class="mr-1">mdi-clock</v-icon>{{ `${dateString} at ${timeString}` }}</div>
-        <div v-if="assignment.proofUrl">
-          <v-icon class="mr-1">mdi-clipboard-check</v-icon>
-          <a :href="assignment.proofUrl" target="_blank">Proof</a>
-        </div>
-        <div v-if="assignment.submissionUrl">
-          <v-icon class="mr-1">mdi-file-upload</v-icon>
-          <a :href="assignment.submissionUrl" target="_blank">Submit here</a>
-        </div>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer />
-        <v-btn text @click="show = false">Close</v-btn>
-        <v-btn :color="assignment.done ? '' : 'primary'" @click="toggle">{{ assignment.done ? 'Unmark as done' : 'Mark as done' }}</v-btn>
-      </v-card-actions>
-    </v-card>-->
   </v-dialog>
 </template>
 
@@ -97,7 +90,9 @@
   }
 
   td {
+    padding: 5px 0;
     white-space: nowrap;
+    vertical-align: top;
   }
 
   td:nth-child(1) {
@@ -112,15 +107,18 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import AssignmentCard from '@/components/AssignmentCard'
+import DateTimePickerDialog from '@/components/DateTimePickerDialog'
 import InputAssignment from '@/components/InputAssignment'
 import TextEdit from '@/components/TextEdit'
 import { DAYS_OF_WEEK, MONTHS } from '@/constants'
+import { getDateString, getTimeString, } from '@/utils/utils'
 
 export default {
   name: 'AssignmentMenu',
 
   components: {
     AssignmentCard,
+    DateTimePickerDialog,
     InputAssignment,
     TextEdit,
   },
@@ -130,8 +128,8 @@ export default {
   },
 
   created() {
-    console.log(this.assignment)
-    this.tempAssignmentData = { ...this.assignment }
+    //console.log(this.assignment)
+    this.updateTempData()
   },
 
   watch: {
@@ -139,7 +137,7 @@ export default {
       immediate: true,
       handler(show) {
         if (show) {
-          this.tempAssignmentData = { ...this.assignment }
+          this.updateTempData()
         }
       },
     },
@@ -158,7 +156,7 @@ export default {
       return this.classColorById(this.tempAssignmentData.class._id)
     },
     dueDate() {
-      return new Date(this.assignment.dueDate)
+      return new Date(Date.parse(this.tempAssignmentData.date + 'T' + this.tempAssignmentData.time))
     },
     dateString() {
       return `${DAYS_OF_WEEK[this.dueDate.getDay()]}, ${MONTHS[this.dueDate.getMonth()]} ${this.dueDate.getDate()}`
@@ -173,6 +171,17 @@ export default {
     toggle() {
       this.show = false
       this.toggleAssignment(this.assignment._id)
+    },
+    showDateSelector(e) {
+      e.target.blur()
+    },
+    updateTempData() {
+      // get date and time string
+      const d = new Date(this.assignment.dueDate)
+      const date = getDateString(d)
+      const time = getTimeString(d)
+
+      this.tempAssignmentData = { ...this.assignment, date, time }
     },
   },
 }

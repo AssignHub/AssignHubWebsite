@@ -6,8 +6,7 @@
           ref="menu"
           v-model="menu"
           :close-on-content-click="false"
-          transition="fade-transition"  
-          :nudge-right="40"
+          transition="fade-transition"
           offset-y
           top
         >
@@ -30,6 +29,7 @@
             :value="date"
             :min="minDate"
             @input="(date) => {$emit('update:date', date); menu=false}"
+            no-title
           ></v-date-picker>
         </v-menu>
       </v-col>
