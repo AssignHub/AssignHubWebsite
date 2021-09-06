@@ -139,6 +139,8 @@ export default {
     blocksString() {
       if (!this._class.blocks)
         return 'N/A'
+      if (this._class.asynchronous)
+        return 'Asynchronous'
 
       const daysString = this._class.blocks.map(block => {
         return block.day === 'H' ? 'TH' : block.day

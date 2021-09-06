@@ -25,15 +25,17 @@
         class="mb-4"
         dense
       />
-      <v-select
-        label="Filter by"
-        v-model="filterBy"
-        :items="filterByItems"
-        outlined
-        hide-details
-        class="mb-4"
-        dense
-      ></v-select>
+      <template v-if="!hideFilter">
+        <v-select
+          label="Filter by"
+          v-model="filterBy"
+          :items="filterByItems"
+          outlined
+          hide-details
+          class="mb-4"
+          dense
+        ></v-select>
+      </template>
 
       <v-card class="grey lighten-5 inner-shadow" style="height: 300px; overflow-y: auto;">
         <v-card-text v-if="filteredAssignments.length > 0" class="pt-2 pb-0 px-1">
@@ -98,7 +100,7 @@ export default {
   },
 
   computed: {
-    ...mapState([ 'publicAssignments', 'loading' ]),
+    ...mapState([ 'authUser', 'publicAssignments', 'loading' ]),
     ...mapGetters({ classes: 'termClasses' }),
     curCourseIds() {
       return this.curClasses.map(classId => {
@@ -128,6 +130,9 @@ export default {
 
       this.setNumPendingAssignments(filtered.length)
       return filtered
+    },
+    hideFilter() {
+      return this.authUser.school === 'berkeley'
     },
   },
 

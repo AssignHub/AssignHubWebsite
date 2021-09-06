@@ -206,7 +206,11 @@ export default new Vuex.Store({
         if (err === 'email-not-allowed') {
           dispatch('showError', 'Could not sign in using that email address! Make sure you are using your school email address to sign in.')
         } else {
-          dispatch('showError', 'There was an problem trying to sign in! Please try again later.')
+          if (err === false) {
+            setTimeout(() => dispatch('signInGoogle'), 100)
+          } else {
+            dispatch('showError', 'There was an problem trying to sign in! Please try again later.')
+          }
         }
       })
     },

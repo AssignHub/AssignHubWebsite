@@ -1,6 +1,5 @@
 const reqlib = require('app-root-path').require
 const User = reqlib('models/user')
-const commands = require('../commands')
 
 module.exports = {
   name: '!num_users',

@@ -33,4 +33,35 @@ exports.scheduleTasks = () => {
   cron.schedule('0 0 * * *', () => {
     usc.utils.writeTermsToConfig()
   })
+
+  cron.schedule('* * * * *', async () => {
+    const curr = new Date()
+    const delayMilli = 1000*60*60*24*editJsonFile(`${appRoot}/config/general.json`).toObject().requestEmailDelay
+    const requests = await FriendRequest.find({
+      // check if timestamp is within a 
+      // just check is lastReminded exists otherwise send email
+      lastReminded: {
+        $lt: curr.getTime() - delayMilli
+      }
+    })
+
+    requests.forEach(request => {
+      // mail to each friend
+      request.lastReminded = curr
+      request.save()
+      console.log(request.lastReminded)
+      findUser(request.to).then((toUsers) => {
+        to = toUsers[0]
+        findUser(request.from).then((fromUsers) => {
+          from = fromUsers[0]
+          mailer.sendMail({
+            to: to.email,
+            subject: `Accept your friend request from ${from.firstName} ${from.lastName}!`,
+            html: `${from.firstName} has been waiting 2 days for you to accept their friend request! Head over to <a href="https://assignhub.app">assignhub.app</a> to accept the friend request!`
+          })
+        })
+      })
+      
+    })
+  })
 }
