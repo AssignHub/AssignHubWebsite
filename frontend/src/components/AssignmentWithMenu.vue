@@ -16,31 +16,36 @@
     </template>
     <v-card style="width: 500px;">
       <v-card-title>
-        <TextEdit v-model="tempAssignmentData.name" class="text-h6"/>
+        <InputItem v-model="tempAssignmentData.name" class="text-h6" maxlength="50"/>
       </v-card-title>
       <v-card-text>
         <table>
           <tr>
             <td>Class</td>
             <td>
-              <v-chip small :color="classColor">
-                {{ tempAssignmentData.class.courseId }}
-              </v-chip>
+              <InputItem
+                class="pa-2"
+                type="lol"
+                cursor="pointer"
+                showHover
+              >
+                <v-chip small :color="classColor" style="cursor: pointer;">
+                  {{ tempAssignmentData.class.courseId }}
+                </v-chip>
+              </InputItem>
             </td>
           </tr>
           <tr>
-            <td>
-              <div class="pt-2">Due</div>
-            </td>
+            <td>Due</td>
             <td>
               <DateTimePickerDialog
                 :date.sync="tempAssignmentData.date"
                 :time.sync="tempAssignmentData.time"
               >
                 <template v-slot:activator="{ on, attrs }">
-                  <TextEdit
+                  <InputItem
                     :value="`${dateString} at ${timeString}`"
-                    class="pa-2"
+                    class="pa-2 black--text"
                     cursor="pointer"
                     showHover
                     readonly
@@ -53,17 +58,17 @@
             </td>
           </tr>
           <tr>
-            <td>
+            <td style="vertical-align: top;">
               <div class="pt-2">Description</div>
             </td>
             <td>
-              <TextEdit 
+              <InputItem 
                 v-model="tempAssignmentData.description" 
                 class="pa-2"
                 placeholder="Empty" 
                 showBorderOnEdit
                 showHover
-                textarea
+                type="textarea"
               />
             </td>
           </tr>
@@ -90,9 +95,8 @@
   }
 
   td {
-    padding: 5px 0;
     white-space: nowrap;
-    vertical-align: top;
+    vertical-align: middle;
   }
 
   td:nth-child(1) {
@@ -109,7 +113,7 @@ import { mapGetters, mapActions } from 'vuex'
 import AssignmentCard from '@/components/AssignmentCard'
 import DateTimePickerDialog from '@/components/DateTimePickerDialog'
 import InputAssignment from '@/components/InputAssignment'
-import TextEdit from '@/components/TextEdit'
+import InputItem from '@/components/InputItem'
 import { DAYS_OF_WEEK, MONTHS } from '@/constants'
 import { getDateString, getTimeString, } from '@/utils/utils'
 
@@ -120,7 +124,7 @@ export default {
     AssignmentCard,
     DateTimePickerDialog,
     InputAssignment,
-    TextEdit,
+    InputItem,
   },
 
   props: {

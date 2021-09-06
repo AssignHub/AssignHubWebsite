@@ -1,8 +1,9 @@
 <!-- This component displays a text input without the border -->
 <template>
   <textarea
-    v-if="textarea"
+    v-if="type === 'textarea'"
     v-model="text"
+    @click="click"
     @mouseover="mouseover"
     @mouseleave="mouseleave"
     @blur="blur"
@@ -10,19 +11,28 @@
     :style="style"
   />
   <input
-    v-else 
-    @click="click"
+    v-else-if="type === 'input'" 
     v-model="text"
+    @click="click"
     @mouseover="mouseover"
     @mouseleave="mouseleave"
     @blur="blur"
     @focus="focus"
     :style="style"
   />
+  <div
+    v-else
+    @click="click"
+    @mouseover="mouseover"
+    @mouseleave="mouseleave"
+    :style="style"
+  >
+    <slot></slot>
+  </div>
 </template>
 
 <style scoped>
-  input, textarea {
+  input, textarea, div {
     border-width: 1px;
     border-color: white;
     border-style: solid;
@@ -46,7 +56,7 @@
 
 <script>
 export default {
-  name: 'TextEdit',
+  name: 'InputItem',
 
   emits: ['input', 'focus', 'click'],
 
@@ -55,7 +65,7 @@ export default {
     cursor: { type: String },
     showBorderOnEdit: { type: Boolean, default: false },
     showHover: { type: Boolean, default: false },
-    textarea: { type: Boolean, default: false },
+    type: { type: String, default: 'input' },
   },
 
   data() {
@@ -105,6 +115,7 @@ export default {
       this.$emit('focus', e)
     },
     mouseover() {
+      console.log('cool')
       this.isMouseOver = true
     },
     mouseleave() {
