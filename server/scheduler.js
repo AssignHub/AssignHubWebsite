@@ -1,10 +1,8 @@
 const cron = require('node-cron')
 const editJsonFile = require('edit-json-file')
 const User = require('./models/user')
-const FriendRequest = require('./models/friend_request')
 const usc = require('./schools/usc')
 const appRoot = require('app-root-path')
-const mailer = require('./mailer.js')
 
 exports.scheduleTasks = () => {
   // Set mood to '' if appropriate (checks at the 0th minute every hour)
@@ -65,17 +63,5 @@ exports.scheduleTasks = () => {
       })
       
     })
-  })
-}
-
-// should probably put in a utils file somewhere
-findUser = async (userId) => {
-  return await User.find({
-    $expr: {
-      $eq: [
-        userId,
-        '$_id'
-      ]
-    }
   })
 }

@@ -10,9 +10,10 @@ exports.addClass = async (req, res, next) => {
   *  courseId - the class's course id (e.g. CS-160)
   *  blocks - array of days/times when the class takes place
   *  instructors - array of instructors that teach the class
+  *  asynchronous - whether class is asynchronous or not
   */
   
-  const { sectionId, courseId, blocks, instructors } = req.body
+  const { sectionId, courseId, blocks, instructors, asynchronous } = req.body
 
   try {
     // Find class, create new one if doesn't exist
@@ -33,7 +34,8 @@ exports.addClass = async (req, res, next) => {
           courseId,
           sectionId,
           instructors,
-          blocks
+          blocks,
+          asynchronous,
         }
         res.locals.class = await new Class(classData).save()
       }
