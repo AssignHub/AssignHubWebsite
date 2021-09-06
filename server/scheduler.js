@@ -49,8 +49,9 @@ exports.scheduleTasks = () => {
 
     requests.forEach(request => {
       // mail to each friend
-      console.log("SENDING MAIL")
       request.lastReminded = curr
+      request.save()
+      console.log(request.lastReminded)
       findUser(request.to).then((toUsers) => {
         to = toUsers[0]
         findUser(request.from).then((fromUsers) => {
