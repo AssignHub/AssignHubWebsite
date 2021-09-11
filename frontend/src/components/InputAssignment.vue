@@ -32,6 +32,7 @@
         dense
       />
       <v-textarea
+        v-model="description"
         hide-details
         outlined  
         autocomplete="off" 

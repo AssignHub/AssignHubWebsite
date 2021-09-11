@@ -44,7 +44,7 @@ export default {
     multiple: {type: Boolean, default: false},
     disabled: {type: Boolean, default: false},
     dense: {type: Boolean, default: false},
-    value: {},
+    value: {}, /* The id of the current class */
   },
 
   methods: {

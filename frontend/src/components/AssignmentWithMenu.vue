@@ -16,23 +16,18 @@
     </template>
     <v-card style="width: 500px;">
       <v-card-title>
-        <InputItem v-model="tempAssignmentData.name" class="text-h6" maxlength="50"/>
+        <InputItem type="input" v-model="tempAssignmentData.name" class="text-h6" maxlength="50"/>
       </v-card-title>
       <v-card-text>
         <table>
           <tr>
             <td>Class</td>
             <td>
-              <InputItem
-                class="pa-2"
-                type="lol"
-                cursor="pointer"
-                showHover
-              >
-                <v-chip small :color="classColor" style="cursor: pointer;">
-                  {{ tempAssignmentData.class.courseId }}
-                </v-chip>
-              </InputItem>
+              <ClassSelectInput 
+                v-model="tempAssignmentData.class"
+                :classes="classes"
+                dense
+              />
             </td>
           </tr>
           <tr>
@@ -44,15 +39,13 @@
               >
                 <template v-slot:activator="{ on, attrs }">
                   <InputItem
-                    :value="`${dateString} at ${timeString}`"
                     class="pa-2 black--text"
                     cursor="pointer"
                     showHover
-                    readonly
                     @focus="showDateSelector"
                     v-bind="attrs"
                     v-on="on"
-                  />
+                  >{{ `${dateString} at ${timeString}` }}</InputItem>
                 </template>
               </DateTimePickerDialog>
             </td>
@@ -111,6 +104,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import AssignmentCard from '@/components/AssignmentCard'
+import ClassSelectInput from '@/components/ClassSelectInput'
 import DateTimePickerDialog from '@/components/DateTimePickerDialog'
 import InputAssignment from '@/components/InputAssignment'
 import InputItem from '@/components/InputItem'
@@ -122,6 +116,7 @@ export default {
 
   components: {
     AssignmentCard,
+    ClassSelectInput,
     DateTimePickerDialog,
     InputAssignment,
     InputItem,
@@ -151,11 +146,13 @@ export default {
     return {
       show: false,
       tempAssignmentData: null,
+      console,
     }
   },
 
   computed: {
     ...mapGetters(['classColorById']),
+    ...mapGetters({ classes: 'termClasses' }),
     classColor() {
       return this.classColorById(this.tempAssignmentData.class._id)
     },

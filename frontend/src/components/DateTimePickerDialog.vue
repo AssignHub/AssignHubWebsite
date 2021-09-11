@@ -11,7 +11,6 @@
       <v-card-text class="pa-0 pb-2">
         <v-date-picker
           :value="date"
-          :min-date="minDate"
           no-title
           @input="(date) => $emit('update:date', date)"
         ></v-date-picker>
@@ -44,7 +43,7 @@ export default {
 
   computed: {
     minDate() {
-      let minDateSplit = new Date().toLocaleDateString().split('/')
+      let minDateSplit = new Date(1631377405426).toLocaleDateString().split('/')
       minDateSplit = [minDateSplit[2], setNumDigits(minDateSplit[0], 2), setNumDigits(minDateSplit[1], 2)]
       const minDate = minDateSplit.join('-')
       return minDate

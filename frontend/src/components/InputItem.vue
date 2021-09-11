@@ -65,7 +65,7 @@ export default {
     cursor: { type: String },
     showBorderOnEdit: { type: Boolean, default: false },
     showHover: { type: Boolean, default: false },
-    type: { type: String, default: 'input' },
+    type: { type: String, default: '' },
   },
 
   data() {
@@ -115,7 +115,6 @@ export default {
       this.$emit('focus', e)
     },
     mouseover() {
-      console.log('cool')
       this.isMouseOver = true
     },
     mouseleave() {
