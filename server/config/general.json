@@ -1,4 +1,5 @@
 {
+  "requestEmailDelay": 2,
   "morningHour": 6,
   "allowedEmails": [
     "*usc.edu",
