@@ -1,0 +1,132 @@
+<template>
+  <v-dialog
+    v-model="show"
+    width="600"
+  >
+    <template v-slot:activator="{ on, attrs }">
+      <slot name="activator" :on="on" :attrs="attrs" />
+    </template>
+    <v-card>
+      <UserListItem
+        :user="friend"
+      />
+      <v-calendar 
+        style="max-height: 600px;"
+        id="schedule"
+        ref="calendar"
+        :max-days="5"
+        :weekdays="[1,2,3,4,5]"
+        :events="events"
+        :event-color="(event) => event.color"
+        color="primary"
+        type="custom-daily"
+        :start="startDate"
+        :end="endDate"
+      />
+    </v-card>
+  </v-dialog>
+</template>
+
+<style>
+#schedule .v-calendar-daily_head-day-label {
+  display: none;
+}
+</style>
+
+<script>
+import UserListItem from '@/components/UserListItem'
+import { get, getDateString } from '@/utils/utils'
+import { mapState, mapActions } from 'vuex'
+
+export default {
+  name: 'ScheduleDialog',
+
+  props: {
+    friend: { type: String, required: true }
+  },
+
+  components: {
+    UserListItem,
+  },
+
+  data() {
+    return {
+      show: false,
+      classes: null,
+      events: [],
+      today: getDateString(new Date()),
+
+      dayMapping: Object.freeze({
+        'M': 1,
+        'T': 2,
+        'W': 3,
+        'H': 4,
+        'F': 5,
+      })
+    }  
+  },
+
+  computed: {
+    ...mapState([ 'term' ]),
+    startDate() {
+      // Get the date object for Monday of this week
+      return this.getDateFromDay(1)
+    },
+    endDate() {
+      // Get the date object for Friday of this week
+      return this.getDateFromDay(5)
+    },
+  },
+
+  methods: {
+    ...mapActions([ 'showError' ]),
+    getDateFromDay(day) {
+      // Returns a date object given the day represented by a number (0-6)
+      const curDate = new Date()
+      const curDay = curDate.getDay()
+      const date = new Date(curDate.getTime() - 1000*60*60*24*(curDay - day))
+      return date
+    },
+    getDateFromDayString(dayString) {
+      return this.getDateFromDay(this.dayMapping[dayString])
+    }
+  },
+
+  watch: {
+    show: {
+      immediate: true,
+      handler() {
+        if (this.show) {
+          // Scroll calendar to a reasonable time, setTimeout ensures calendar has been mounted
+          setTimeout(() => this.$refs.calendar.scrollToTime('08:00'))
+
+          if (!this.classes) {
+            // Get friend's classes
+            get(`/friends/${this.friend._id}/classes?term=${this.term}`).then(c => {
+              // Set classes
+              this.classes = c
+
+              // Set events array
+              for (let _class of this.classes) {
+                for (let block of _class.blocks) {
+                  const curDate = getDateString(this.getDateFromDayString(block.day))
+                  const event = {
+                    name: _class.courseId,
+                    start: `${curDate} ${block.start}`,
+                    end: `${curDate} ${block.end}`,
+                    color: _class.color,
+                  }
+                  this.events.push(event)
+                }
+              }
+            }).catch(err => {
+              console.log(err)
+              this.showError('Something went wrong fetching this friend\'s schedule. Please try again later.')
+            })
+          }
+        }
+      },
+    },
+  }
+}
+</script>

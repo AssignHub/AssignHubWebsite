@@ -6,8 +6,7 @@
           ref="menu"
           v-model="menu"
           :close-on-content-click="false"
-          transition="fade-transition"  
-          :nudge-right="40"
+          transition="fade-transition"
           offset-y
           top
         >
@@ -27,6 +26,7 @@
             </v-text-field>
           </template>
           <v-date-picker
+            no-title
             :value="date"
             :min="minDate"
             @input="(date) => {$emit('update:date', date); menu=false}"
@@ -48,7 +48,7 @@
 
 <script>
 import TimePicker from '@/components/TimePicker'
-import { setNumDigits } from '@/utils/utils'
+import { setNumDigits, getDateString } from '@/utils/utils'
 
 export default {
   name: 'DateTimePicker',
@@ -69,6 +69,7 @@ export default {
   data() {
     return {
       menu: false,
+      minDate: getDateString(new Date()),
     }
   },
 
@@ -79,12 +80,6 @@ export default {
       let s = (this.date ? this.date : '')
       const [year, month, day] = this.date.split('-')
       return month + '/' + day + '/' + year.substring(2)
-    },
-    minDate() {
-      let minDateSplit = new Date().toLocaleDateString().split('/')
-      minDateSplit = [minDateSplit[2], setNumDigits(minDateSplit[0], 2), setNumDigits(minDateSplit[1], 2)]
-      const minDate = minDateSplit.join('-')
-      return minDate
     },
   },
 }

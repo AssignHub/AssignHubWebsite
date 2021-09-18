@@ -4,6 +4,7 @@ const FriendRequest = require('../models/friend_request')
 const { getUser } = require('../middleware/auth')
 const { escapeRegExp } = require('../utils/utils')
 const { emitToUser } = require('../websockets')
+const { getTerm } = require('../middleware/general')
 
 router.get('/mine', getUser, async (req, res) => {
   // Get current user's friends
@@ -20,6 +21,46 @@ router.get('/mine', getUser, async (req, res) => {
     console.error(err)
     res.status(500).json({ error: err })
   }
+})
+
+router.get('/:uid/classes', getUser, getTerm, async (req, res) => {
+  // Get all the classes of the given friend for the given term
+
+  // Requires authentication
+
+  /* Query params:
+  *  term - the desired term
+  */
+
+  const { uid } = req.params
+  try {
+    // Check if friend is a friend of user
+    if (!res.locals.user.friends.includes(uid)) {
+      res.status(404).json({ error: 'friend-not-found' })
+      return
+    }
+
+    // Populate friend's classes
+    const friend = await User
+      .findById(uid)
+      .populate({
+        path: 'classes.class',
+        match: { term: res.locals.term },
+      })
+      .lean()
+
+    // Get rid of null values and format
+    const classes = friend.classes
+      .filter(c => c.class)
+      .map(({ _id, class: classData, ...rest }) => {
+        return { ...classData, ...rest }
+      })
+
+    res.json(classes)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: err })
+  }  
 })
 
 router.get('/search', getUser, async (req, res) => {
