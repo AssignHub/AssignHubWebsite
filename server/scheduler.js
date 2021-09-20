@@ -65,3 +65,15 @@ exports.scheduleTasks = () => {
     })
   })
 }
+
+// should move to a utils.js later
+findUser = async (userId) => {
+  return await User.find({
+    $expr: {
+      $eq: [
+        userId,
+        '$_id'
+      ]
+    }
+  })
+}
