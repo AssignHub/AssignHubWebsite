@@ -36,13 +36,16 @@
 <script>
 import UserListItem from '@/components/UserListItem'
 import { get, getDateString } from '@/utils/utils'
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapGetters, mapActions } from 'vuex'
 
 export default {
   name: 'ScheduleDialog',
 
   props: {
-    friend: { type: String, required: true }
+    /* The friend who we want to see the schedule for
+     * If it is null, then show the current user's schedule
+     */
+    friend: { type: Object, default: null },
   },
 
   components: {
@@ -68,6 +71,7 @@ export default {
 
   computed: {
     ...mapState([ 'term' ]),
+    ...mapGetters({ authUserClasses: 'termClasses' }),
     startDate() {
       // Get the date object for Monday of this week
       return this.getDateFromDay(1)
@@ -89,7 +93,7 @@ export default {
     },
     getDateFromDayString(dayString) {
       return this.getDateFromDay(this.dayMapping[dayString])
-    }
+    },
   },
 
   watch: {

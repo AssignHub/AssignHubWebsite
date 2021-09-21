@@ -68,7 +68,6 @@
               :friend="f"
             >
               <template v-slot:activator="{ on, attrs }">
-                <div v-on="on" v-bind="attrs"> lol </div>
                 <UserListItem
                   v-on="on"
                   v-bind="attrs"
