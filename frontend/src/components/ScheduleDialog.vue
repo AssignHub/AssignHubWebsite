@@ -2,6 +2,7 @@
   <v-dialog
     v-model="show"
     width="600"
+    content-class="schedule-dialog__dialog"
   >
     <template v-slot:activator="{ on, attrs }">
       <slot name="activator" :on="on" :attrs="attrs" />
@@ -10,9 +11,8 @@
       <UserListItem
         :user="friend"
       />
-      <v-calendar 
-        style="max-height: 600px;"
-        id="schedule"
+      <v-calendar
+        class="schedule-dialog__calendar"
         ref="calendar"
         :max-days="5"
         :weekdays="[1,2,3,4,5]"
@@ -28,8 +28,20 @@
 </template>
 
 <style>
-#schedule .v-calendar-daily_head-day-label {
+.schedule-dialog__calendar {
+  max-height: 500px;
+}
+
+.schedule-dialog__calendar .v-calendar-daily_head-day-label {
   display: none;
+}
+
+.schedule-dialog__dialog {
+  /* 
+  TODO: this is a little hacky at the current moment, 
+  think of a better way to prevent the double scrollbar 
+  */
+  overflow: hidden;
 }
 </style>
 
