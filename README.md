@@ -21,6 +21,8 @@ A live demo of the website can be found here: [DEMO](https://assignhub.github.io
 ## Deployment
 ### Frontend
 1. `cd frontend`
-2. `sudo npm run build`
+2. `sudo pm2 stop server`
+3. `sudo npm run build`
+4. `sudo pm2 start server`
 ### Backend
 1. `sudo pm2 restart server`
