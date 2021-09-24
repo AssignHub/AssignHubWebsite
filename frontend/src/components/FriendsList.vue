@@ -62,12 +62,20 @@
         </v-expansion-panel-header>
         <v-expansion-panel-content class="grey lighten-5 inner-shadow">
           <v-list v-if="sortedFriends.length > 0" dense class="grey lighten-5 mx-n4 mt-2 mb-n2 overflow-y-auto">
-            <UserListItem
+            <ScheduleDialog
               v-for="f in sortedFriends" 
               :key="f._id"
-              :user="f"
-              remove-friend-menu
-            />
+              :friend="f"
+            >
+              <template v-slot:activator="{ on, attrs }">
+                <UserListItem
+                  v-on="on"
+                  v-bind="attrs"
+                  :user="f"
+                  remove-friend-menu
+                />
+              </template>
+            </ScheduleDialog>
           </v-list>
           <div v-else class="text-center text-caption pt-8">
             You have no friends :(
@@ -123,6 +131,7 @@
 
 <script>
 import AddFriendMenu from '@/components/AddFriendMenu'
+import ScheduleDialog from '@/components/ScheduleDialog'
 import UserListItem from '@/components/UserListItem'
 import { mapState } from 'vuex'
 
@@ -131,7 +140,8 @@ export default {
 
   components: {
     AddFriendMenu,
-    UserListItem
+    ScheduleDialog,
+    UserListItem,
   },
 
   computed: {

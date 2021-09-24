@@ -1,7 +1,8 @@
 <template>
   <v-list-item 
     two-line
-    v-on="vOn"
+    v-on="_vOn"
+    v-bind="{ ...$attrs }"
   >
     <v-list-item-avatar size="32" color="primary" class="text-center">
       <v-img width="32px" cover :src="user.pic" />
@@ -109,10 +110,10 @@ export default {
         return type
       }).flat()
     },
-    vOn() {
+    _vOn() {
       if (!this.removeFriendMenu) return {}
       return {
-        click: (e) => {e.preventDefault()},
+        click: (e) => {this.$emit('click', e)},
         mousedown: (e) => {if (e.which === 3) this.hideContextMenu()},
         contextmenu: (e) => this.showRemoveFriendMenu(e),
       }
