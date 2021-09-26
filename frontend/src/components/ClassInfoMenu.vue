@@ -34,29 +34,76 @@
           <v-card-actions>
             <v-spacer />
             <v-btn text @click="show = false">Close</v-btn>
-            <v-dialog
-              v-model="removeDialog"
-              width="400"
-              persistent
+            
+            <v-menu
+              top
+              right
+              :close-on-content-click="false"
+              transition="slide-y-transition"
+              id="classMenu"
+              @close="console.log('awef')"
             >
               <template v-slot:activator="{ on, attrs }">
-                <v-btn 
-                  text 
-                  class="red--text" 
+                <v-btn
+                  icon
                   v-bind="attrs"
                   v-on="on"
-                >Remove class</v-btn>
+                >
+                  <v-icon>mdi-dots-vertical</v-icon>
+                </v-btn>
               </template>
-              <v-card>
-                <v-card-title>Are you sure?</v-card-title>
-                <v-card-text>Are you sure you want to remove "{{ _class.courseId }}" and all its assignments?</v-card-text>
-                <v-card-actions>
-                  <v-spacer />
-                  <v-btn text @click="removeDialog = false">Cancel</v-btn>
-                  <v-btn text color="error" @click="removeClass(_class._id)">I'm sure</v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
+
+              <v-list align="center" justify="center">
+                
+                <span v-if="shareLink">
+                  <input
+                    id="linkToCopy"
+                    class="mx-2 my-0"
+                    v-model="link"
+                  >
+                  <br>
+                </span>
+                <v-btn 
+                  text
+                  small
+                  class="blue--text"
+                  v-if="!copyingLink"
+                  @click="shareLinkClick()"
+                >Share link</v-btn>
+                <v-btn 
+                  text
+                  small
+                  class="blue--text mt-1"
+                  @click="copyLink()"
+                  v-if="shareLink && copyingLink"
+                >Copy link</v-btn>
+                <br>
+                <v-dialog
+                  v-model="removeDialog"
+                  width="400"
+                  persistent
+                >
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn 
+                      text 
+                      small
+                      class="red--text" 
+                      v-bind="attrs"
+                      v-on="on"
+                    >Remove class</v-btn>
+                  </template>
+                  <v-card>
+                    <v-card-title>Are you sure?</v-card-title>
+                    <v-card-text>Are you sure you want to remove "{{ _class.courseId }}" and all its assignments?</v-card-text>
+                    <v-card-actions>
+                      <v-spacer />
+                      <v-btn text @click="removeDialog = false">Cancel</v-btn>
+                      <v-btn text color="error" @click="removeClass(_class._id)">I'm sure</v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
+              </v-list>
+            </v-menu>
           </v-card-actions>
         </div>
       </v-expand-transition>
@@ -99,6 +146,13 @@
   position: absolute;
   width: 100%;
 }
+
+#linkToCopy {
+  outline: none;
+  border: 1px solid #d1d1d1;
+  border-radius: 3px;
+  padding: 2px;
+}
 </style>
 
 <script>
@@ -130,7 +184,9 @@ export default {
       showMembers: false,
       removeDialog: false,
       members: [],
-      gotMembers: false
+      gotMembers: false,
+      shareLink: false,
+      copyingLink: false,
     }
   },
 
@@ -155,10 +211,13 @@ export default {
         return 'N/A'
       return this._class.instructors.map(({ firstName, lastName }) => `${firstName} ${lastName}`).join(', ')
     },
+    link() {
+      return `${window.location.origin}/#/join/${this._class._id}`
+    }
   },
 
   methods: {
-    ...mapActions([ 'showError', 'getAssignments', 'getPublicAssignments' ]),
+    ...mapActions([ 'showError', 'getAssignments', 'getPublicAssignments', 'showInfo' ]),
     to12Hr(time) {
       const [ hour, min ] = time.split(':')
       let newHour;
@@ -187,6 +246,21 @@ export default {
         this.showError('There was a problem removing that class! Please try again later.')
       })
     },
+    copyLink() {
+      let codeToCopy = document.querySelector('#linkToCopy')
+      codeToCopy.setAttribute('type', 'text')
+      codeToCopy.select()
+      try {
+        var successful = document.execCommand('copy')
+        this.showInfo('Room link copied to clipboard')
+      } catch (err) {
+        this.showError('There was an error copying the link')
+      }
+    },
+    shareLinkClick() {
+      this.shareLink=true
+      this.copyingLink=true
+    }
   },
 }
 </script>

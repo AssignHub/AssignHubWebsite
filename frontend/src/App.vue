@@ -124,6 +124,7 @@ export default {
   },
 
   async created() {
+
     // TODO: move this to vuex
     await get(`/auth/profile`).then(authUser => {
       this.$store.commit('setAuthUser', authUser)
@@ -167,10 +168,14 @@ export default {
       let noAuthRoutes = ['SignIn']
 
       if (!this.authUser) {
-        if (authRoutes.includes(this.$route.name))
-          this.$router.replace({ name: 'SignIn' })
+        if (this.$route.name == 'Join') {
+          this.$router.replace({ name: 'SignIn', query: { join: this.$route.params.id } })
+        } else if (authRoutes.includes(this.$route.name))
+            this.$router.replace({ name: 'SignIn' })
       } else {
-        if (noAuthRoutes.includes(this.$route.name))
+        if (this.$route.query.join) {
+          this.$router.replace({ path: `join/${this.$route.query.join}` })
+        } else if (noAuthRoutes.includes(this.$route.name))
           this.$router.replace({ name: 'Home' })
       }
     },

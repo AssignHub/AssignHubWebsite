@@ -87,6 +87,21 @@ router.get('/mine', getUser, async (req, res) => {
   }
 })
 
+router.get('/get/:courseId', getUser, getTerm, async (req, res) => {
+  // Requires authentication
+  const { courseId } = req.params
+
+  try {
+
+    let chosenClass = await Class.findById(courseId)
+
+    res.json(chosenClass)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: err })
+  }
+})
+
 router.delete('/:classId', getUser, async (req, res) => {
   // Deletes the requested class
   // Requires authentication
