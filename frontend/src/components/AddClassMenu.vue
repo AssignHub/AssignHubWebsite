@@ -82,7 +82,9 @@ export default {
     ...mapState([ 'authUser' ]),
     ...mapGetters({ classes: 'termClasses' }),
     school() {
-      if (this.authUser.school == 'gmail') return 'berkeley' // REMOVE BEFORE COMMIT
+      if (process.env.NODE_ENV === 'development' && this.authUser.school == 'gmail') {
+        return 'usc'
+      }
       return this.authUser.school
     },
     colors() {

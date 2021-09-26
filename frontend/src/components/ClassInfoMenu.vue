@@ -212,7 +212,13 @@ export default {
       return this._class.instructors.map(({ firstName, lastName }) => `${firstName} ${lastName}`).join(', ')
     },
     link() {
-      return `${window.location.origin}/#/join/${this._class._id}`
+      // returns the join class link
+      let origin = window.location.origin
+
+      // Add hash if in development mode
+      if (process.env.NODE_ENV === 'development') origin += '/#'
+      
+      return `${origin}/join/${this._class._id}`
     }
   },
 

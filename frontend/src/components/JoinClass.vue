@@ -133,7 +133,7 @@ export default {
     },
     handleErrors(err) {
       if (err === 'class-not-found') {
-        //There is no class
+        this.showError('The class you tried to add does not exist!')
       } else if (err === 'already-in-class') {
         this.showError('You are already in that class!')
       } else if (err === 'same-course-id') {
