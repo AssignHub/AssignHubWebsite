@@ -49,6 +49,13 @@
             <v-list-item-title><strong>{{ `${authUser.firstName} ${authUser.lastName}` }}</strong></v-list-item-title>
           </v-list-item>
           <v-divider></v-divider>
+          <ScheduleDialog>
+            <template v-slot:activator="{ attrs, on }">
+              <v-list-item v-bind="attrs" v-on="on">
+                <v-list-item-title>My schedule</v-list-item-title>
+              </v-list-item>
+            </template>
+          </ScheduleDialog>
           <v-list-item @click="signOut">
             <v-list-item-title class="red--text">Sign Out</v-list-item-title>
           </v-list-item>
@@ -113,6 +120,7 @@ import { get, post, signOut } from '@/utils/utils'
 import { mapState, mapActions } from 'vuex'
 
 import AutoSnackbar from '@/components/AutoSnackbar'
+import ScheduleDialog from '@/components/ScheduleDialog'
 import UserAvatarContent from '@/components/UserAvatarContent'
 
 export default {
@@ -120,6 +128,7 @@ export default {
 
   components: {
     AutoSnackbar,
+    ScheduleDialog,
     UserAvatarContent,
   },
 

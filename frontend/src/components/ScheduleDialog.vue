@@ -9,7 +9,7 @@
     </template>
     <v-card>
       <UserListItem
-        :user="friend"
+        :user="friend ? friend : authUser"
       />
       <v-calendar
         class="schedule-dialog__calendar"
@@ -82,7 +82,7 @@ export default {
   },
 
   computed: {
-    ...mapState([ 'term' ]),
+    ...mapState([ 'term', 'authUser' ]),
     ...mapGetters({ authUserClasses: 'termClasses' }),
     startDate() {
       // Get the date object for Monday of this week
@@ -106,6 +106,21 @@ export default {
     getDateFromDayString(dayString) {
       return this.getDateFromDay(this.dayMapping[dayString])
     },
+    setEvents() {
+      // Adds events to the calendar based on this.classes
+      for (let _class of this.classes) {
+        for (let block of _class.blocks) {
+          const curDate = getDateString(this.getDateFromDayString(block.day))
+          const event = {
+            name: _class.courseId,
+            start: `${curDate} ${block.start}`,
+            end: `${curDate} ${block.end}`,
+            color: _class.color,
+          }
+          this.events.push(event)
+        }
+      }
+    },
   },
 
   watch: {
@@ -117,32 +132,26 @@ export default {
           setTimeout(() => this.$refs.calendar.scrollToTime('08:00'))
 
           if (!this.classes) {
-            // Get friend's classes
-            get(`/friends/${this.friend._id}/classes?term=${this.term}`).then(c => {
-              // Set classes
-              this.classes = c
+            if (this.friend) {
+              // Get friend's classes
+              get(`/friends/${this.friend._id}/classes?term=${this.term}`).then(c => {
+                // Set classes
+                this.classes = c
+              }).catch(err => {
+                console.log(err)
+                this.showError('Something went wrong fetching this friend\'s schedule. Please try again later.')
+              })
+            } else {
+              // Set classes to authUser's classes
+              this.classes = this.authUserClasses
+            }
 
-              // Set events array
-              for (let _class of this.classes) {
-                for (let block of _class.blocks) {
-                  const curDate = getDateString(this.getDateFromDayString(block.day))
-                  const event = {
-                    name: _class.courseId,
-                    start: `${curDate} ${block.start}`,
-                    end: `${curDate} ${block.end}`,
-                    color: _class.color,
-                  }
-                  this.events.push(event)
-                }
-              }
-            }).catch(err => {
-              console.log(err)
-              this.showError('Something went wrong fetching this friend\'s schedule. Please try again later.')
-            })
+            // Structure events array
+            this.setEvents();
           }
         }
       },
     },
-  }
+  },
 }
 </script>
