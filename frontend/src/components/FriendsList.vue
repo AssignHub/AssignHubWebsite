@@ -55,9 +55,42 @@
           disable-icon-rotate 
           :hide-actions="sortedFriends.length === 0"
         >
-          My friends
+          <div>
+            <v-expand-transition>
+              <div v-if="!showSearch">
+                My friends
+                <v-btn
+                  icon
+                  small
+                  @click="showSearch = true"
+                >
+                  <v-icon>mdi-magnify</v-icon>
+                </v-btn>
+              </div>
+            </v-expand-transition>
+            <v-expand-transition>
+              <div
+                v-if="showSearch"
+                class="transition-fast-in-fast-out"
+              >
+                <v-text-field
+                  autofocus
+                  style="font-weight: normal;"
+                  v-model="query"
+                  solo
+                  dense
+                  hide-details
+                  placeholder="Search friend"
+                  clearable
+                  @click:clear="query = ''; showSearch = false;"
+                ></v-text-field>
+              </div>
+            </v-expand-transition>
+          </div>
+          
           <template v-slot:actions>
-            <v-chip v-if="sortedFriends.length > 0" small :style="{ cursor: onlyFriendsPanel ? 'default' : 'pointer' }">{{ sortedFriends.length }}</v-chip>    
+            <v-chip v-if="!showSearch && sortedFriends.length > 0" small :style="{ cursor: onlyFriendsPanel ? 'default' : 'pointer' }">{{ sortedFriends.length }}</v-chip>
+            <div v-else></div>    
           </template>  
         </v-expansion-panel-header>
         <v-expansion-panel-content class="grey lighten-5 inner-shadow">
@@ -78,7 +111,12 @@
             </ScheduleDialog>
           </v-list>
           <div v-else class="text-center text-caption pt-8">
-            You have no friends :(
+            <span v-if="friends.length > 0">
+              No friends found.
+            </span>
+            <span v-else>
+              You have no friends :(
+            </span>
           </div>
         </v-expansion-panel-content>
       </v-expansion-panel>
@@ -144,6 +182,13 @@ export default {
     UserListItem,
   },
 
+  data() {
+    return {
+      query: '',
+      showSearch: false,
+    }
+  },
+
   computed: {
     ...mapState([ 'friends', 'friendRequests' ]),
     onlyFriendsPanel() {
@@ -167,6 +212,12 @@ export default {
         } else {
           return compareLastName
         }
+      }).filter(({ firstName, lastName, email }) => {
+        // Combine first name, last name, and email into a single string for searching 
+        const s = `${firstName} ${lastName} ${email}`
+
+        // Filter using search query
+        return s.toLowerCase().includes(this.query.toLowerCase())
       })
     },
   },

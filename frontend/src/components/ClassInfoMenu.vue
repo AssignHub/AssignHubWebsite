@@ -92,15 +92,6 @@
   </v-menu>
 </template>
 
-<style scoped>
-.v-card--reveal {
-  bottom: 0;
-  opacity: 1 !important;
-  position: absolute;
-  width: 100%;
-}
-</style>
-
 <script>
 import UserListItem from '@/components/UserListItem'
 import { mapState, mapActions } from 'vuex'
