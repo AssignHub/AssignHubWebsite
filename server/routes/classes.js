@@ -60,6 +60,63 @@ router.post('/add', getUser, getTerm, getSchoolMiddleware('addClass'), async (re
   }
 })
 
+router.post('/join', getUser, getTerm, getSchoolMiddleware('addClass'), async (req, res) => {
+  // Requires authentication
+  // Lets user join an existing class
+
+  /* Query params:
+  *  term - the desired term
+  */
+
+  /* Body params:
+  *  IS UNIQUE TO EACH SCHOOL, check a school's specific middleware for more details
+  *  color - the color, in hex format (e.g. #1fa3bc)
+  */
+
+  const { color, sectionId } = req.body
+
+  try {
+
+    const _class = await Class.findOne({ 
+        term: res.locals.term,
+        sectionId,
+    })
+
+    if (!res.locals.class) {
+      res.status(400).json({ error: 'class-not-found' })
+      return
+    }
+
+    await res.locals.user.populate({
+      path: 'classes.class',
+      select: 'courseId term'
+    }).execPopulate()
+
+    if (res.locals.user.classes.filter(e => e.class._id.equals(_class._id)).length > 0) {
+      // If user already enrolled in class
+      res.status(400).json({ error: 'already-in-class' })
+      return
+    }
+
+    if (res.locals.user.classes.findIndex(e => e.class.term === res.locals.term && e.class.courseId === _class.courseId) !== -1) {
+      // If user already enrolled in a class that has same courseId
+      res.status(400).json({ error: 'same-course-id' })
+      return
+    }
+
+    res.locals.user.classes.push({ class: _class._id, color: color })
+    await res.locals.user.save()
+
+    const numMembers = await _class.findMembers().lean().countDocuments()
+    emitToUser(res.locals.user._id, 'addClass', { ..._class.toJSON(), color: color, numMembers })
+
+    res.status(201).json({ courseId: _class.courseId })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: err })
+  }
+})
+
 router.get('/mine', getUser, async (req, res) => {
   // Requires authentication
   try {
@@ -93,7 +150,16 @@ router.get('/get/:courseId', getUser, getTerm, async (req, res) => {
 
   try {
 
-    let chosenClass = await Class.findById(courseId)
+    let chosenClass = null;
+
+    if (courseId.length == 24) {
+      chosenClass = await Class.findById(courseId)
+    }
+
+    if (!chosenClass) {
+      res.status(400).json({ error: 'class-not-found' })
+      return
+    }
 
     res.json(chosenClass)
   } catch (err) {

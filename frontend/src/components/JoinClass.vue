@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import { get, post } from '@/utils/utils.js'
+import { get, post, blocksString, instructorNames } from '@/utils/utils.js'
 import { mapState, mapGetters, mapActions } from 'vuex'
 import { CLASS_COLORS } from '@/constants'
 
@@ -63,8 +63,10 @@ export default {
     term() {
       get(`/classes/get/${this.classId}?term=${this.term}`).then(data => {
           this.course = data
+          this.loading = false
       }).catch(err => {
           this.handleErrors(err)
+          this.loading = false
       })
     }
   },
@@ -72,7 +74,7 @@ export default {
   data() {
     return {
         color: '',
-        loading: false,
+        loading: true,
         course: '',
     }
   },
@@ -89,23 +91,10 @@ export default {
       return colors
     },
     blocksString() {
-      if (!this.course.blocks)
-        return 'N/A'
-      if (this.course.asynchronous)
-        return 'Asynchronous'
-
-      const daysString = this.course.blocks.map(block => {
-        return block.day === 'H' ? 'TH' : block.day
-        //return this.dayOfWeekFromAbbr(block.day)
-      }).join('/')
-      const { start, end } = this.course.blocks[0]
-      const timeString = this.to12Hr(start) + ' - ' + this.to12Hr(end)
-      return daysString + ' | ' + timeString
+      return blocksString(this.course)
     },
     instructorNames() {
-      if (!this.course.instructors || this.course.instructors.length === 0)
-        return 'N/A'
-      return this.course.instructors.map(({ firstName, lastName }) => `${firstName} ${lastName}`).join(', ')
+      return instructorNames(this.course)
     },
   },
 
@@ -114,7 +103,7 @@ export default {
     addClass() {
         this.loading = true
         
-        post(`/classes/add?term=${this.term}`, {
+        post(`/classes/join?term=${this.term}`, {
           sectionId: this.course.sectionId,
           color: this.color,
         }).then(data => {
@@ -124,7 +113,6 @@ export default {
         }).catch(err => {
           console.log("Encountered an error")
           this.handleErrors(err)
-          this.loading = false
         })
 
         this.$router.push("/")
@@ -133,7 +121,11 @@ export default {
     },
     handleErrors(err) {
       if (err === 'class-not-found') {
-        this.showError('The class you tried to add does not exist!')
+        this.showError('That class doesn\'t exist!')
+        this.$router.push("/")
+        this.$emit('doneJoining').then(() => {
+          this.loading = false
+        })
       } else if (err === 'already-in-class') {
         this.showError('You are already in that class!')
       } else if (err === 'same-course-id') {
@@ -141,18 +133,6 @@ export default {
       } else {
         this.showError('Something went wrong when trying to add that class. Please try again later.')
       }
-    },
-    to12Hr(time) {
-      const [ hour, min ] = time.split(':')
-      let newHour;
-      if (parseInt(hour) <= 11) {
-        return time + ' AM'
-      } else if (parseInt(hour) === 12) {
-        newHour = parseInt(hour)
-      } else {
-        newHour = parseInt(hour) - 12
-      }
-      return newHour + ':' + min + ' PM'
     },
     cancel() {
       this.$router.push("/")

@@ -158,7 +158,7 @@
 <script>
 import UserListItem from '@/components/UserListItem'
 import { mapState, mapActions } from 'vuex'
-import { get, _delete } from '@/utils/utils'
+import { get, _delete, blocksString, instructorNames } from '@/utils/utils'
 
 export default {
   name: 'ClassInfoMenu',
@@ -193,23 +193,10 @@ export default {
   computed: {
     ...mapState([ 'authUser' ]),
     blocksString() {
-      if (!this._class.blocks)
-        return 'N/A'
-      if (this._class.asynchronous)
-        return 'Asynchronous'
-
-      const daysString = this._class.blocks.map(block => {
-        return block.day === 'H' ? 'TH' : block.day
-        //return this.dayOfWeekFromAbbr(block.day)
-      }).join('/')
-      const { start, end } = this._class.blocks[0]
-      const timeString = this.to12Hr(start) + ' - ' + this.to12Hr(end)
-      return daysString + ' | ' + timeString
+      return blocksString(this._class)
     },
     instructorNames() {
-      if (!this._class.instructors || this._class.instructors.length === 0)
-        return 'N/A'
-      return this._class.instructors.map(({ firstName, lastName }) => `${firstName} ${lastName}`).join(', ')
+      return instructorNames(this._class)
     },
     link() {
       // returns the join class link
@@ -224,18 +211,6 @@ export default {
 
   methods: {
     ...mapActions([ 'showError', 'getAssignments', 'getPublicAssignments', 'showInfo' ]),
-    to12Hr(time) {
-      const [ hour, min ] = time.split(':')
-      let newHour;
-      if (parseInt(hour) <= 11) {
-        return time + ' AM'
-      } else if (parseInt(hour) === 12) {
-        newHour = parseInt(hour)
-      } else {
-        newHour = parseInt(hour) - 12
-      }
-      return newHour + ':' + min + ' PM'
-    },
     getMembers() {
       if (!this.gotMembers) {
         this.gotMembers = true
