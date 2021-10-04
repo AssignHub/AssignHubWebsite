@@ -17,18 +17,39 @@
         </v-row>
       </v-container>
       <div class="grey lighten-5 inner-shadow py-4 inner-container" style="flex: 1 1 auto; min-height: 0;">
-        <v-select
-          style="flex: 0 0 auto;"
-          :items="terms"
-          dense
-          outlined
-          item-text="text"
-          item-value="term"
-          :value="term"
-          @input="_changeTerm"
-          hide-details
-          class="mx-4 white"
-        ></v-select>
+        <div style="flex: 0 0 auto; display: flex; justify-content: center; align-items: center;">
+          <v-select
+            :items="terms"
+            dense
+            outlined
+            item-text="text"
+            item-value="term"
+            :value="term"
+            @input="_changeTerm"
+            hide-details
+            class="ml-4 white"
+          ></v-select>
+          <ScheduleDialog>
+            <template v-slot:activator="{ attrs, on }">
+              <v-btn
+                v-bind="attrs"
+                v-on="on"
+                icon
+                class="mx-2"
+              >
+                <v-tooltip right>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-icon
+                      v-bind="attrs"
+                      v-on="on"
+                    >mdi-calendar</v-icon>
+                  </template>
+                  <span>My schedule</span>
+                </v-tooltip>
+              </v-btn>
+            </template>
+          </ScheduleDialog>
+        </div>
         <div v-if="classes.length === 0" class="text-center text-caption pt-6 px-2">
           You are not in any classes.
         </div>
@@ -81,6 +102,7 @@
 <script>
 import AddClassMenu from '@/components/AddClassMenu'
 import ClassInfoMenu from '@/components/ClassInfoMenu'
+import ScheduleDialog from '@/components/ScheduleDialog'
 import { mapState, mapGetters, mapActions } from 'vuex'
 
 export default {
@@ -89,6 +111,7 @@ export default {
   components: {
     AddClassMenu,
     ClassInfoMenu,
+    ScheduleDialog,
   },
 
   computed: {

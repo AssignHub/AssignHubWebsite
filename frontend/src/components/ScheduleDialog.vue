@@ -1,44 +1,55 @@
 <template>
-  <v-dialog
-    v-model="show"
-    width="600"
-    content-class="schedule-dialog__dialog"
-  >
-    <template v-slot:activator="{ on, attrs }">
-      <slot name="activator" :on="on" :attrs="attrs" />
-    </template>
-    <v-card>
-      <UserListItem
-        :user="friend ? friend : authUser"
-      />
-      <v-calendar
-        class="schedule-dialog__calendar"
-        ref="calendar"
-        :max-days="5"
-        :weekdays="[1,2,3,4,5]"
-        :events="events"
-        :event-color="(event) => event.color"
-        color="primary"
-        type="custom-daily"
-        :start="startDate"
-        :end="endDate"
+  <span>
+    <v-dialog
+      v-model="show"
+      width="600"
+      content-class="schedule-dialog__dialog"
+    >
+      <template v-slot:activator="{ on, attrs }">
+        <slot name="activator" :on="on" :attrs="attrs" />
+      </template>
+      <v-card>
+        <UserListItem
+          :user="friend ? friend : authUser"
+        />
+        <v-calendar
+          class="schedule-dialog__calendar"
+          ref="calendar"
+          :max-days="5"
+          :weekdays="[1,2,3,4,5]"
+          :events="events"
+          :event-color="(event) => event.color"
+          color="primary"
+          type="custom-daily"
+          :start="startDate"
+          :end="endDate"
 
-        v-on="vOn"
-      >
-        <template v-slot:event="{ event, timed, eventSummary }">
-          <div
-            class="v-event"
-            v-html="eventSummary()"
-          ></div>
-          <div
-            v-if="!friend && event.editable && timed"
-            class="v-event-drag-bottom"
-            @mousedown.stop="extendBottom(event)"
-          ></div>
-        </template>
-      </v-calendar>
-    </v-card>
-  </v-dialog>
+          v-on="vOn"
+        >
+          <template v-slot:event="{ event, timed, eventSummary }">
+            <div
+              class="v-event"
+              v-html="eventSummary()"
+            ></div>
+            <div
+              v-if="!friend && event.editable && timed"
+              class="v-event-drag-bottom"
+              @mousedown.stop="extendBottom(event)"
+            ></div>
+          </template>
+        </v-calendar>
+      </v-card>
+    </v-dialog>
+    <ScheduleEventMenu
+      v-model="eventMenu.show"
+      :event="eventMenu.event"
+      :position-x="eventMenu.x"
+      :position-y="eventMenu.y"
+      :close-on-content-click="false"
+      :transition="false"
+      absolute
+    />
+  </span>
 </template>
 
 <style>
@@ -94,6 +105,7 @@
 </style>
 
 <script>
+import ScheduleEventMenu from '@/components/ScheduleEventMenu'
 import UserListItem from '@/components/UserListItem'
 import { get, getDateString } from '@/utils/utils'
 import { mapState, mapGetters, mapActions } from 'vuex'
@@ -109,12 +121,19 @@ export default {
   },
 
   components: {
+    ScheduleEventMenu,
     UserListItem,
   },
 
   data() {
     return {
       show: false,
+      eventMenu: {
+        show: false,
+        x: 0,
+        y: 0,
+        event: null,
+      },
       classes: null,
       events: [],
       today: getDateString(new Date()),
@@ -151,6 +170,7 @@ export default {
       // Only return drag events if this is authUser's schedule 
       if (this.friend) return {}
       return {
+        'click:event': this.eventClicked,
         'mousedown:event': this.startDrag,
         'mousedown:time': this.startTime,
         'mousemove:time': this.mouseMove,
@@ -170,6 +190,7 @@ export default {
       return date
     },
     getDateFromDayString(dayString) {
+      // Returns date object given a string representing the day ('M'-'F')
       return this.getDateFromDay(this.dayMapping[dayString])
     },
     setEvents() {
@@ -189,8 +210,25 @@ export default {
         }
       }
     },
+    eventClicked({ event, nativeEvent: { target, clientY } }) {
+      // Show edit event menu
+      if (event.editable) {
+        const { right } = target.getBoundingClientRect()
 
-    // Event drag functionality
+        // Show event menu on a timeout so that it doesn't disappear as when switching from one event to another
+        setTimeout(() => {
+          // Show event menu at the right side of the event and at mouse click Y
+          this.eventMenu = {
+            event,
+            show: true,
+            x: right,
+            y: clientY,
+          }
+        })
+      }
+    },
+
+    // Event drag functionality (most of this is copied and pasted from the vuetify calendar example)
     startDrag ({ event, timed }) {
       if (event && timed) {
         this.dragEvent = event
@@ -208,7 +246,7 @@ export default {
       } else {
         this.createStart = this.roundTime(mouse)
         this.createEvent = {
-          name: `Event #${this.events.length}`,
+          name: 'Untitled event',
           color: 'grey darken-2',
           start: this.createStart,
           end: this.createStart,
@@ -312,6 +350,8 @@ export default {
             // Structure events array
             this.setEvents();
           }
+        } else {
+          this.eventMenu.show = false
         }
       },
     },

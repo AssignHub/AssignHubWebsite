@@ -57,8 +57,10 @@
         >
           <div>
             <v-expand-transition>
-              <div v-if="!showSearch">
+              <div v-if="!showSearch" style="display: flex; align-items: center;">
+                <div class="mr-1">
                 My friends
+                </div>
                 <v-btn
                   icon
                   small
