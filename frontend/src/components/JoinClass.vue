@@ -63,7 +63,13 @@ export default {
     term() {
       get(`/classes/get/${this.classId}?term=${this.term}`).then(data => {
           this.course = data
-          this.loading = false
+          if(this.classes.find(x => x._id === this.course._id)) {
+            this.$router.push("/")
+            this.$emit('doneJoining').then(() => {
+              this.loading = false
+            })
+          }
+          this.loading = false;
       }).catch(err => {
           this.handleErrors(err)
           this.loading = false
@@ -107,11 +113,9 @@ export default {
           sectionId: this.course.sectionId,
           color: this.color,
         }).then(data => {
-          console.log(data.courseId)
           this.showInfo(`Successfully added "${data.courseId}"`)
           this.loading = false
         }).catch(err => {
-          console.log("Encountered an error")
           this.handleErrors(err)
         })
 
