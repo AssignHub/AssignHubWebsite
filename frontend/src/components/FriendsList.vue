@@ -209,10 +209,10 @@ export default {
 
         if (compareLastName === 0 && compareFirstName === 0) {
           return compareEmail
-        } else if (compareLastName === 0) {
-          return compareFirstName
-        } else {
+        } else if (compareFirstName === 0) {
           return compareLastName
+        } else {
+          return compareFirstName
         }
       }).filter(({ firstName, lastName, email }) => {
         // Combine first name, last name, and email into a single string for searching 
