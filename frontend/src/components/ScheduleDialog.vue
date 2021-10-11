@@ -168,7 +168,7 @@ export default {
     },
     vOn() {
       // Only return drag events if this is authUser's schedule 
-      if (this.friend) return {}
+      if (true || this.friend) return {}
       return {
         'click:event': this.eventClicked,
         'mousedown:event': this.startDrag,
