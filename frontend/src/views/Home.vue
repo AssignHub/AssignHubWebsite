@@ -42,12 +42,14 @@
       <Navigator></Navigator>
 
       <div style="flex: 10 0 300px; display: flex; flex-flow: column; min-width: 0;">
-        <Calendar class="mb-4" style="flex: 1 1 auto; min-height: 0" />
-        <AddInputAssignment style="flex: 0 0 auto;" />
+        <Calendar class="mb-4" style="flex: 1 1 100%; min-height: 100%" />
       </div>
 
     </div>
     
+    <AddInputAssignmentDialog 
+      v-model="addInputDialog"
+    />
   </div>
 </template>
 
@@ -68,10 +70,10 @@
 </style>
 
 <script>
+import AddInputAssignmentDialog from '@/components/AddInputAssignmentDialog'
 import Navigator from '@/components/Navigator'
 import Calendar from '@/components/Calendar'
-import AddInputAssignment from '../components/AddInputAssignment'
-import InputAssignment from '../components/InputAssignment'
+import InputAssignment from '@/components/InputAssignment'
 
 import { _delete } from '@/utils/utils'
 import { mapGetters, mapState, mapMutations, mapActions } from 'vuex'
@@ -81,10 +83,10 @@ export default {
   name: 'Home',
   
   components: {
-    Navigator,
+    AddInputAssignmentDialog,
     Calendar,
-    AddInputAssignment,
     InputAssignment,
+    Navigator,
   },
 
   mounted() {
@@ -96,6 +98,7 @@ export default {
       CONTEXT_MENU_TYPES,
       tab: 0,
       editDialog: false,
+      addInputDialog: false,
     }
   },
 

@@ -1,5 +1,5 @@
 <template>
-  <v-card flat>
+  <v-card flat :width="width">
     <v-card-title v-if="!editing">Input Assignment</v-card-title>
     <v-card-title v-else>Edit Assignment</v-card-title>
     <v-card-text>
@@ -72,6 +72,7 @@ export default {
   props: {
     editing: { type: Boolean, default: false },
     assignment: { type: Object, default: null },
+    width: { type: Number, default: undefined },
   },
 
   components: {

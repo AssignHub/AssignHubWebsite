@@ -6,6 +6,7 @@ import vuetify from './plugins/vuetify'
 import VueSocketIO from 'vue-socket.io'
 import SocketIO from 'socket.io-client'
 import { socketURL } from '@/utils/utils'
+import VDragged from 'v-dragged'
 
 Vue.config.productionTip = false
 
@@ -28,6 +29,9 @@ Vue.use(new VueSocketIO({
     mutationPrefix: 'SOCKET_',
   },
 }))
+
+// VDragged
+Vue.use(VDragged) 
 
 new Vue({
   router,
