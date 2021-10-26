@@ -27,6 +27,7 @@
 			absolute
 			bottom
 			right
+			class="mr-1 mb-1"
 			style="bottom: 16px;"
 			@click="$emit('input', true)"
 		>
