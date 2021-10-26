@@ -1,6 +1,6 @@
 <template>
     <div style="display: flex; flex-flor: row;" class="mr-4">
-        <v-card class="pt-2" style="flex: 0 0 50px; min-width: 50px; display: flex; flex-flow: column; align-items: center;">
+        <v-card elevation="1" class="pt-2" style="flex: 0 0 50px; min-width: 50px; display: flex; flex-flow: column; align-items: center;">
             <v-btn icon :color="page == 0 ? 'blue' : 'gray'" large v-on:click="handleChangePage(0)">
               <v-icon>mdi-clipboard-check</v-icon>
             </v-btn>
@@ -11,21 +11,33 @@
               <v-icon>mdi-account-group</v-icon>
             </v-btn>
         </v-card>
-        <v-card v-if="page >= 0" style="flex: 1 0 200px; min-width: 250px; min-height: 100%; display: flex; flex-flow: column">
-            <!--<CheckIn class="mb-4" style="flex: 0 1 auto;"/> Reactions taken out for now-->
-            <Todo v-if="page == 0" class="display-item"/>
-            <ClassesList v-if="page == 1" class="display-item"/>
-            <FriendsList v-if="page == 2" class="display-item"/>
-        </v-card>
+        <v-expand-x-transition>
+          <div v-if="page == 0">
+                <Todo class="display-item"/>
+          </div>
+        </v-expand-x-transition>
+        <v-expand-x-transition>
+          <div v-if="page == 1">
+                <ClassesList class="display-item"/>
+          </div>
+        </v-expand-x-transition>
+
+        <v-expand-x-transition>
+          <div v-if="page == 2">
+                <FriendsList class="display-item"/>
+          </div>
+        </v-expand-x-transition>
+                
     </div>
 </template>
 
 <style scoped>
 
 .display-item {
-    flex: 0 0 250px; 
-    min-height: 100%; 
-    width: 250px;
+    flex: 0 0 300px; 
+    height: 100%; 
+    width: 300px;
+    min-width: 300px;
 }
 
 </style>
@@ -50,7 +62,7 @@ export default {
 
   data() {
     return {
-        page: 1,
+        page: -1,
     }
   },
 
