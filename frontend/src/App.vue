@@ -3,7 +3,7 @@
     <AutoSnackbar color="error" :text="error" />
     <AutoSnackbar color="info" :text="info" />
 
-    <v-app-bar
+    <!--<v-app-bar
       v-if="authUser"
       app
       color="white darken-2"
@@ -54,7 +54,7 @@
           </v-list-item>
         </v-list>
       </v-menu>
-    </v-app-bar>
+    </v-app-bar>-->
 
     <v-main style="height: 0vh;">
       <router-view />
