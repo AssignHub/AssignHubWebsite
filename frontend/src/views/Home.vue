@@ -1,3 +1,4 @@
+<!-- The main screen containing the calendar, todo list, friends, classes list, etc. -->
 <template>
   <div class="outer-container pr-4 pt-4 pb-4 grey lighten-4">
     <v-menu
@@ -41,8 +42,8 @@
     <div class="inner-container">
       <Navigator></Navigator>
 
-      <div style="flex: 10 0 300px; display: flex; flex-flow: column; min-width: 0;">
-        <Calendar class="mb-4" style="flex: 1 1 100%; min-height: 100%" />
+      <div style="flex: 10 0 300px; min-width: 0;">
+        <Calendar class="mb-4" />
       </div>
 
     </div>

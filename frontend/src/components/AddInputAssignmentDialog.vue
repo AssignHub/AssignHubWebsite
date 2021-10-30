@@ -119,8 +119,9 @@ export default {
 			/* 
 			 * Resets the position of dialog to be above fab
 			 */
-			const card = this.$refs.card.$el
-			const button = this.$refs.button.$el
+			const card = this.$refs.card?.$el
+			const button = this.$refs.button?.$el
+			if (!card || !button) return
 
 			const { clientHeight: btnHeight, clientWidth: btnWidth } = button
 

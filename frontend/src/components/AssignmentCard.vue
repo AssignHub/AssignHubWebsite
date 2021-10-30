@@ -80,6 +80,8 @@ export default {
       return 'Created by ' + this.assignment.creator.firstName + ' ' + this.assignment.creator.lastName
     },
     color() {
+      // NOTE: This could result in problems, what if you have two of the same classes with same courseId?
+      // Would this ever actually happen?
       const _class = this.classes.find(c => c.courseId === this.assignment.class.courseId)
       if (!_class)
         return 'white'
