@@ -20,11 +20,15 @@
             <v-icon>mdi-chevron-right</v-icon>
           </v-btn>
 
-          <template v-for="(item, i) in monthHeader" >
-            <span :key="`dash-${i}`" v-if="i !== 0" class="mr-4 text-h4">-</span>
-            <span :key="`month-${i}`" class="month-text text-h3 mr-4"><b>{{ item.month }}</b></span>
-            <span :key="`year-${i}`" v-if="item.year" class="year-text text-h4 mr-4">{{ item.year }}</span>
-          </template>
+          <v-expand-x-transition mode="out-in">
+            <div :key="headerKey" style="white-space: nowrap;">
+              <template v-for="(item, i) in monthHeader" >
+                <span :key="`dash-${i}`" v-if="i !== 0" class="mr-4 text-h4">-</span>
+                <span :key="`month-${i}`" class="month-text text-h3 mr-4"><b>{{ item.month }}</b></span>
+                <span :key="`year-${i}`" v-if="item.year" class="year-text text-h4 mr-4">{{ item.year }}</span>
+              </template>
+            </div>
+          </v-expand-x-transition>
 
           <!--<v-chip v-if="numPendingAssignments > 0">{{ numPendingAssignments }} pending assignments</v-chip>-->
 
@@ -43,9 +47,9 @@
           </div>
         </div>
       </v-card>
-      <div class="d-flex mt-2">
-        <div class="col-day" v-for="(day, i) in daysOfWeek" :key="i">
-          <v-card class="pa-2 mx-1" v-if="assignmentsByDay[i].length > 0">
+      <div class="d-flex mt-2" style="overflow: auto;">
+        <div class="col-day pb-1" v-for="(day, i) in daysOfWeek" :key="i" style="overflow: auto;">
+          <v-card class="pa-2 mx-1" v-if="assignmentsByDay[i].length > 0" style="overflow: auto; max-height: 100%;">
             <AssignmentCard
               v-for="(a, j) in assignmentsByDay[i]" 
               :key="a._id"
@@ -120,6 +124,13 @@ export default {
     ProgressBar,
   },
 
+  created() {
+    window.addEventListener('keyup', (e) => {
+      if (e.key === 'ArrowRight') this.nextWeek() 
+      else if (e.key === 'ArrowLeft') this.prevWeek()
+    })
+  },
+
   data() {
     return {
       months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
@@ -133,17 +144,26 @@ export default {
   computed: {
     ...mapState([ 'assignments', 'numPendingAssignments' ]),
     ...mapGetters({ classes: 'termClasses' }),
+    curMonthYear() {
+      /*
+       * Returns an object containing the beginning/ending month for the currently
+       * selected week
+       */
+      const begMonth = this.months[this.daysOfWeek[0].date.getMonth()]
+      const begYear = this.daysOfWeek[0].date.getFullYear()
+      const endMonth = this.months[this.daysOfWeek[this.daysOfWeek.length-1].date.getMonth()]
+      const endYear = this.daysOfWeek[this.daysOfWeek.length-1].date.getFullYear()
+      return { begMonth, begYear, endMonth, endYear }
+    },
     monthHeader() {
       /*
        * Returns an array containing the current month and year
        * If the current week spans two different months, there will be two elements in array
        * Otherwise, there will be one element
        */
-      let begMonth = this.months[this.daysOfWeek[0].date.getMonth()]
-      const begYear = this.daysOfWeek[0].date.getFullYear()
-      let endMonth = this.months[this.daysOfWeek[this.daysOfWeek.length-1].date.getMonth()]
-      const endYear = this.daysOfWeek[this.daysOfWeek.length-1].date.getFullYear()
+      let { begMonth, begYear, endMonth, endYear } = this.curMonthYear
 
+      // Return array based on if months and years are the same
       if (begMonth !== endMonth) {
         begMonth = begMonth.substring(0, 3)
         endMonth = endMonth.substring(0, 3)
@@ -152,6 +172,13 @@ export default {
         return [{month: begMonth, year: begYear}, {month: endMonth, year: endYear}]
       }
       return [{ month: begMonth, year: begYear }]
+    },
+    headerKey() {
+      /* 
+       * Calculate and returns the header key based on months and years (used to animate text transition)
+       */
+      let { begMonth, begYear, endMonth, endYear } = this.curMonthYear
+      return begMonth + begYear + endMonth + endYear
     },
     daysOfWeek() {
       /*
