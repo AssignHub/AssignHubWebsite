@@ -1,16 +1,18 @@
 <!-- The progress bar showing assignment completion progress -->
 <template>
   <div class="inner-shadow progress-bar">
-    <div
-      v-for="block in progressBlocks"
-      :key="block.courseId"
-      :style="{
-        backgroundColor: block.color,
-        width: block.width, 
-        height: '100%',
-      }"
-      class="inner-shadow progress-block"
-    ></div>
+    <transition-group name="progress-blocks" tag="div" class="progress-blocks-container">
+      <div
+        v-for="block in progressBlocks"
+        :key="block.courseId"
+        :style="{
+          backgroundColor: block.color,
+          width: block.width, 
+          height: '100%',
+        }"
+        class="inner-shadow progress-block"
+      ></div>
+    </transition-group>
   </div>
 </template>
 
@@ -22,8 +24,25 @@
   display: flex;
 }
 
+.progress-blocks-container {
+  width: 100%;
+  display: flex;
+} 
+
 .progress-block {
   transition: width 0.2s ease-in-out;
+}
+
+.progress-blocks-enter-active, .progress-blocks-leave-active {
+  transition: all 0.2s ease-in-out;
+}
+
+.progress-blocks-enter, .progress-blocks-leave-to {
+  max-width: 0%;
+}
+
+.progress-blocks-enter-to, .progress-blocks-leave {
+  max-width: 100%;
 }
 </style>
 
