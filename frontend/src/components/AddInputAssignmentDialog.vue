@@ -29,7 +29,7 @@
 			right
 			class="mr-1 mb-1"
 			style="bottom: 16px;"
-			@click="$emit('input', true)"
+			@click="show"
 		>
 			<v-icon>mdi-plus</v-icon>
 		</v-btn>
@@ -60,21 +60,6 @@ export default {
 		InputAssignment,
 	},
 
-	mounted() {
-		this.resetPos()
-	},
-
-	watch: {
-		value: {
-			immediate: true,
-			handler() {
-				if (!this.value) {
-					this.resetPos()
-				}
-			},
-		}
-	},
-
 	data() {
 		return {
 			x: 0,
@@ -94,7 +79,7 @@ export default {
 
 	methods: {
 		drag({ deltaX, deltaY }) {
-			// Move dialog box when dragged
+			/* Move dialog box when dragged */
 			const { clientHeight, clientWidth } = this.$refs.card.$el
 
 			// Keep dialog box in bounds of window
@@ -116,9 +101,7 @@ export default {
 			} 
 		},
 		resetPos() {
-			/* 
-			 * Resets the position of dialog to be above fab
-			 */
+			/* Resets the position of dialog to be above fab */
 			const card = this.$refs.card?.$el
 			const button = this.$refs.button?.$el
 			if (!card || !button) return
@@ -128,11 +111,17 @@ export default {
 			// Show card temporarily to get width and height
 			card.style.display = 'unset'
 			const { clientHeight: cardHeight, clientWidth: cardWidth } = card
-			card.style.display = 'none'
+			if (!this.value) card.style.display = 'none'
 
 			// Set position
 			this.x = window.innerWidth - cardWidth - 16
 			this.y = window.innerHeight - cardHeight - btnHeight - 2*16 // 16 is the margin surrounding the button 
+		},
+		show() {
+			/* Resets dialog box position then displays it */
+			this.resetPos()
+			// setTimeout is needed so the slide transition plays
+			setTimeout(() => this.$emit('input', true))
 		}
 	},
 }

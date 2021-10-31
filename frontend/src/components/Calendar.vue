@@ -174,16 +174,12 @@ export default {
       return [{ month: begMonth, year: begYear }]
     },
     headerKey() {
-      /* 
-       * Calculate and returns the header key based on months and years (used to animate text transition)
-       */
+      /* Calculate and returns the header key based on months and years (used to animate text transition) */
       let { begMonth, begYear, endMonth, endYear } = this.curMonthYear
       return begMonth + begYear + endMonth + endYear
     },
     daysOfWeek() {
-      /*
-       * Returns an array containing information for the days of the current week
-       */
+      /* Returns an array containing information for the days of the current week */
       const curDayNum = this.curDate.getDay()
       const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
       const daysOfWeek = []
