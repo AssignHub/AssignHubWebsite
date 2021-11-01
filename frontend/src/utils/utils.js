@@ -76,6 +76,8 @@ export const fetchMethod = (method, route, body={}) => {
 export const getCurTerm = (terms) => {
   // Get current month and determine whether currently in spring, summer, or fall
   // 1 = spring, 2 = summer, 3 = fall
+
+  // TODO: need to account for quarter system
   let month = new Date().getMonth()
   let year = new Date().getFullYear()
   if (inRange(month, 0, 4))

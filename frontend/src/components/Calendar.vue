@@ -1,55 +1,65 @@
+<!-- Displays assignments in a calendar view -->
 <template>
-  <v-card>
     <div class="outer-container">
-      <v-card-title style="flex: 0 1 auto;">
-        <span class="text-h3 mr-4">{{ monthHeader }}</span>
-        <v-chip v-if="numPendingAssignments > 0">{{ numPendingAssignments }} pending assignments</v-chip>
-      </v-card-title>
-      <div style="overflow-x: auto; flex: 1 1 auto; display: flex; flex-flow: column;">
-        <div class="calendar-middle d-flex scrollbar-hidden" :class="scrollAmt > 0 && 'bottom-shadow'" style="flex: 0 0 auto; overflow-y: scroll">
-          <div class="col-day" :class="i !== 0 && 'left-border'" v-for="(day, i) in daysOfWeek" :key="i">
-            <div class="text-center text-h5 mb-n2" :class="getClassFromOffset(day.offset)">{{ day.name }}</div>
-            <div class="text-center text-h7" :class="getClassFromOffset(day.offset)">{{ day.date.getDate() }}</div>
-          </div>
+      <v-card>
+        <div class="calendar-header pa-2">
+          <v-btn 
+            icon
+            small
+            class="ml-2"
+            @click="prevWeek"
+          >
+            <v-icon>mdi-chevron-left</v-icon>
+          </v-btn>
+          <v-btn 
+            icon
+            small
+            class="mr-2"
+            @click="nextWeek"
+          >
+            <v-icon>mdi-chevron-right</v-icon>
+          </v-btn>
+
+          <template v-for="(item, i) in monthHeader" >
+            <span :key="`dash-${i}`" v-if="i !== 0" class="mr-4 text-h4">-</span>
+            <span :key="`month-${i}`" class="month-text text-h3 mr-4"><b>{{ item.month }}</b></span>
+            <span :key="`year-${i}`" v-if="item.year" class="year-text text-h4 mr-4">{{ item.year }}</span>
+          </template>
+
+          <!--<v-chip v-if="numPendingAssignments > 0">{{ numPendingAssignments }} pending assignments</v-chip>-->
+
+          <ProgressBar class="flex mr-4" :assignments-for-week="assignmentsByDay" />
+
+          <AuthUserMenu />
         </div>
-        <div class="calendar-middle" v-scroll.self="onScroll" style="flex: 1 1 auto; overflow-y: scroll;" @scroll="hideContextMenu">
-          <div class="d-flex" style="min-height: 100%;">
+        <div style="overflow-x: auto; flex: 1 1 auto; display: flex; flex-flow: column;">
+          <div class="calendar-middle d-flex" :class="scrollAmt > 0 && 'bottom-shadow'" style="flex: 0 0 auto;">
             <div class="col-day" :class="i !== 0 && 'left-border'" v-for="(day, i) in daysOfWeek" :key="i">
-              <AssignmentCard
-                v-for="(a, i) in getAssignmentsForDate(day.date)" 
-                :key="i"
-                class="mb-2 mx-2"
-                :assignment="a"
-                :disabled="a.done"
-                @click="toggleAssignment(a._id)"
-                @mousedown="(e) => {if (e.which === 3) hideContextMenu()}"
-                @contextmenu="(e) => showAssignmentMenu(e, a._id)"
-              />
+              <div class="top-border pa-2">
+                <div class="text-center text-h5 mb-n2" :class="getClassFromOffset(day.offset)">{{ day.name }}</div>
+                <div class="text-center text-h7" :class="getClassFromOffset(day.offset)">{{ day.date.getDate() }}</div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div class="btn-row">
-        <v-btn 
-          icon
-          class="ml-2"
-          style="align-self: center;"
-          @click="prevWeek"
-        >
-          <v-icon>mdi-chevron-left</v-icon>
-        </v-btn>
-        <v-spacer />
-        <v-btn 
-          icon
-          class="mr-2"
-          style="align-self: center;"
-          @click="nextWeek"
-        >
-          <v-icon>mdi-chevron-right</v-icon>
-        </v-btn>
+      </v-card>
+      <div class="d-flex mt-2">
+        <div class="col-day" v-for="(day, i) in daysOfWeek" :key="i">
+          <v-card class="pa-2 mx-1" v-if="assignmentsByDay[i].length > 0">
+            <AssignmentCard
+              v-for="(a, j) in assignmentsByDay[i]" 
+              :key="a._id"
+              :class="j != 0 && 'mt-2'"
+              :assignment="a"
+              :disabled="a.done"
+              @click="toggleAssignment(a._id)"
+              @mousedown="(e) => {if (e.which === 3) hideContextMenu()}"
+              @contextmenu="(e) => showAssignmentMenu(e, a._id)"
+            />
+          </v-card>
+        </div>
       </div>
     </div>
-  </v-card>
 </template>
 
 <style scoped>
@@ -60,22 +70,32 @@
   overflow-x: auto;
 }
 
+.calendar-header {
+  flex: 0 1 auto;
+  display: flex;
+  align-items: center;
+}
+
+.year-text {
+  align-self: flex-end;
+  color: lightgray;
+}
+
 .calendar-middle {
   min-width: 600px;
 }
 
 .left-border {
-  box-shadow: -1px 0px 0px 0px black;
+  box-shadow: -1px 0px 0px 0px lightgray;
+}
+
+.top-border {
+  box-shadow: inset 0px 1px 0px 0px lightgray;
 }
 
 .bottom-shadow {
   box-shadow: 0px 5px 5px -5px gray;
   z-index: 3;
-}
-
-.btn-row {
-  flex: 0 0 50px;
-  display: flex; 
 }
 
 .col-day {
@@ -85,6 +105,8 @@
 
 <script>
 import AssignmentCard from '@/components/AssignmentCard'
+import AuthUserMenu from '@/components/AuthUserMenu'
+import ProgressBar from '@/components/ProgressBar'
 import { compareDateDay } from '@/utils/utils.js'
 import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
 import { CONTEXT_MENU_TYPES } from '@/constants'
@@ -94,6 +116,8 @@ export default {
 
   components: {
     AssignmentCard,
+    AuthUserMenu,
+    ProgressBar,
   },
 
   data() {
@@ -110,24 +134,35 @@ export default {
     ...mapState([ 'assignments', 'numPendingAssignments' ]),
     ...mapGetters({ classes: 'termClasses' }),
     monthHeader() {
-      const begMonth = this.months[this.daysOfWeek[0].date.getMonth()]
+      /*
+       * Returns an array containing the current month and year
+       * If the current week spans two different months, there will be two elements in array
+       * Otherwise, there will be one element
+       */
+      let begMonth = this.months[this.daysOfWeek[0].date.getMonth()]
       const begYear = this.daysOfWeek[0].date.getFullYear()
-      const endMonth = this.months[this.daysOfWeek[this.daysOfWeek.length-1].date.getMonth()]
+      let endMonth = this.months[this.daysOfWeek[this.daysOfWeek.length-1].date.getMonth()]
       const endYear = this.daysOfWeek[this.daysOfWeek.length-1].date.getFullYear()
 
       if (begMonth !== endMonth) {
-        return `${begMonth} ${begYear} - ${endMonth} ${endYear}`
+        begMonth = begMonth.substring(0, 3)
+        endMonth = endMonth.substring(0, 3)
+        if (begYear === endYear)
+          return [{month: begMonth, year: ''}, {month: endMonth, year: endYear}]
+        return [{month: begMonth, year: begYear}, {month: endMonth, year: endYear}]
       }
-      return `${begMonth} ${begYear}`
+      return [{ month: begMonth, year: begYear }]
     },
     daysOfWeek() {
-      let curDateNum = this.curDate.getDate()
-      let curDayNum = this.curDate.getDay()
-      let days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
-      let daysOfWeek = []
+      /*
+       * Returns an array containing information for the days of the current week
+       */
+      const curDayNum = this.curDate.getDay()
+      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+      const daysOfWeek = []
 
       for (let i = 0; i < days.length; i++) {
-        let curDayOffset = (this.weekOffset*7 + i) - curDayNum
+        const curDayOffset = (this.weekOffset*7 + i) - curDayNum
         daysOfWeek.push({
           name: days[i],
           date: this.getDateWithOffset(curDayOffset),
@@ -136,6 +171,13 @@ export default {
       }
 
       return daysOfWeek
+    },
+    assignmentsByDay() {
+      let arr = []
+      for (let day of this.daysOfWeek) {
+        arr.push(this.getAssignmentsForDate(day.date))
+      }
+      return arr
     },
   },
 

@@ -21,8 +21,9 @@
     <v-card color="grey lighten-3" style="width:300px;">
       <v-card-text class="">
         <v-text-field 
+          autofocus
           v-model="query"
-          label="Search (name, email)"
+          placeholder="Search (name, email)"
           solo
           dense
           class="mb-2"
