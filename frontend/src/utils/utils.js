@@ -112,3 +112,37 @@ export const getDateString = (date) => {
 export const getTimeString = (date) => {
   return setNumDigits(date.getHours(), 2) + ':' + setNumDigits(date.getMinutes(), 2)
 }
+
+export const to12Hr = (time) => {
+  const [ hour, min ] = time.split(':')
+  let newHour;
+  if (parseInt(hour) <= 11) {
+    return time + ' AM'
+  } else if (parseInt(hour) === 12) {
+    newHour = parseInt(hour)
+  } else {
+    newHour = parseInt(hour) - 12
+  }
+  return newHour + ':' + min + ' PM'
+}
+
+export const blocksString = (_class) => {
+  if (!_class.blocks)
+    return 'N/A'
+  if (_class.asynchronous)
+    return 'Asynchronous'
+
+  const daysString = _class.blocks.map(block => {
+    return block.day === 'H' ? 'TH' : block.day
+    //return this.dayOfWeekFromAbbr(block.day)
+  }).join('/')
+  const { start, end } = _class.blocks[0]
+  const timeString = to12Hr(start) + ' - ' + to12Hr(end)
+  return daysString + ' | ' + timeString
+}
+
+export const instructorNames = (_class) => {
+  if (!_class.instructors || _class.instructors.length === 0)
+    return 'N/A'
+  return _class.instructors.map(({ firstName, lastName }) => `${firstName} ${lastName}`).join(', ')
+}

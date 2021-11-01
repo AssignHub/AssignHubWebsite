@@ -37,7 +37,7 @@ exports.scheduleTasks = () => {
   })
 
   // email friend request reminder after a certain time period
-  cron.schedule('30 12 * * *', async () => {
+  cron.schedule('11 6 * * *', async () => {
     const curr = new Date()
     const delayMilli = 1000*60*60*24*editJsonFile(`${appRoot}/config/general.json`).toObject().requestEmailDelay // Number of days to wait before emailing
     const requests = await FriendRequest.find({
