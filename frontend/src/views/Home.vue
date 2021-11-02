@@ -37,6 +37,16 @@
         />
       </v-card>
     </v-dialog>
+
+    <v-dialog
+      v-model="joinDialog"
+      max-width="400"
+    >
+      <JoinClass 
+        :classId="id"
+         @doneJoining="joinDialog = false"
+      />
+    </v-dialog>
     
     
     <div class="inner-container">
@@ -74,7 +84,10 @@
 import AddInputAssignmentDialog from '@/components/AddInputAssignmentDialog'
 import Navigator from '@/components/Navigator'
 import Calendar from '@/components/Calendar'
-import InputAssignment from '@/components/InputAssignment'
+import Todo from '@/components/Todo'
+import AddInputAssignment from '../components/AddInputAssignment'
+import InputAssignment from '../components/InputAssignment'
+import JoinClass from '../components/JoinClass'
 
 import { _delete } from '@/utils/utils'
 import { mapGetters, mapState, mapMutations, mapActions } from 'vuex'
@@ -88,10 +101,16 @@ export default {
     Calendar,
     InputAssignment,
     Navigator,
+    JoinClass
+  },
+
+  props: {
+    id: { type: String, default: "-1" }
   },
 
   mounted() {
     this.populateData()
+    this.joinDialog = this.id != "-1"
   },
 
   data() {
@@ -100,6 +119,7 @@ export default {
       tab: 0,
       editDialog: false,
       addInputDialog: false,
+      joinDialog: false,
     }
   },
 
