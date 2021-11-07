@@ -1,18 +1,19 @@
+<!-- A form to add assignments from the crowdsourced assignment database -->
 <template>
-  <v-card flat>
+  <v-card flat :width="width">
     <v-card-title>
       <v-row no-gutters>
         <v-col>
           Add Crowdsourced Assignment
         </v-col>
-        <v-col cols="auto">
+        <!--<v-col cols="auto">
           <v-btn
             icon
             @click="getPublicAssignments"
           >
             <v-icon>mdi-sync</v-icon>
           </v-btn>
-        </v-col>
+        </v-col>-->
       </v-row>
     </v-card-title>
     <v-card-text>
@@ -37,15 +38,13 @@
         ></v-select>
       </template>
 
-      <v-card class="grey lighten-5 inner-shadow" style="height: 300px; overflow-y: auto;">
+      <v-card class="grey lighten-5 inner-shadow" style="height: 200px; overflow-y: auto;">
         <v-card-text v-if="filteredAssignments.length > 0" class="pt-2 pb-0 px-1">
           <v-row no-gutters>
             <v-col 
               v-for="(a, i) in filteredAssignments" 
               :key="i"
               cols="12"
-              :md="6"
-              :lg="6"
             >
               <AssignmentCard
                 class="mx-1 mb-2"
@@ -81,6 +80,10 @@ import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
 
 export default {
   name: 'AddAssignment',
+
+  props: {
+    width: { type: Number },
+  },
 
   components: {
     AssignmentCard,
@@ -128,7 +131,7 @@ export default {
         return false
       }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
 
-      this.setNumPendingAssignments(filtered.length)
+      //this.setNumPendingAssignments(filtered.length)
       return filtered
     },
     hideFilter() {

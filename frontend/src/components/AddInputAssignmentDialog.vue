@@ -14,9 +14,40 @@
 						<v-icon>mdi-close</v-icon>
 					</v-btn>
 				</div>
-				<InputAssignment
-					:width="400"
-				/>
+				<div style="position: relative;">
+					<div class="add-btn-container">
+						<v-badge
+							bordered
+							style="z-index: 99;"
+							:content="_numPendingAssignments"
+							:value="showInput"
+							color="primary"
+							overlap
+							absolute
+						>
+							<v-btn
+								icon
+								style="z-index: 98;"
+								@click="showInput = !showInput; getPublicAssignments()"
+							>
+								<v-scale-transition leave-absolute origin="center">
+									<v-icon v-if="showInput" key="plus-box-multiple">mdi-plus-box-multiple</v-icon>
+									<v-icon v-else key="clipboard-plus">mdi-clipboard-plus</v-icon>
+								</v-scale-transition>
+							</v-btn>
+						</v-badge>
+					</div>
+					<v-expand-transition>
+						<InputAssignment
+							v-if="showInput"
+							:width="400"
+						/>
+						<AddAssignment
+							v-else
+							:width="400"
+						/>
+					</v-expand-transition>
+				</div>
 			</v-card>
 		</v-slide-y-reverse-transition>
 
@@ -42,10 +73,19 @@
 		display: flex;
 		cursor: move;
 	}
+
+	.add-btn-container {
+		position: absolute; 
+		right: 16px; 
+		top: 16px;
+	}
 </style>
 
 <script>
+import { mapState, mapActions } from 'vuex'
+
 import InputAssignment from '@/components/InputAssignment'
+import AddAssignment from '@/components/AddAssignment'
 
 export default {
 	name: 'AddInputAssignmentDialog',
@@ -57,17 +97,31 @@ export default {
 	},
 
 	components: {
+		AddAssignment,
 		InputAssignment,
+	},
+
+	watch: {
+		value() {
+			if (!this.value) {
+				setTimeout(() => this.showInput = true, 100)
+			}
+		},
 	},
 
 	data() {
 		return {
 			x: 0,
 			y: 0,
+			showInput: true,
 		}
 	},
 
 	computed: {
+		...mapState([ 'numPendingAssignments' ]),
+		_numPendingAssignments() {
+			return this.numPendingAssignments > 99 ? '99+' : this.numPendingAssignments
+		},
 		style() {
 			// Style the position of the card
 			return {
@@ -78,6 +132,7 @@ export default {
 	},
 
 	methods: {
+		...mapActions([ 'getPublicAssignments' ]),
 		drag({ deltaX, deltaY }) {
 			/* Move dialog box when dragged */
 			const { clientHeight, clientWidth } = this.$refs.card.$el
@@ -120,8 +175,13 @@ export default {
 		show() {
 			/* Resets dialog box position then displays it */
 			this.resetPos()
-			// setTimeout is needed so the slide transition plays
-			setTimeout(() => this.$emit('input', true))
+
+			if (!this.value) {
+				// setTimeout is needed so the slide transition plays
+				setTimeout(() => this.$emit('input', true))
+				// Get public assignments so the numPendingAssignments number is correct
+				this.getPublicAssignments()
+			}
 		}
 	},
 }

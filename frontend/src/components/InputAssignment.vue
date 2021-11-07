@@ -1,3 +1,4 @@
+<!-- A form to input new assignments -->
 <template>
   <v-card flat :width="width">
     <v-card-title v-if="!editing">Input Assignment</v-card-title>
@@ -15,13 +16,6 @@
         :disabled="loading"
         dense
       ></v-text-field>
-      <!--<v-textarea
-        hide-details
-        outlined  
-        autocomplete="off" 
-        label="Description (optional)"
-        class="mb-4"
-      ></v-textarea>-->
       <ClassSelect
         :classes="classes" 
         v-model="curClass" 
