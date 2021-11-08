@@ -110,7 +110,7 @@ export default {
         this.loading = true
         
         post(`/classes/join?term=${this.term}`, {
-          sectionId: this.course.sectionId,
+          classId: this.classId,
           color: this.color,
         }).then(data => {
           this.showInfo(`Successfully added "${data.courseId}"`)
