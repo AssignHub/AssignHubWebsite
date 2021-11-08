@@ -146,3 +146,9 @@ export const instructorNames = (_class) => {
     return 'N/A'
   return _class.instructors.map(({ firstName, lastName }) => `${firstName} ${lastName}`).join(', ')
 }
+
+export const partition = (arr, filter) => {
+  const pass = [], fail = []
+  arr.forEach((e, i, arr) => (filter(e, i, arr) ? pass : fail).push(e))
+  return [pass, fail]
+}

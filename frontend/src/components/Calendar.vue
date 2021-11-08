@@ -51,15 +51,46 @@
         <div class="col-day pb-1" v-for="(day, i) in daysOfWeek" :key="i" style="overflow: auto;">
           <v-card class="pa-2 mx-1" v-if="assignmentsByDay[i].length > 0" style="overflow: auto; max-height: 100%;">
             <AssignmentCard
-              v-for="(a, j) in assignmentsByDay[i]" 
-              :key="a._id"
-              :class="j != 0 && 'mt-2'"
+              v-for="(a, j) in assignmentsByDaySeparated[i].todo" 
+              :key="`todo-${a._id}`"
+              :class="j !== 0 && 'mt-2'"
               :assignment="a"
               :disabled="a.done"
-              @click="toggleAssignment(a._id)"
+              @click="_toggleAssignment(a._id)"
               @mousedown="(e) => {if (e.which === 3) hideContextMenu()}"
               @contextmenu="(e) => showAssignmentMenu(e, a._id)"
             />
+
+            <v-btn 
+              v-show="assignmentsByDaySeparated[i].done.length > 0"
+              @click="$set(completed, i, !completed[i])"
+              plain
+              block
+              text
+              class="pa-1"
+              :class="assignmentsByDaySeparated[i].todo.length > 0 && 'mt-2'"
+            >
+              <div class="text-caption" style="display: flex; align-items: center; width: 100%; text-align:left;">
+                <div style="flex: 1">completed</div>
+                <v-icon v-if="completed[i]">mdi-chevron-up</v-icon>
+                <v-icon v-else>mdi-chevron-down</v-icon>
+              </div> 
+            </v-btn>
+
+            <v-expand-transition>
+              <div v-if="completed[i]">
+                <AssignmentCard
+                  v-for="(a, j) in assignmentsByDaySeparated[i].done" 
+                  :key="`done-${a._id}`"
+                  :class="'mt-2'"
+                  :assignment="a"
+                  :disabled="a.done"
+                  @click="_toggleAssignment(a._id)"
+                  @mousedown="(e) => {if (e.which === 3) hideContextMenu()}"
+                  @contextmenu="(e) => showAssignmentMenu(e, a._id)"
+                />
+              </div>
+            </v-expand-transition>
           </v-card>
         </div>
       </div>
@@ -111,7 +142,7 @@
 import AssignmentCard from '@/components/AssignmentCard'
 import AuthUserMenu from '@/components/AuthUserMenu'
 import ProgressBar from '@/components/ProgressBar'
-import { compareDateDay } from '@/utils/utils.js'
+import { compareDateDay, partition } from '@/utils/utils.js'
 import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
 import { CONTEXT_MENU_TYPES } from '@/constants'
 
@@ -138,6 +169,7 @@ export default {
       weekOffset: 0,
       curDate: new Date(),
       scrollAmt: 0,
+      completed: [false, false, false, false, false, false, false],
     }
   },
 
@@ -195,12 +227,17 @@ export default {
 
       return daysOfWeek
     },
-    assignmentsByDay() {
+    assignmentsByDaySeparated() {
+      /* returns array containing the assignments for the week by day, separated by done and todo */
       let arr = []
       for (let day of this.daysOfWeek) {
         arr.push(this.getAssignmentsForDate(day.date))
       }
       return arr
+    },
+    assignmentsByDay() {
+      /* returns array containing the assignments for the week by day */
+      return this.assignmentsByDaySeparated.map(a => [...a.done, ...a.todo])
     },
   },
 
@@ -211,10 +248,11 @@ export default {
       return new Date(this.curDate.getTime() + offset*this.dayLength)
     },
     getAssignmentsForDate(date) {
-      let assignments = this.assignments.filter(a => {
+      const allAssignments = this.assignments.filter(a => {
         return compareDateDay(a.dueDate, date) === 0 //&& !a.done
       }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
-      return assignments
+      const [done, todo] = partition(allAssignments, a => a.done)
+      return { done, todo }
     },
     getClassFromOffset(offset) {
       if (offset === 0)
@@ -225,9 +263,11 @@ export default {
     },
     nextWeek() {
       this.weekOffset++
+      this.resetCompleted()
     },
     prevWeek() {
       this.weekOffset--
+      this.resetCompleted()
     },
     showAssignmentMenu(e, id) {
       e.preventDefault()
@@ -239,6 +279,12 @@ export default {
     },
     onScroll(e) {
       this.scrollAmt = e.target.scrollTop
+    },
+    _toggleAssignment(...args) {
+      setTimeout(() => this.toggleAssignment(...args), 100)
+    },
+    resetCompleted() {
+      this.completed = [false, false, false, false, false, false, false]
     },
   },
 }
