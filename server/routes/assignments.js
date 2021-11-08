@@ -27,7 +27,7 @@ router.get('/mine', getUser, getTerm, async (req, res) => {
       },
     }).execPopulate()
     const assignments = res.locals.user.assignments
-      .filter(a => a.assignment.class !== null)
+      .filter(a => Boolean(a.assignment.class) || a.assignment.noClass)
       .map(a => {
         a = a.toJSON()
         const { _id, assignment, ...rest } = a
@@ -88,7 +88,7 @@ router.post('/create', getUser, async (req, res) => {
   // Requires authentication
 
   /* Body params:
-  *  classId - ObjectId of the class the assignment is associated with
+  *  classId - ObjectId of the class the assignment is associated with ('no-class' means it's a task not associated with a class)
   *  name - name of assignment
   *  dueDate - due date of assignment
   *  public - whether assignment is public (shared with everybody in your class)
@@ -96,16 +96,30 @@ router.post('/create', getUser, async (req, res) => {
   const {classId, name, dueDate, public} = req.body
 
   try {
-    const _class = await Class.findById(classId)
-
-    if (!_class) {
-      res.status(400).json({ error: 'invalid-class' })
-      return
+    const assignmentData = {
+      creator: res.locals.user._id, 
+      class: classId, 
+      name, 
+      dueDate, 
+      public
     }
 
-    const assignment = await new Assignment({
-      creator: res.locals.user._id, class: classId, name, dueDate, public
-    }).save()
+    // Only check if class exists if class id is not no-class
+    if (classId !== 'no-class') {
+      const _class = await Class.findById(classId)
+
+      if (!_class) {
+        res.status(400).json({ error: 'invalid-class' })
+        return
+      }
+    } else {
+      // classId is no-class!
+      assignmentData.noClass = true
+      assignmentData.public = false // Ensure no-class assignment is not public
+      delete assignmentData.class
+    }
+
+    const assignment = await new Assignment(assignmentData).save()
 
     res.locals.user.assignments.push({assignment: assignment._id})
     await res.locals.user.save()

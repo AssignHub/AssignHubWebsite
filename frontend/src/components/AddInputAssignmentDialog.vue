@@ -3,7 +3,7 @@
 <template>
 	<span>
 		<v-slide-y-reverse-transition>
-			<v-card v-show="value" ref="card" style="position: absolute;" :style="style">
+			<v-card v-show="value" ref="card" style="position: absolute; z-index: 50;" :style="style">
 				<div v-dragged="drag" id="drag-area" class="pa-1">
 					<v-spacer />
 					<v-btn
@@ -18,7 +18,7 @@
 					<div class="add-btn-container">
 						<v-badge
 							bordered
-							style="z-index: 99;"
+							style="z-index: 51;"
 							:content="_numPendingAssignments"
 							:value="showInput"
 							color="primary"
@@ -27,7 +27,7 @@
 						>
 							<v-btn
 								icon
-								style="z-index: 98;"
+								style="z-index: 50;"
 								@click="showInput = !showInput; getPublicAssignments()"
 							>
 								<v-scale-transition leave-absolute origin="center">

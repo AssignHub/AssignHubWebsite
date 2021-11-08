@@ -212,7 +212,7 @@ export default {
     },
     getAssignmentsForDate(date) {
       let assignments = this.assignments.filter(a => {
-        return compareDateDay(a.dueDate, date) === 0
+        return compareDateDay(a.dueDate, date) === 0 //&& !a.done
       }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
       return assignments
     },

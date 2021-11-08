@@ -17,7 +17,7 @@
         dense
       ></v-text-field>
       <ClassSelect
-        :classes="classes" 
+        :classes="_classes" 
         v-model="curClass" 
         :disabled="loading"
         class="mb-4"
@@ -39,7 +39,7 @@
         class="mt-0"
         hint="Let others use this assignment"
         persistent-hint
-        :disabled="loading"
+        :disabled="loading || curClass === 'no-class'"
       >
       </v-checkbox>
       <v-card-actions class="pa-0">
@@ -105,6 +105,12 @@ export default {
     ...mapGetters({ classes: 'termClasses' }),
     enableSubmit() {
       return this.name && this.curClass && this.date && this.time
+    },
+    _classes() {
+      return [
+        ...this.classes,
+        { _id: 'no-class', color: '#eee', courseId: 'None' }
+      ]
     },
   },
 

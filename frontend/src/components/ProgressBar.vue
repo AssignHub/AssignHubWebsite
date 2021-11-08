@@ -48,12 +48,28 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import confetti from 'canvas-confetti'
 
 export default {
   name: 'ProgressBar',
 
   props: {
     assignmentsForWeek: { type: Array, required: true },
+  },
+
+  watch: {
+    // TODO: fix this logic, right now, shows confetti even on month change!
+    /*progressBlocks() {
+      if (this.progressTotal == 100) {
+        // If 100% complete, display confetti!
+        confetti({
+          startVelocity: 30,
+          particleCount: 100,
+          spread: 360,
+          angle: 270,
+        })
+      }
+    },*/
   },
 
   computed: {
@@ -70,10 +86,11 @@ export default {
       // Count the number of completed assignments per class
       const numCompletedAssignments = {}
       assignments.filter(a => a.done).forEach(a => {
-        if (a.class.courseId in numCompletedAssignments) {
-          numCompletedAssignments[a.class.courseId]++
+        const courseId = a.class?.courseId ?? 'TASK'
+        if (courseId in numCompletedAssignments) {
+          numCompletedAssignments[courseId]++
         } else {
-          numCompletedAssignments[a.class.courseId] = 1
+          numCompletedAssignments[courseId] = 1
         }
       })
 
@@ -92,14 +109,23 @@ export default {
 
       return progressBlocks
     },
+    progressTotal() {
+      /* Returns a single number representing the total progress */
+      let total = 0 
+      for (const block of this.progressBlocks) {
+        total += parseFloat(block.width)
+      }
+
+      return total
+    },
   },
 
   methods: {
     colorByCourseId(courseId) {
-      // Returns the color of the class based on courseId
+      /* Returns the color of the class based on courseId */
       const _class = this.classes.find(c => c.courseId === courseId)
       if (!_class)
-        return 'white'
+        return '#eee'
       return _class.color
     },
   },
