@@ -203,7 +203,7 @@ export default {
       codeToCopy.select()
       try {
         var successful = document.execCommand('copy')
-        this.showInfo('Room link copied to clipboard')
+        this.showInfo('Class link copied to clipboard')
       } catch (err) {
         this.showError('There was an error copying the link')
       }
