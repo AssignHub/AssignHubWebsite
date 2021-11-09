@@ -26,7 +26,7 @@
             id="classMenu"
           >
             <template v-slot:activator="{ on, attrs }">
-              <v-btn icon v-bind="attrs" v-on="on">
+              <v-btn plain icon v-bind="attrs" v-on="on">
                 <v-fade-transition>
                   <v-icon v-if="hover" large>mdi-dots-horizontal</v-icon>
                 </v-fade-transition>
