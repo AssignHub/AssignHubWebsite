@@ -20,7 +20,7 @@
 							bordered
 							style="z-index: 51;"
 							:content="_numPendingAssignments"
-							:value="showInput"
+							:value="showInput && numPendingAssignments > 0"
 							color="primary"
 							overlap
 							absolute
