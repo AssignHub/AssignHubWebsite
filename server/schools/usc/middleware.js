@@ -22,13 +22,17 @@ exports.addClass = async (req, res, next) => {
 
     if (!res.locals.class) {
       const options = { term: res.locals.term }
-      const section = await TROJAN.course(courseId, options).then(data => {
-        return data.courses[courseId].sections[sectionId]
-      }).catch(err => {
-        // If course ID is wrong 
-        //res.status(404).json({ error: 'class-not-found' })
-        return false
-      })
+
+      let section
+      try {
+        section = await TROJAN.course(courseId, options).then(data => {
+          return data.courses[courseId].sections[sectionId]
+        })
+      } catch (err) {
+        // If course ID is wrong
+        res.status(404).json({ error: 'class-not-found' })
+        return
+      }
 
       if (!section) {
         // If section number is wrong

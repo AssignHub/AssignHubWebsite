@@ -7,7 +7,7 @@
     class="pa-0"
   >
     <div class="courseId pl-1">
-      {{ assignment.class.courseId }}
+      {{ courseId }}
     </div>
     <v-card-text>
       <v-row>
@@ -79,10 +79,16 @@ export default {
     creatorString() {
       return 'Created by ' + this.assignment.creator.firstName + ' ' + this.assignment.creator.lastName
     },
+    courseId() {
+      return this.assignment.class?.courseId ?? 'TASK'
+    },
     color() {
+      if (!this.assignment.class) return '#eee'
+      // NOTE: This could result in problems, what if you have two of the same classes with same courseId?
+      // Would this ever actually happen?
       const _class = this.classes.find(c => c.courseId === this.assignment.class.courseId)
       if (!_class)
-        return 'white'
+        return '#eee'
       return _class.color
     },
   },

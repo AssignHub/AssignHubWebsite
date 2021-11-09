@@ -82,6 +82,9 @@ export default {
     ...mapState([ 'authUser' ]),
     ...mapGetters({ classes: 'termClasses' }),
     school() {
+      if (process.env.NODE_ENV === 'development' && this.authUser.school == 'gmail') {
+        return 'usc'
+      }
       return this.authUser.school
     },
     colors() {

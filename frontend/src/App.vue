@@ -3,7 +3,7 @@
     <AutoSnackbar color="error" :text="error" />
     <AutoSnackbar color="info" :text="info" />
 
-    <v-app-bar
+    <!--<v-app-bar
       v-if="authUser"
       app
       color="white darken-2"
@@ -31,30 +31,7 @@
       >
         Give Feedback
       </v-btn>
-
-      <v-menu
-        v-if="authUser"
-        offset-y
-        :close-on-content-click="false"
-      >
-        <template v-slot:activator="{ on }">
-          <v-btn icon v-on="on">
-            <v-avatar>
-              <UserAvatarContent :user="authUser" />
-            </v-avatar>
-          </v-btn>
-        </template>
-        <v-list class="py-0">
-          <v-list-item>
-            <v-list-item-title><strong>{{ `${authUser.firstName} ${authUser.lastName}` }}</strong></v-list-item-title>
-          </v-list-item>
-          <v-divider></v-divider>
-          <v-list-item @click="signOut">
-            <v-list-item-title class="red--text">Sign Out</v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-menu>
-    </v-app-bar>
+    </v-app-bar>-->
 
     <v-main style="height: 0vh;">
       <router-view />
@@ -109,27 +86,26 @@ html {
 </style>
 
 <script>
-import { get, post, signOut } from '@/utils/utils'
-import { mapState, mapActions } from 'vuex'
+import { get, } from '@/utils/utils'
+import { mapState, mapMutations } from 'vuex'
 
 import AutoSnackbar from '@/components/AutoSnackbar'
-import UserAvatarContent from '@/components/UserAvatarContent'
 
 export default {
   name: 'App',
 
   components: {
     AutoSnackbar,
-    UserAvatarContent,
   },
 
   async created() {
+
     // TODO: move this to vuex
     await get(`/auth/profile`).then(authUser => {
-      this.$store.commit('setAuthUser', authUser)
+      this.setAuthUser(authUser)
     }).catch(err => {
       // Forbidden, user not signed in
-      this.$store.commit('setAuthUser', null)
+      this.setAuthUser(null)
     })
     
     this.loaded = true
@@ -161,16 +137,20 @@ export default {
   },
 
   methods: {
-    ...mapActions([ 'signOut' ]),
+    ...mapMutations([ 'setAuthUser' ]),
     redirectAuthUser() {
       let authRoutes = ['Home']
       let noAuthRoutes = ['SignIn']
 
       if (!this.authUser) {
-        if (authRoutes.includes(this.$route.name))
-          this.$router.replace({ name: 'SignIn' })
+        if (this.$route.name == 'Join') {
+          this.$router.replace({ name: 'SignIn', query: { join: this.$route.params.id } })
+        } else if (authRoutes.includes(this.$route.name))
+            this.$router.replace({ name: 'SignIn' })
       } else {
-        if (noAuthRoutes.includes(this.$route.name))
+        if (this.$route.query.join) {
+          this.$router.replace({ path: `join/${this.$route.query.join}` })
+        } else if (noAuthRoutes.includes(this.$route.name))
           this.$router.replace({ name: 'Home' })
       }
     },

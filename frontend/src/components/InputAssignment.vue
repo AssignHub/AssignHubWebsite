@@ -1,5 +1,6 @@
+<!-- A form to input new assignments -->
 <template>
-  <v-card flat>
+  <v-card flat :width="width">
     <v-card-title v-if="!editing">Input Assignment</v-card-title>
     <v-card-title v-else>Edit Assignment</v-card-title>
     <v-card-text>
@@ -15,15 +16,8 @@
         :disabled="loading"
         dense
       ></v-text-field>
-      <!--<v-textarea
-        hide-details
-        outlined  
-        autocomplete="off" 
-        label="Description (optional)"
-        class="mb-4"
-      ></v-textarea>-->
       <ClassSelect
-        :classes="classes" 
+        :classes="_classes" 
         v-model="curClass" 
         :disabled="loading"
         class="mb-4"
@@ -45,7 +39,7 @@
         class="mt-0"
         hint="Let others use this assignment"
         persistent-hint
-        :disabled="loading"
+        :disabled="loading || curClass === 'no-class'"
       >
       </v-checkbox>
       <v-card-actions class="pa-0">
@@ -72,6 +66,7 @@ export default {
   props: {
     editing: { type: Boolean, default: false },
     assignment: { type: Object, default: null },
+    width: { type: Number, default: undefined },
   },
 
   components: {
@@ -110,6 +105,12 @@ export default {
     ...mapGetters({ classes: 'termClasses' }),
     enableSubmit() {
       return this.name && this.curClass && this.date && this.time
+    },
+    _classes() {
+      return [
+        ...this.classes,
+        { _id: 'no-class', color: '#eee', courseId: 'None' }
+      ]
     },
   },
 

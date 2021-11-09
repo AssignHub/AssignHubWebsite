@@ -279,6 +279,7 @@ export default new Vuex.Store({
       return get(`/assignments/public?term=${state.term}`).then(publicAssignments => {
         commit('setLoading', { key: 'publicAssignments', value: false })
         commit('setPublicAssignments', publicAssignments)
+        commit('setNumPendingAssignments', publicAssignments.length)
       }).catch(err => {
         dispatch('showError', 'There was an problem fetching public assignments!')
       })
