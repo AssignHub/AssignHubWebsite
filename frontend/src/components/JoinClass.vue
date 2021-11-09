@@ -63,12 +63,6 @@ export default {
     term() {
       get(`/classes/get/${this.classId}?term=${this.term}`).then(data => {
           this.course = data
-          if(this.classes.find(x => x._id === this.course._id)) {
-            this.$router.push("/")
-            this.$emit('doneJoining').then(() => {
-              this.loading = false
-            })
-          }
           this.loading = false;
       }).catch(err => {
           this.handleErrors(err)
