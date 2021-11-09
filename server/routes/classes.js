@@ -60,7 +60,7 @@ router.post('/add', getUser, getTerm, getSchoolMiddleware('addClass'), async (re
   }
 })
 
-router.post('/join', getUser, getTerm, getSchoolMiddleware('addClass'), async (req, res) => {
+router.post('/join', getUser, getTerm, async (req, res) => {
   // Requires authentication
   // Lets user join an existing class
 
@@ -73,16 +73,13 @@ router.post('/join', getUser, getTerm, getSchoolMiddleware('addClass'), async (r
   *  color - the color, in hex format (e.g. #1fa3bc)
   */
 
-  const { color, sectionId } = req.body
+  const { color, classId } = req.body
 
   try {
 
-    const _class = await Class.findOne({ 
-        term: res.locals.term,
-        sectionId,
-    })
+    const _class = await Class.findById(classId)
 
-    if (!res.locals.class) {
+    if (!_class) {
       res.status(400).json({ error: 'class-not-found' })
       return
     }

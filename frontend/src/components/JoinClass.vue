@@ -63,12 +63,6 @@ export default {
     term() {
       get(`/classes/get/${this.classId}?term=${this.term}`).then(data => {
           this.course = data
-          if(this.classes.find(x => x._id === this.course._id)) {
-            this.$router.push("/")
-            this.$emit('doneJoining').then(() => {
-              this.loading = false
-            })
-          }
           this.loading = false;
       }).catch(err => {
           this.handleErrors(err)
@@ -110,7 +104,7 @@ export default {
         this.loading = true
         
         post(`/classes/join?term=${this.term}`, {
-          sectionId: this.course.sectionId,
+          classId: this.classId,
           color: this.color,
         }).then(data => {
           this.showInfo(`Successfully added "${data.courseId}"`)
