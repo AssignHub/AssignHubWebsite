@@ -11,6 +11,7 @@ router.get('/mine', getUser, async (req, res) => {
   // Requires authentication
 
   try {
+    // Populate friends array and return basic data for each friend
     await res.locals.user.populate({
       path: 'friends',
       select: 'firstName lastName email pic mood'
@@ -102,6 +103,8 @@ router.get('/requests', getUser, async (req, res) => {
   // Requires authentication
 
   try {
+    // Populate current user's outgoing and incoming friend requests with basic data about
+    // who it's being sent to or who it's being sent from
     await res.locals.user.populate({
       path: 'outgoingFriendRequests',
       populate: {
@@ -141,7 +144,7 @@ router.post('/create-request', getUser, async (req, res) => {
     // Check if request has already been sent to current user by the "to" user
     //await res.locals.user.populate('incomingFriendRequests').execPopulate()
 
-
+    // Create new friend request object
     const request = await new FriendRequest({
       timestamp: new Date(),
       lastReminded: new Date(),
@@ -151,6 +154,7 @@ router.post('/create-request', getUser, async (req, res) => {
 
     const toUser = await User.findById(userId, 'firstName lastName email pic').lean()
 
+    // Emit the creation of the friend request to both toUser and fromUser
     emitToUser(res.locals.user._id, 'addFriendRequest', { 
       type: 'outgoing', 
       request: {
