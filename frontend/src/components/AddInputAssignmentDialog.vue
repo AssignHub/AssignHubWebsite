@@ -61,6 +61,8 @@
 			class="mr-1 mb-1"
 			style="bottom: 16px;"
 			@click="show"
+			v-intro="'Click here to add personal assignments or crowdsourced assignments from your classmates'"
+			 v-intro-tooltip-class="'toolTip'"
 		>
 			<v-icon>mdi-plus</v-icon>
 		</v-btn>
@@ -99,6 +101,13 @@ export default {
 	components: {
 		AddAssignment,
 		InputAssignment,
+	},
+
+	mounted() {
+		
+    	this.$intro().setOptions({
+			showStepNumbers: false
+		}).start();
 	},
 
 	watch: {

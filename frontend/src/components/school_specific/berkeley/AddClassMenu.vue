@@ -157,6 +157,9 @@ export default {
     this.state = this.states.ADD_CLASS
   },
 
+  mounted() {
+  },
+
   props: {
     colors: { type: Array, required: true },
   },
