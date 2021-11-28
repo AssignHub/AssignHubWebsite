@@ -14,16 +14,11 @@ db.on('open', async () => {
   //console.log(users)
   for (let doc of users) {
     for (let friendId of doc.friends) {
-      const results = await Friendship.collection.find({ $or: [
-        {person1: doc._id, person2: friendId},
-        {person2: doc._id, person1: friendId}
-      ] }).toArray()
+      const results = await Friendship.collection.find({ people: { $all: [doc._id, friendId] } }).toArray()
 
       if (results.length === 0) {
         await new Friendship({
-          timestamp: new Date(),
-          person1: doc._id,
-          person2: friendId,
+          people: [doc._id, friendId]
         }).save()
       }
     }

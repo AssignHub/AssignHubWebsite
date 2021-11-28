@@ -1,10 +1,12 @@
 const router = require('express').Router()
-const User = require('../models/user')
-const FriendRequest = require('../models/friend_request')
-const { getUser } = require('../middleware/auth')
-const { escapeRegExp } = require('../utils/utils')
-const { emitToUser } = require('../websockets')
-const { getTerm } = require('../middleware/general')
+const reqlib = require('app-root-path').require
+const User = reqlib('models/user')
+const FriendRequest = reqlib('models/friend_request')
+const Friendship = reqlib('models/friendship')
+const { getUser } = reqlib('middleware/auth')
+const { escapeRegExp } = reqlib('utils/utils')
+const { emitToUser } = reqlib('websockets')
+const { getTerm } = reqlib('middleware/general')
 
 router.get('/mine', getUser, async (req, res) => {
   // Get current user's friends
@@ -12,12 +14,23 @@ router.get('/mine', getUser, async (req, res) => {
 
   try {
     // Populate friends array and return basic data for each friend
-    await res.locals.user.populate({
-      path: 'friends',
-      select: 'firstName lastName email pic mood'
-    }).execPopulate()
+    const result = await Friendship.find({ people: res.locals.user._id })
+    
+    // Format friends array
+    const friends = []
+    for (let friendship of result) {
+      // Filter out current user from people array
+      const arr = friendship.people.filter(id => id.toString() != res.locals.user._id.toString())
+      
+      // Make sure we have a valid friendship
+      if (arr.length !== 1) continue 
 
-    res.json(res.locals.user.friends)
+      const friendId = arr[0]
+      const friend = await User.findById(friendId)
+      friends.push(friend.basicInfo)
+    }
+
+    res.json(friends)
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: err })
@@ -36,7 +49,8 @@ router.get('/:uid/classes', getUser, getTerm, async (req, res) => {
   const { uid } = req.params
   try {
     // Check if friend is a friend of user
-    if (!res.locals.user.friends.includes(uid)) {
+    const result = await Friendship.findOne({ people: { $all: [res.locals.user._id, uid] } }).lean()
+    if (!result) {
       res.status(404).json({ error: 'friend-not-found' })
       return
     }
@@ -187,18 +201,24 @@ router.post('/accept-request', getUser, async (req, res) => {
   
   const { friendRequestId } = req.body
   try {
+    // Populate friend request fields
     const friendRequest = await FriendRequest.findById(friendRequestId).populate('from').populate('to')
+    
     if (friendRequest.to._id != res.locals.user._id.toString()) {
       // Friend request was not directed to you
       res.status(403).json({ error: 'not-allowed' })
       return
     }
 
-    friendRequest.from.friends.push(friendRequest.to._id)
-    friendRequest.to.friends.push(friendRequest.from._id)
-    await Promise.all([ friendRequest.from.save(), friendRequest.to.save() ])
+    // Create friendship in database
+    await new Friendship({
+      people: [ friendRequest.from._id, friendRequest.to._id ]
+    }).save()
+
+    // Delete friend request because it was accepted
     await FriendRequest.findByIdAndDelete(friendRequestId)
 
+    // Inform users about friend request removal and friend addition
     emitToUser(friendRequest.from._id, 'removeFriendRequest', friendRequestId)
     emitToUser(friendRequest.to._id, 'removeFriendRequest', friendRequestId)
     emitToUser(friendRequest.from._id, 'addFriend', friendRequest.to.basicInfo)
@@ -227,8 +247,11 @@ router.delete('/reject-request', getUser, async (req, res) => {
       res.status(403).json({ error: 'not-allowed' })
       return
     }
+
+    // Delete friend request
     await FriendRequest.findByIdAndDelete(friendRequestId)
 
+    // Inform users about friend request removal
     emitToUser(friendRequest.from, 'removeFriendRequest', friendRequestId)
     emitToUser(friendRequest.to, 'removeFriendRequest', friendRequestId)
 
@@ -255,8 +278,11 @@ router.delete('/cancel-request', getUser, async (req, res) => {
       res.status(403).json({ error: 'not-allowed' })
       return
     }
+
+    // Delete friend request
     await FriendRequest.findByIdAndDelete(friendRequestId)
 
+    // Inform users about friend request removal
     emitToUser(friendRequest.from, 'removeFriendRequest', friendRequestId)
     emitToUser(friendRequest.to, 'removeFriendRequest', friendRequestId)
 
@@ -284,11 +310,10 @@ router.delete('/:friendId', getUser, async (req, res) => {
       return
     }
 
-    res.locals.user.friends = res.locals.user.friends.filter(id => id != friendId)
-    friend.friends = res.locals.user.friends.filter(id => id != res.locals.user._id)
-    await res.locals.user.save()
-    await friend.save()
+    // Find friendship and delete it
+    await Friendship.deleteMany({ people: { $all: [res.locals.user._id, friendId] } })
 
+    // Inform users about friend removal
     emitToUser(res.locals.user._id, 'removeFriend', friendId)
     emitToUser(friendId, 'removeFriend', res.locals.user._id)
 
