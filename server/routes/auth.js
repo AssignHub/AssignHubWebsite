@@ -1,12 +1,16 @@
+const reqlib = require('app-root-path').require
+const editJsonFile = require('edit-json-file')
 const express = require('express')
 const router = express.Router()
-const User = require('../models/user')
-const { _fetch, getProfile, getExpireDate } = require('../utils/utils')
-const { getUser } = require('../middleware/auth')
-const editJsonFile = require('edit-json-file')
-const { escapeRegExp } = require('../utils/utils')
-const { sendMail } = require('../mailer')
-const discordBot = require('../discord_bot')
+
+const User = reqlib('models/user')
+const DailyUserLog = reqlib('models/daily_user_log')
+
+const { _fetch, getProfile, getExpireDate } = reqlib('utils/utils')
+const { getUser } = reqlib('middleware/auth')
+const { escapeRegExp } = reqlib('utils/utils')
+const { sendMail } = reqlib('mailer')
+const discordBot = reqlib('discord_bot')
 require('dotenv').config()
 
 router.post('/sign-in', async (req, res) => {
@@ -50,7 +54,7 @@ router.post('/sign-in', async (req, res) => {
       return
     }
 
-    // Find user if exists
+    // Find user if exists and update user data
     const school = profileData.email.match(/(?:[.@](.+?))+\..+/)[1]
     const userData = { 
       lastSignIn: new Date(),
@@ -75,6 +79,13 @@ router.post('/sign-in', async (req, res) => {
       user = await new User(userData).save()
       console.log('New account created: ', profileData.email)
       discordBot.sendMessage(`:wave: ${profileData.given_name} ${profileData.family_name} (${profileData.email}) has joined AssignHub!`)
+    }
+
+    // Update daily user log if user not already added
+    const log = await DailyUserLog.findByDate({ date: new Date(), timezoneOffset })
+    if (!log.users.includes(user._id)) {
+      log.users.push(user._id)
+      await log.save()
     }
     
     // Start authenticated session
