@@ -51,12 +51,10 @@ module.exports = {
     
     // Define constants
     const daysString = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-
-    // Construct message based on the logs retrieved
-    let message = 'Active Users:\n'
-
+    
     if (list) {
       // Display a list of all active users
+      let message = 'Active Users:\n'
       message += '```'
       for (const { date, users } of logs) {
         message += daysString[date.getUTCDay()] + ' '
@@ -69,6 +67,8 @@ module.exports = {
         }
       }
       message += '```'
+
+      msg.channel.send(message)
     } else {
       // Display a bar graph of active users over time
 
@@ -90,13 +90,27 @@ module.exports = {
             data,
           }]
         },
+        options: {
+          scales: {
+            yAxes: [{
+              ticks: {
+                stepSize: 1,
+              }
+            }],
+          },
+        },
       }
 
       const encodedChart = encodeURIComponent(JSON.stringify(chart))
-      const chartUrl = `https://quickchart.io/chart?c=${encodedChart}`
-      message += chartUrl
+      const chartUrl = `https://quickchart.io/chart?c=${encodedChart}&backgroundColor=white`
+      const chartEmbed = {
+        title: 'Active Users',
+        image: {
+          url: chartUrl,
+        },
+      }
+
+      msg.channel.send({ embed: chartEmbed })
     }
-    
-    msg.channel.send(message)
   },
 }
