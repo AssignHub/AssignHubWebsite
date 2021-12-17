@@ -21,7 +21,7 @@ const RedisStore = require('connect-redis')(session)
 const redisClient = require('./redis')
 
 // Connect to database
-mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false })
+mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true })
 const db = mongoose.connection
 db.on('error', err => console.error(err))
 db.on('open', () => console.log(`Successfully connected to db: ${process.env.DATABASE_URL}`))

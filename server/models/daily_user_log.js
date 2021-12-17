@@ -10,18 +10,22 @@ const dailyUserLogSchema = new mongoose.Schema({
   users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }],
 })
 
+dailyUserLogSchema.index({ date: -1 }, { unique: true })
+
 dailyUserLogSchema.statics.findByDate = async function({ date, timezoneOffset }) {
   /* 
-  This finds a daily user log, localized to the user's month/day/year, by:
+  Finds a daily user log, localized to the user's month/day/year, by:
   Checking if the given date (in server time) and timezone offset (in client time) match the day of a daily user log (in UTC time) 
   If none exist, then create a new daily log
+
+  Note: we find the log localized to the user's month/day/year in order to track if the user has signed in on different days in their 
+  own timezone, rather than the server's timezone. For example, if a user signed in at 11pm on Monday, then signed in at 8am on Tuesday,
+  it could theoretically count as the same day if we were to use server time
   */
   const adjustedDate = new Date(date.getTime() - timezoneOffset*1000*60)
-  const utcDate = adjustedDate.getUTCDate()
-  const utcFullYear = adjustedDate.getUTCFullYear()
-  const utcMonth = adjustedDate.getUTCMonth()
-  const startDate = new Date(`${utcFullYear}-${utcMonth}-${utcDate}T00:00:00.000Z`)
-  const endDate = new Date(`${utcFullYear}-${utcMonth}-${utcDate}T23:59:59.999Z`)
+  const isoDate = adjustedDate.toISOString().substring(0, 10)
+  const startDate = new Date(`${isoDate}T00:00:00.000Z`)
+  const endDate = new Date(`${isoDate}T23:59:59.999Z`)
 
   // Find a log for the current date
   let log = await this.findOne({
