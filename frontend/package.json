@@ -9,7 +9,7 @@
   "dependencies": {
     "canvas-confetti": "^1.4.0",
     "core-js": "^3.6.5",
-    "socket.io-client": "^3.0.4",
+    "socket.io-client": "^4.4.0",
     "trojan-course-api": "^2.2.2",
     "v-dragged": "0.0.5",
     "vue": "^2.6.11",
