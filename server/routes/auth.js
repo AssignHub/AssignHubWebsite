@@ -70,8 +70,10 @@ router.post('/sign-in', async (req, res) => {
       { new: true },
     )
     
+    let isNewUser = false
     if (!user) {
       // Create new account if no account exists for email
+      isNewUser = true
       user = await new User(userData).save()
       console.log('New account created: ', profileData.email)
       discordBot.sendMessage(`:wave: ${profileData.given_name} ${profileData.family_name} (${profileData.email}) has joined AssignHub!`)
@@ -80,7 +82,7 @@ router.post('/sign-in', async (req, res) => {
     // Start authenticated session
     req.session.userId = user._id
 
-    res.json({ success: true })
+    res.json({ isNewUser })
   } catch(err) {
     console.error(err)
     res.status(500).json({ error: err })

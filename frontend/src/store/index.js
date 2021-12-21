@@ -196,7 +196,8 @@ export default new Vuex.Store({
     signInGoogle({ commit, dispatch }) {
       return Vue.gAuth.getAuthCode().then(authCode => {
         return post('/auth/sign-in', { authCode, timezoneOffset: new Date().getTimezoneOffset() })
-      }).then(() => {
+      }).then(({ isNewUser }) => {
+        console.log('IS NEW USER: ', isNewUser)
         return get(`/auth/profile`)
       }).then(authUser => {
         socketReconnect()
