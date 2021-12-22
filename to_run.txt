@@ -1,1 +1,0 @@
-node scripts/instructors_plural.js
