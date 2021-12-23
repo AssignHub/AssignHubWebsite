@@ -3,9 +3,22 @@ const { getAccessToken, getExpireDate } = require('../utils/utils')
 require('dotenv').config()
 
 exports.getUser = async (req, res, next) => {
-  if (req.session.userId) {
+  let userId
+
+  // Allow for debugging of auth routes in development
+  // Just pass userId as a body parameter
+  if (process.env.NODE_ENV === 'development' && (req.body.testUserId || req.query.testUserId) ) {
+    if (req.body.userId) 
+      userId = req.body.testUserId 
+    else 
+      userId = req.query.testUserId
+  } else {
+    userId = req.session.userId
+  }
+
+  if (userId) {
     try {
-      res.locals.user = await User.findById(req.session.userId)
+      res.locals.user = await User.findById(userId)
       if (!res.locals.user) {
         throw 'User does not exist!'
       }
@@ -15,7 +28,7 @@ exports.getUser = async (req, res, next) => {
       return
     }
     
-    if (res.locals.user.accessTokenExpireDate < new Date().getTime()) {
+    if (process.env.NODE_ENV !== 'development' && res.locals.user.accessTokenExpireDate < new Date().getTime()) {
       // Update access token if expired
       try {
         const accessTokenData = await getAccessToken(res.locals.user.refreshToken)

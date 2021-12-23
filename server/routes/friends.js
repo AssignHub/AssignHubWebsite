@@ -184,7 +184,7 @@ router.post('/create-request', getUser, async (req, res) => {
       } 
     })
 
-    res.status(201).json({ sucess: true })
+    res.status(201).json({ success: true })
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: err })
