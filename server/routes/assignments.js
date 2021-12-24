@@ -131,7 +131,7 @@ router.post('/create', getUser, async (req, res) => {
     }).execPopulate()
     emitToUser(res.locals.user._id, 'addAssignment', { ...assignmentPopulated.toJSON(), done: false })
 
-    res.status(201).json({ success: true })
+    res.status(201).end()
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: err })
@@ -150,7 +150,7 @@ router.post('/add', getUser, async (req, res) => {
     res.locals.user.assignments.push({ assignment: assignmentId })
     await res.locals.user.save()
 
-    res.status(201).json({ success: true })
+    res.status(201).end()
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: err })
@@ -166,7 +166,7 @@ router.post('/public/:assignmentId/hide', getUser, async (req, res) => {
     res.locals.user.hiddenAssignments.push(assignmentId)
     await res.locals.user.save()
 
-    res.json({ success: true })  
+    res.end()  
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: err })
@@ -187,7 +187,7 @@ router.post('/:assignmentId/toggle', getUser, async (req, res) => {
     res.locals.user.assignments[index].done = !res.locals.user.assignments[index].done
     await res.locals.user.save()
 
-    res.json({ success: true })    
+    res.end()    
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: err })
@@ -256,7 +256,7 @@ router.delete('/:assignmentId', getUser, async (req, res) => {
     // Socket communication
     emitToUser(res.locals.user._id, 'removeAssignment', assignmentId)
 
-    res.json({ success: true })
+    res.end()
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: err })

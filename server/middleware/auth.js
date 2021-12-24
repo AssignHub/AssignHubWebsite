@@ -8,7 +8,7 @@ exports.getUser = async (req, res, next) => {
   // Allow for debugging of auth routes in development
   // Just pass userId as a body parameter
   if (process.env.NODE_ENV === 'development' && (req.body.testUserId || req.query.testUserId) ) {
-    if (req.body.userId) 
+    if (req.body.testUserId) 
       userId = req.body.testUserId 
     else 
       userId = req.query.testUserId

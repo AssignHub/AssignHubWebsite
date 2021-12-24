@@ -34,15 +34,7 @@ export const inRange = (val, a, b) => {
 } 
 
 export const get = (route) => {
-  return fetch(serverURL + route, {
-    method: 'GET',
-    credentials: 'include',
-  }).then(res => res.json()).then(data => {
-    if (data.error)
-      throw data.error
-    
-    return data
-  })
+  return fetchMethod('GET', route)
 }
 
 export const post = (route, body={}) => {
@@ -58,14 +50,30 @@ export const _delete = (route, body={}) => {
 }
 
 export const fetchMethod = (method, route, body={}) => {
-  return fetch(serverURL + route, {
+  /* Calls the given route with the give method and body */
+  const params = {
     method,
     credentials: 'include',
-    headers: {
+  }
+
+  if (method !== 'GET') {
+    // Add params specific to POST/PATCH/DELETE
+    params.headers = {
       'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(body),
-  }).then(res => res.json()).then(data => {
+    }
+    params.body = JSON.stringify(body)
+  }
+
+  return fetch(serverURL + route, params).then(async res => {
+    // Parse data if it is json, otherwise just return an empty object
+    const text = await res.text()
+    try {
+      return JSON.parse(text)
+    } catch (err) {
+      return {}
+    }
+  }).then(data => {
+    // Throw an error if one occurred
     if (data.error)
       throw data.error
     

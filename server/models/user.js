@@ -12,7 +12,7 @@ const Moods = Object.freeze({
 const userSchema = new mongoose.Schema({
   lastSignIn: { type: Date },
   timezoneOffset: { type: Number, default: 0 },
-
+  
   // basicInfo
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
@@ -25,8 +25,9 @@ const userSchema = new mongoose.Schema({
   accessToken: String,
   refreshToken: String,
   accessTokenExpireDate: Number,
-
+  
   // Classes and assignments
+  curSelectedTerm: { type: String },
   classes: [{
     class: { type: mongoose.Schema.Types.ObjectId, ref: 'Class', required: true },
     color: { type: String, required: true },
@@ -36,7 +37,7 @@ const userSchema = new mongoose.Schema({
     done: { type: Boolean, default: false }, 
   }],
   hiddenAssignments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Assignment' }],
-
+  
   // Friends (deprecated!)
   friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 },

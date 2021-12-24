@@ -80,7 +80,7 @@ router.post('/sign-in', async (req, res) => {
     // Start authenticated session
     req.session.userId = user._id
 
-    res.json({ success: true })
+    res.end()
   } catch(err) {
     console.error(err)
     res.status(500).json({ error: err })

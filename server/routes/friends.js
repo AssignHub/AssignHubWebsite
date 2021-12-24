@@ -184,7 +184,7 @@ router.post('/create-request', getUser, async (req, res) => {
       } 
     })
 
-    res.status(201).json({ success: true })
+    res.status(201).end()
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: err })
@@ -224,7 +224,7 @@ router.post('/accept-request', getUser, async (req, res) => {
     emitToUser(friendRequest.from._id, 'addFriend', friendRequest.to.basicInfo)
     emitToUser(friendRequest.to._id, 'addFriend', friendRequest.from.basicInfo)
     
-    res.json({ success: true })
+    res.end()
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: err })
@@ -255,7 +255,7 @@ router.delete('/reject-request', getUser, async (req, res) => {
     emitToUser(friendRequest.from, 'removeFriendRequest', friendRequestId)
     emitToUser(friendRequest.to, 'removeFriendRequest', friendRequestId)
 
-    res.json({ success: true })
+    res.end()
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: err })
@@ -286,7 +286,7 @@ router.delete('/cancel-request', getUser, async (req, res) => {
     emitToUser(friendRequest.from, 'removeFriendRequest', friendRequestId)
     emitToUser(friendRequest.to, 'removeFriendRequest', friendRequestId)
 
-    res.json({ success: true })
+    res.end()
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: err })
@@ -317,7 +317,7 @@ router.delete('/:friendId', getUser, async (req, res) => {
     emitToUser(res.locals.user._id, 'removeFriend', friendId)
     emitToUser(friendId, 'removeFriend', res.locals.user._id)
 
-    res.json({ success: true })
+    res.end()
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: err })

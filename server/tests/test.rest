@@ -11,3 +11,11 @@ Content-Type: application/json
 }
 
 ###
+
+POST http://localhost:3000/classes/set-term
+Content-Type: application/json
+
+{
+  "testUserId": "6173ca34fb1a493f54ec8967",
+  "term": "no way"
+}
