@@ -37,8 +37,11 @@ const userSchema = new mongoose.Schema({
   }],
   hiddenAssignments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Assignment' }],
 
-  // Friends 
+  // Friends (deprecated!)
   friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+},
+{
+  timestamps: true,
 })
 
 userSchema.virtual('basicInfo').get(function() {

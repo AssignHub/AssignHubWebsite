@@ -20,9 +20,8 @@ A live demo of the website can be found here: [DEMO](https://assignhub.github.io
 
 ## Deployment
 ### Frontend
-1. `cd frontend`
-2. `sudo pm2 stop server`
-3. `sudo npm run build`
-4. `sudo pm2 start server`
+1. Make sure you are on the `master` branch
+2. Run `./deploy_scripts/deploy_frontend.sh SERVER_HOST AWS_KEY_LOCATION`
 ### Backend
-1. `sudo pm2 restart server`
+1. Make sure you are on the `master` branch
+2. Run `./deploy_scripts/deploy_server.sh SERVER_HOST AWS_KEY_LOCATION`
