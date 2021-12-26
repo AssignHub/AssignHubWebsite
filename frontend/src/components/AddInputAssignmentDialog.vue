@@ -120,17 +120,20 @@ export default {
   },
 
   mounted() {
-    const that = this
-    this.$intro()
-      .setOptions({
-        showStepNumbers: false,
-      })
-      .onchange(function(targetElement) {
-        if (targetElement.id == 'addAssignmentBtn') {
-          that.show()
-        }
-      })
-      .start()
+
+    if (this.isNewUser) {
+      const that = this
+      this.$intro()
+        .setOptions({
+          showStepNumbers: false,
+        })
+        .onchange(function(targetElement) {
+          if (targetElement.id == 'addAssignmentBtn') {
+            that.show()
+          }
+        })
+        .start()
+    }
   },
 
   watch: {
@@ -150,7 +153,7 @@ export default {
   },
 
   computed: {
-    ...mapState(['numPendingAssignments']),
+    ...mapState(['numPendingAssignments', 'isNewUser']),
     _numPendingAssignments() {
       return this.numPendingAssignments > 99
         ? '99+'

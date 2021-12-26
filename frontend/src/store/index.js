@@ -29,6 +29,7 @@ const getDefaultState = () => {
     publicAssignments: [],
     numPendingAssignments: 0,
     classes: [],
+    isNewUser: false,
 
     // Friends
     friends: [],
@@ -197,7 +198,8 @@ export default new Vuex.Store({
       return Vue.gAuth.getAuthCode().then(authCode => {
         return post('/auth/sign-in', { authCode, timezoneOffset: new Date().getTimezoneOffset() })
       }).then(({ isNewUser }) => {
-        console.log('IS NEW USER: ', isNewUser)
+        this.state.isNewUser = isNewUser
+        console.log('IS NEW USER: ', this.state.isNewUser)
         return get(`/auth/profile`)
       }).then(authUser => {
         socketReconnect()
