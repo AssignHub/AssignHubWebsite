@@ -8,7 +8,6 @@
         ref="card"
         style="position: absolute; z-index: 50;"
         :style="style"
-        
       >
         <div v-dragged="drag" id="drag-area" class="pa-1" >
           <v-spacer />
@@ -16,11 +15,14 @@
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </div>
-        <div style="position: relative;" v-intro="
-          'Add personal assignments'
-        "
-		v-intro-step="5"
-        v-intro-tooltip-class="'toolTip'">
+        <div 
+          style="position: relative;" 
+          v-intro="
+            'Add personal assignments'
+          "
+          v-intro-step="5"
+          v-intro-tooltip-class="'toolTip'"
+        >
           <div class="add-btn-container">
             <v-badge
               bordered
@@ -41,16 +43,13 @@
               >
                 <v-scale-transition leave-absolute origin="center">
                   <v-icon v-if="showInput" key="plus-box-multiple" 
-        v-intro="
-          'Add crowdsourced assignments that your classmates have added'
-        "
-		v-intro-step="6"
-        v-intro-tooltip-class="'toolTip'"
-                    >mdi-plus-box-multiple</v-icon
-                  >
-                  <v-icon v-else key="clipboard-plus"
-                    >mdi-clipboard-plus</v-icon
-                  >
+                    v-intro="
+                      'Add crowdsourced assignments that your classmates have added'
+                    "
+                    v-intro-step="6"
+                    v-intro-tooltip-class="'toolTip'"
+                  >mdi-plus-box-multiple</v-icon>
+                  <v-icon v-else key="clipboard-plus">mdi-clipboard-plus</v-icon>
                 </v-scale-transition>
               </v-btn>
             </v-badge>
@@ -77,7 +76,7 @@
       v-intro="
         'Click here to add assignments'
       "
-	  v-intro-step="4"
+      v-intro-step="4"
       v-intro-tooltip-class="'toolTip'"
     >
       <v-icon>mdi-plus</v-icon>

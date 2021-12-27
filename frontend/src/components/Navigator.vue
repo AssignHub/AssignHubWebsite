@@ -22,9 +22,7 @@
         :color="page == 1 ? 'blue' : 'gray'"
         large
         v-on:click="handleChangePage(1)"
-        v-intro="
-          'Add a class by finding your Class # (<a href=\'https://classes.berkeley.edu/\' target=\'_blank\'>classes.berkeley.edu</a>)'
-        "
+        v-intro="`${addClassBlurb}`"
         v-intro-position="'right'"
         v-intro-step="2"
         v-intro-tooltip-class="'toolTip'"
@@ -100,6 +98,15 @@ export default {
 
   computed: {
     ...mapState(['authUser']),
+    addClassBlurb() {
+      // Programatically displays the tutorial tip for adding classes based on user's school
+      if (this.authUser.school === 'usc')
+        return 'Add your classes here by entering the course code and section number. This info can be found at <a href=\'https://my.usc.edu\' target=\'_blank\'>my.usc.edu</a>.'
+      else if (this.authUser.school === 'berkeley')
+        return 'Add your classes here by entering your Class #. This info can be found at <a href=\'https://classes.berkeley.edu/\' target=\'_blank\'>classes.berkeley.edu</a>.'
+      else
+        return 'Add and view your classes here'
+    }
   },
 
   methods: {
