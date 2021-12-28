@@ -188,7 +188,7 @@ export default {
       }
     },
     hide() {
-      $emit('input', false)
+      this.$emit('input', false)
     },
   },
 }

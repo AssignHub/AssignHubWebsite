@@ -174,8 +174,7 @@ export const showTutorial = () => {
           break
         case 'tut-calendar':
           // Hide the add assignment form
-          // NOTE: currently throws a vue warning, need to figure out a way to fix later
-          document.getElementById('add-input-assignment-dialog').__vue__.value = false
+          document.getElementById('add-input-assignment-dialog').__vue__.hide()
           break
       }
     })
