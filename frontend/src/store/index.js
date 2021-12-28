@@ -199,7 +199,6 @@ export default new Vuex.Store({
         return post('/auth/sign-in', { authCode, timezoneOffset: new Date().getTimezoneOffset() })
       }).then(({ isNewUser }) => {
         this.state.isNewUser = isNewUser
-        console.log('IS NEW USER: ', this.state.isNewUser)
         return get(`/auth/profile`)
       }).then(authUser => {
         socketReconnect()

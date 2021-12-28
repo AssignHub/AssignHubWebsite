@@ -89,7 +89,6 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
-import { showTutorial } from '@/utils/utils'
 
 import InputAssignment from '@/components/InputAssignment'
 import AddAssignment from '@/components/AddAssignment'
