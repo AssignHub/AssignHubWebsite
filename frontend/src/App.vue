@@ -84,15 +84,6 @@ html {
   visibility: hidden !important;
 }
 
-.toolTip * {
-  font-family: 'Roboto';
-  font-size: 14px;
-}
-
-.toolTip a {
-  color: #1976d2;
-}
-
 </style>
 
 <script>
@@ -119,9 +110,6 @@ export default {
     })
     
     this.loaded = true
-  },
-
-  mounted() {
   },
 
   watch: {
