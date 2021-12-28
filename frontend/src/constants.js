@@ -1,4 +1,5 @@
-export const CLASS_COLORS = [
+// Array containing all the possible colors users can set their classes to
+export const CLASS_COLORS = Object.freeze([
   '#E57373', 
   //'#F06292', 
   '#BA68C8', 
@@ -18,14 +19,16 @@ export const CLASS_COLORS = [
   //'#A1887F',
   '#90A4AE',
   //'#E0E0E0',
-]
+])
 
-export const CONTEXT_MENU_TYPES = {
+// Enum of all the context menu types
+export const CONTEXT_MENU_TYPES = Object.freeze({
   assignment: 0,
   class: 1,
   removeFriend: 2,
-}
+})
 
+// Object that maps a mood to the corresponding emoji name on the server
 export const MOODS = Object.freeze({
   Crying: 'crying',
   Sad: 'sad',
@@ -34,6 +37,7 @@ export const MOODS = Object.freeze({
   Sunglasses: 'sunglasses',
 })
 
+// Object that maps the emoji name to its corresponding image on the frontend
 export const EMOJIS = Object.freeze({
   [MOODS.Crying]: require('@/assets/crying.png'),
   [MOODS.Sad]: require('@/assets/sad.png'),
@@ -41,3 +45,48 @@ export const EMOJIS = Object.freeze({
   [MOODS.Smiling]: require('@/assets/smiling.png'),
   [MOODS.Sunglasses]: require('@/assets/sunglasses.png'),
 })
+
+// An array of all the intro.js tutorial steps
+export const TUTORIAL_STEPS = Object.freeze([
+  {
+    element: '#tut-todo-list',
+    title: 'Todo list',
+    intro: 'Click here to see all your upcoming assignments',
+    position: 'right',
+  },
+  {
+    element: '#tut-classes',
+    title: 'Classes',
+    intro: '', // This is determined programmatically (see utils.js)
+    position: 'right',
+  },
+  {
+    element: '#tut-friends',
+    title: 'Friends',
+    intro: 'View all your friends and their schedules here',
+    position: 'right',
+  },
+  {
+    element: '#tut-add-assignment-btn',
+    title: 'Add assignments',
+    intro: 'Click here to add assignments',
+  },
+  {
+    element: '#tut-add-assignment-form',
+    intro: 'Fill out the details for your assignment here',
+  },
+  {
+    element: '#tut-crowdsource-btn',
+    intro: 'Click here to add crowdsourced assignments that your classmates have created',
+  },
+  {
+    element: '#tut-calendar',
+    title: 'Calendar',
+    intro: 'View all of your assignment deadlines on this calendar',
+  },
+  {
+    element: '#tut-help',
+    title: 'Help',
+    intro: 'Click here to view this tutorial again'
+  },
+])

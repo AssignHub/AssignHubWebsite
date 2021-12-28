@@ -83,6 +83,7 @@ html {
 .scrollbar-hidden::-webkit-scrollbar-track {
   visibility: hidden !important;
 }
+
 </style>
 
 <script>

@@ -29,6 +29,7 @@ const getDefaultState = () => {
     publicAssignments: [],
     numPendingAssignments: 0,
     classes: [],
+    isNewUser: false,
 
     // Friends
     friends: [],
@@ -196,7 +197,8 @@ export default new Vuex.Store({
     signInGoogle({ commit, dispatch }) {
       return Vue.gAuth.getAuthCode().then(authCode => {
         return post('/auth/sign-in', { authCode, timezoneOffset: new Date().getTimezoneOffset() })
-      }).then(() => {
+      }).then(({ isNewUser }) => {
+        this.state.isNewUser = isNewUser
         return get(`/auth/profile`)
       }).then(authUser => {
         socketReconnect()
