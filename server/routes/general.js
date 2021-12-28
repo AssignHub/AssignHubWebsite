@@ -23,7 +23,7 @@ router.patch('/mood', getUser, async (req, res) => {
       emitToUser(id, 'setFriendMood', { friendId: res.locals.user._id, mood })
     }
 
-    res.json({ success: true })
+    res.end()
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: err })

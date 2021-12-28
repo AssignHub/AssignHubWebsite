@@ -1,22 +1,21 @@
-GET http://localhost:3000/usc/terms
+GET http://localhost:3000/classes/mine?testUserId=6173ca66fb1a493f54ec8968
 
 ###
 
-GET http://localhost:3000/usc/depts
+POST http://localhost:3000/friends/create-request
+Content-Type: application/json
+
+{
+  "testUserId": "6173ca66fb1a493f54ec8968",
+  "userId": "6173ca34fb1a493f54ec8967"
+}
 
 ###
 
-GET http://localhost:3000/usc/depts/CSCI/courses?term=20203
+POST http://localhost:3000/classes/set-term
+Content-Type: application/json
 
-###
-
-GET http://localhost:3000/usc/courses/CSCI-103/sections?term=20211
-
-###
-GET http://localhost:3000/usc/courses/_/sections?term=20211
-
-###
-GET http://localhost:3000/friends/search?query=liu.z
-
-###
-GET http://localhost:3000/usc/classes/5ffb8cd6a3452d2c78c7bd17/members
+{
+  "testUserId": "6173ca34fb1a493f54ec8967",
+  "term": "no way"
+}

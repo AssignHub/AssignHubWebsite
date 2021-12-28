@@ -13,6 +13,26 @@ router.get('/terms', getUser, (req, res) => {
   res.json(terms)
 })
 
+router.post('/set-term', getUser, async (req, res) => {
+  /* Sets the user's currently selected term */
+
+  /* Body params:
+   * term - the term to set the user's curSelectedTerm to
+   */
+
+  const { term } = req.body
+
+  try {
+    res.locals.user.curSelectedTerm = term
+    await res.locals.user.save()
+
+    res.end()
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: err })
+  }
+})
+
 router.post('/add', getUser, getTerm, getSchoolMiddleware('addClass'), async (req, res) => {
   // Requires authentication
 
@@ -203,7 +223,7 @@ router.delete('/:classId', getUser, async (req, res) => {
 
     emitToUser(res.locals.user._id, 'removeClass', classId)
 
-    res.json({ success: true })
+    res.end()
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: err })
