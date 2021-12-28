@@ -27,7 +27,10 @@ router.get('/mine', getUser, async (req, res) => {
 
       const friendId = arr[0]
       const friend = await User.findById(friendId)
-      friends.push(friend.basicInfo)
+      
+      // Make sure friend user exists before adding it to the array
+      if (friend != null)
+        friends.push(friend.basicInfo)
     }
 
     res.json(friends)

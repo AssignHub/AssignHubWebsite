@@ -59,6 +59,7 @@
     </div>
     
     <AddInputAssignmentDialog 
+      id="add-input-assignment-dialog"
       v-model="addInputDialog"
     />
   </div>
@@ -84,12 +85,10 @@
 import AddInputAssignmentDialog from '@/components/AddInputAssignmentDialog'
 import Navigator from '@/components/Navigator'
 import Calendar from '@/components/Calendar'
-import Todo from '@/components/Todo'
-import AddInputAssignment from '../components/AddInputAssignment'
 import InputAssignment from '../components/InputAssignment'
 import JoinClass from '../components/JoinClass'
 
-import { _delete } from '@/utils/utils'
+import { _delete, showTutorial } from '@/utils/utils'
 import { mapGetters, mapState, mapMutations, mapActions } from 'vuex'
 import { CONTEXT_MENU_TYPES } from '@/constants'
 
@@ -109,6 +108,10 @@ export default {
   },
 
   mounted() {
+    if (this.isNewUser) {
+      showTutorial()
+    }
+
     this.populateData()
     this.joinDialog = this.id != "-1"
   },
@@ -124,7 +127,7 @@ export default {
   },
 
   computed: {
-    ...mapState([ 'authUser', 'contextMenu' ]),
+    ...mapState([ 'authUser', 'contextMenu', 'isNewUser' ]),
     ...mapGetters([ 'assignmentById' ]),
   },
 

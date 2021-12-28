@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import store from '@/store'
 import { socket } from '@/main'
+import { TUTORIAL_STEPS } from '@/constants'
 
 export const serverURL = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : '/api'
 export const socketURL = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : '/'
@@ -159,4 +160,41 @@ export const partition = (arr, filter) => {
   const pass = [], fail = []
   arr.forEach((e, i, arr) => (filter(e, i, arr) ? pass : fail).push(e))
   return [pass, fail]
+}
+
+export const showTutorial = () => {
+  introJs()
+    .setOptions({
+      disableInteraction: true,
+      showBullets: false,
+      showStepNumbers: true,
+      steps: TUTORIAL_STEPS,
+    })
+    .onbeforechange(function(element) {
+      switch (element.id) {
+        case 'tut-classes':
+          // Change the tutorial text to reflect the school user goes to
+          this._introItems[this._currentStep].intro = getAddClassBlurb()
+          break
+        case 'tut-add-assignment-btn':
+          // Show the add assignment form
+          document.getElementById('add-input-assignment-dialog').__vue__.show()
+          break
+        case 'tut-calendar':
+          // Hide the add assignment form
+          document.getElementById('add-input-assignment-dialog').__vue__.hide()
+          break
+      }
+    })
+    .start()
+}
+
+export const getAddClassBlurb = () => {
+  // Programatically displays the tutorial tip for adding classes based on user's school
+  if (store.state.authUser.school === 'usc')
+    return 'Add your classes here by entering the course code and section number. This info can be found at <a href=\'https://my.usc.edu\' target=\'_blank\'>my.usc.edu</a>.'
+  else if (store.state.authUser.school === 'berkeley')
+    return 'Add your classes here by entering your Class #. This info can be found at <a href=\'https://classes.berkeley.edu/\' target=\'_blank\'>classes.berkeley.edu</a>.'
+  else
+    return 'Add and view your classes here'
 }
