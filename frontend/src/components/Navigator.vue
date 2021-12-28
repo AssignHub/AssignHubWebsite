@@ -2,44 +2,46 @@
   <div style="display: flex; flex-flor: row;" class="mr-4">
     <v-card
       elevation="1"
-      class="pt-2"
+      class="py-2"
       style="flex: 0 0 50px; min-width: 50px; display: flex; flex-flow: column; align-items: center;"
     >
       <v-btn
+        id="tut-todo-list"
         icon
         :color="page == 0 ? 'blue' : 'gray'"
         large
         v-on:click="handleChangePage(0)"
-        v-intro="'Click here to see all your assignments'"
-        v-intro-position="'right'"
-        v-intro-step="1"
-        v-intro-tooltip-class="'toolTip'"
       >
         <v-icon>mdi-clipboard-check</v-icon>
       </v-btn>
       <v-btn
+        id="tut-classes"
         icon
         :color="page == 1 ? 'blue' : 'gray'"
         large
         v-on:click="handleChangePage(1)"
-        v-intro="`${addClassBlurb}`"
-        v-intro-position="'right'"
-        v-intro-step="2"
-        v-intro-tooltip-class="'toolTip'"
       >
         <v-icon>mdi-school</v-icon>
       </v-btn>
       <v-btn
+        id="tut-friends"
         icon
         :color="page == 2 ? 'blue' : 'gray'"
         large
         v-on:click="handleChangePage(2)"
-        v-intro="'View all your friends and their schedules here'"
-        v-intro-position="'right'"
-        v-intro-step="3"
-        v-intro-tooltip-class="'toolTip'"
       >
         <v-icon>mdi-account-group</v-icon>
+      </v-btn>
+
+      <v-spacer />
+
+      <v-btn
+        id="tut-help"
+        icon
+        large
+        v-on:click="showTutorial"
+      >
+        <v-icon>mdi-help-circle</v-icon>
       </v-btn>
     </v-card>
     <v-expand-x-transition>
@@ -77,6 +79,7 @@ import FriendsList from '@/components/FriendsList'
 import Todo from '@/components/Todo'
 
 import { mapState, mapActions } from 'vuex'
+import { showTutorial } from '@/utils/utils'
 
 export default {
   name: 'Navigator',
@@ -94,22 +97,12 @@ export default {
     }
   },
 
-  mounted() {},
-
   computed: {
     ...mapState(['authUser']),
-    addClassBlurb() {
-      // Programatically displays the tutorial tip for adding classes based on user's school
-      if (this.authUser.school === 'usc')
-        return 'Add your classes here by entering the course code and section number. This info can be found at <a href=\'https://my.usc.edu\' target=\'_blank\'>my.usc.edu</a>.'
-      else if (this.authUser.school === 'berkeley')
-        return 'Add your classes here by entering your Class #. This info can be found at <a href=\'https://classes.berkeley.edu/\' target=\'_blank\'>classes.berkeley.edu</a>.'
-      else
-        return 'Add and view your classes here'
-    }
   },
 
   methods: {
+    showTutorial,
     handleChangePage(page) {
       if (page != this.page) {
         this.page = page

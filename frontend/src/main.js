@@ -7,7 +7,6 @@ import VueSocketIO from 'vue-socket.io'
 import SocketIO from 'socket.io-client'
 import { socketURL } from '@/utils/utils'
 import VDragged from 'v-dragged'
-import VueIntro from 'vue-introjs'
 import 'intro.js/introjs.css';
 
 Vue.config.productionTip = false
@@ -33,12 +32,7 @@ Vue.use(new VueSocketIO({
 }))
 
 // VDragged
-Vue.use(VDragged) 
-
-// IntroJS
-Vue.use(VueIntro)
-
-//import 'intro.js/introjs.css'
+Vue.use(VDragged)
 
 new Vue({
   router,

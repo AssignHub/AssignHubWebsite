@@ -1,11 +1,8 @@
 <!-- Displays assignments in a calendar view -->
 <template>
   <div
+    id="tut-calendar"
     class="outer-container"
-    v-intro="'View all of your added assignments on this calendar'"
-    v-intro-position="'right'"
-    v-intro-step="7"
-    v-intro-tooltip-class="'toolTip'"
   >
     <v-card>
       <div class="calendar-header pa-2">

@@ -11,17 +11,13 @@
       >
         <div v-dragged="drag" id="drag-area" class="pa-1" >
           <v-spacer />
-          <v-btn icon small @click="$emit('input', false)">
+          <v-btn icon small @click="hide">
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </div>
         <div 
+          id="tut-add-assignment-form"
           style="position: relative;" 
-          v-intro="
-            'Add personal assignments'
-          "
-          v-intro-step="5"
-          v-intro-tooltip-class="'toolTip'"
         >
           <div class="add-btn-container">
             <v-badge
@@ -42,12 +38,10 @@
                 "
               >
                 <v-scale-transition leave-absolute origin="center">
-                  <v-icon v-if="showInput" key="plus-box-multiple" 
-                    v-intro="
-                      'Add crowdsourced assignments that your classmates have added'
-                    "
-                    v-intro-step="6"
-                    v-intro-tooltip-class="'toolTip'"
+                  <v-icon 
+                    id="tut-crowdsource-btn"
+                    v-if="showInput" 
+                    key="plus-box-multiple" 
                   >mdi-plus-box-multiple</v-icon>
                   <v-icon v-else key="clipboard-plus">mdi-clipboard-plus</v-icon>
                 </v-scale-transition>
@@ -63,7 +57,7 @@
     </v-slide-y-reverse-transition>
 
     <v-btn
-      id="addAssignmentBtn"
+      id="tut-add-assignment-btn"
       ref="button"
       fab
       color="primary"
@@ -73,11 +67,6 @@
       class="mr-1 mb-1"
       style="bottom: 16px;"
       @click="show"
-      v-intro="
-        'Click here to add assignments'
-      "
-      v-intro-step="4"
-      v-intro-tooltip-class="'toolTip'"
     >
       <v-icon>mdi-plus</v-icon>
     </v-btn>
@@ -100,6 +89,7 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
+import { showTutorial } from '@/utils/utils'
 
 import InputAssignment from '@/components/InputAssignment'
 import AddAssignment from '@/components/AddAssignment'
@@ -116,23 +106,6 @@ export default {
   components: {
     AddAssignment,
     InputAssignment,
-  },
-
-  mounted() {
-
-    if (this.isNewUser) {
-      const that = this
-      this.$intro()
-        .setOptions({
-          showStepNumbers: false,
-        })
-        .onchange(function(targetElement) {
-          if (targetElement.id == 'addAssignmentBtn') {
-            that.show()
-          }
-        })
-        .start()
-    }
   },
 
   watch: {
@@ -152,7 +125,7 @@ export default {
   },
 
   computed: {
-    ...mapState(['numPendingAssignments', 'isNewUser']),
+    ...mapState(['numPendingAssignments']),
     _numPendingAssignments() {
       return this.numPendingAssignments > 99
         ? '99+'
@@ -214,6 +187,9 @@ export default {
         // Get public assignments so the numPendingAssignments number is correct
         this.getPublicAssignments()
       }
+    },
+    hide() {
+      $emit('input', false)
     },
   },
 }
