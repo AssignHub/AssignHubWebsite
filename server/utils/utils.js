@@ -10,34 +10,6 @@ const _fetch = (path, options) => fetch(path, options)
     return data
   })
 
-const getProfile = (accessToken) => {
-  return _fetch('https://www.googleapis.com/oauth2/v1/userinfo?alt=json', {
-    method: 'GET',
-    headers: {
-      'Authorization': 'Bearer ' + accessToken
-    },
-  })
-}
-
-const getAccessToken = (refreshToken) => {
-  return _fetch('https://oauth2.googleapis.com/token', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      client_id: process.env.GOOGLE_CLIENT_ID,
-      client_secret: process.env.GOOGLE_CLIENT_SECRET,
-      grant_type: 'refresh_token',
-      refresh_token: refreshToken,
-    })
-  })
-}
-
-const getExpireDate = (expiresIn) => {
-  return new Date(new Date().getTime() + expiresIn*1000).getTime()
-}
-
 const escapeRegExp = (string)=> {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 }
@@ -47,4 +19,4 @@ const inRange = (val, a, b) => {
   return a <= val && val <= b
 } 
 
-module.exports = { _fetch, getProfile, getAccessToken, getExpireDate, escapeRegExp, inRange }
+module.exports = { _fetch, escapeRegExp, inRange }

@@ -5,19 +5,17 @@ import store from './store'
 import vuetify from './plugins/vuetify'
 import VueSocketIO from 'vue-socket.io'
 import SocketIO from 'socket.io-client'
-import { socketURL } from '@/utils/utils'
+import { socketURL, handleCredentialResponse } from '@/utils/utils'
 import VDragged from 'v-dragged'
 import 'intro.js/introjs.css';
 
 Vue.config.productionTip = false
 
-// Google OAuth 2
-import GAuth from 'vue-google-oauth2'
-const gauthOptions = {
-  clientId: '844813140506-upjq868ckcms47783pmelqtgqs2s1ft4.apps.googleusercontent.com',
-  prompt: 'consent',
-}
-Vue.use(GAuth, gauthOptions)
+// Google sign in
+google.accounts.id.initialize({
+  client_id: '844813140506-upjq868ckcms47783pmelqtgqs2s1ft4.apps.googleusercontent.com',
+  callback: handleCredentialResponse,
+})
 
 // Socket.io
 export const socket = SocketIO(socketURL, { path: '/sockets', withCredentials: true })

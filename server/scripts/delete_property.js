@@ -9,5 +9,5 @@ db.on('error', err => console.error(err))
 db.on('open', async () => {
   console.log(`Successfully connected to db: ${process.env.DATABASE_URL}`)
 
-  User.collection.updateMany({}, {$unset: {lastSignInTimestamp: true, lastActiveTimestamp: true}}, () => console.log('success!'))
+  User.collection.updateMany({}, {$unset: {friends: true, accessToken: true, refreshToken: true, accessTokenExpireDate: true}}, () => console.log('success!'))
 })

@@ -2,11 +2,11 @@ const reqlib = require('app-root-path').require
 const editJsonFile = require('edit-json-file')
 const express = require('express')
 const router = express.Router()
+const jwt_decode = require('jwt-decode')
 
 const User = reqlib('models/user')
 const DailyUserLog = reqlib('models/daily_user_log')
 
-const { _fetch, getProfile, getExpireDate } = reqlib('utils/utils')
 const { getUser } = reqlib('middleware/auth')
 const { escapeRegExp } = reqlib('utils/utils')
 const { sendMail } = reqlib('mailer')
@@ -15,29 +15,14 @@ require('dotenv').config()
 
 router.post('/sign-in', async (req, res) => {
   /* Body params:
-  *  authCode - the authorization code for Google OAuth
+  *  credential - the JWT credential obtained from google sign in
   *  timezoneOffset - the client's offset from UTC time
   */
   
-  const { authCode, timezoneOffset } = req.body
+  const { credential, timezoneOffset } = req.body
   try {
-    // Get token data from authCode
-    const tokenData = await _fetch('https://oauth2.googleapis.com/token', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        code: authCode,
-        client_id: process.env.GOOGLE_CLIENT_ID,
-        client_secret: process.env.GOOGLE_CLIENT_SECRET,
-        grant_type: 'authorization_code',
-        redirect_uri: process.env.NODE_ENV === 'development' ? 'http://localhost:8080' : 'https://assignhub.app',
-      })
-    })
-
-    // Find user and update info and tokens
-    const profileData = await getProfile(tokenData.access_token)
+    // Parse user info from credential
+    const profileData = jwt_decode(credential)
     
     // Restrict emails
     const allowedEmails = editJsonFile(`${__dirname}/../config/general.json`).toObject().allowedEmails
@@ -63,10 +48,7 @@ router.post('/sign-in', async (req, res) => {
       lastName: profileData.family_name || 'null', 
       email: profileData.email,
       pic: profileData.picture,
-      school,
-      accessToken: tokenData.access_token,
-      refreshToken: tokenData.refresh_token,
-      accessTokenExpireDate: getExpireDate(tokenData.expires_in), 
+      school
     }
     let user = await User.findOneAndUpdate(
       { email: profileData.email }, 

@@ -194,9 +194,10 @@ export default new Vuex.Store({
     },
 
     // Auth
-    signInGoogle({ commit, dispatch }) {
-      return Vue.gAuth.getAuthCode().then(authCode => {
-        return post('/auth/sign-in', { authCode, timezoneOffset: new Date().getTimezoneOffset() })
+    signInGoogle({ commit, dispatch }, credential) {
+      return post('/auth/sign-in', { 
+        credential, 
+        timezoneOffset: new Date().getTimezoneOffset() 
       }).then(({ isNewUser }) => {
         this.state.isNewUser = isNewUser
         return get(`/auth/profile`)
@@ -219,6 +220,7 @@ export default new Vuex.Store({
       return post('/auth/sign-out').then(() => {
         socketReconnect()
         commit('resetState')
+        google.accounts.id.disableAutoSelect()
       }).catch((err) => {
         dispatch('showError', 'There was an problem trying to sign out! Please try again later.')
       })
