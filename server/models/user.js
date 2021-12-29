@@ -21,11 +21,6 @@ const userSchema = new mongoose.Schema({
   school: { type: String, required: true },
   mood: { type: String, enum: Object.values(Moods), default: '' },
   
-  // Google OAuth
-  accessToken: String,
-  refreshToken: String,
-  accessTokenExpireDate: Number,
-  
   // Classes and assignments
   curSelectedTerm: { type: String },
   classes: [{
@@ -37,9 +32,6 @@ const userSchema = new mongoose.Schema({
     done: { type: Boolean, default: false }, 
   }],
   hiddenAssignments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Assignment' }],
-  
-  // Friends (deprecated!)
-  friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 },
 {
   timestamps: true,

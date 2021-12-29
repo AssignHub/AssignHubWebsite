@@ -198,3 +198,7 @@ export const getAddClassBlurb = () => {
   else
     return 'Add and view your classes here'
 }
+
+export const handleCredentialResponse = ({ credential }) => {
+  store.dispatch('signInGoogle', credential)
+}
