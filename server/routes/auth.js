@@ -2,7 +2,8 @@ const reqlib = require('app-root-path').require
 const editJsonFile = require('edit-json-file')
 const express = require('express')
 const router = express.Router()
-const jwt_decode = require('jwt-decode')
+const { OAuth2Client } = require('google-auth-library');
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
 
 const User = reqlib('models/user')
 const DailyUserLog = reqlib('models/daily_user_log')
@@ -22,7 +23,11 @@ router.post('/sign-in', async (req, res) => {
   const { credential, timezoneOffset } = req.body
   try {
     // Parse user info from credential
-    const profileData = jwt_decode(credential)
+    const ticket = await client.verifyIdToken({
+      idToken: credential,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    })
+    const profileData = ticket.getPayload()
     
     // Restrict emails
     const allowedEmails = editJsonFile(`${__dirname}/../config/general.json`).toObject().allowedEmails
