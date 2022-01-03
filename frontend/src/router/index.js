@@ -21,11 +21,11 @@ const routes = [
     name: 'Join',
     component: Home,
     props: true
-  }
+  },
 ]
 
 const router = new VueRouter({
-  mode: process.env.NODE_ENV === 'development' ? 'hash' : 'history',
+  mode: 'history',
   routes
 })
 

@@ -179,7 +179,7 @@ export default {
       let origin = window.location.origin
 
       // Add hash if in development mode
-      if (process.env.NODE_ENV === 'development') origin += '/#'
+      //if (process.env.NODE_ENV === 'development') origin += '/#'
 
       return `${origin}/join/${this._class._id}`
     },

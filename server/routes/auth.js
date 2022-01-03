@@ -1,6 +1,7 @@
 const reqlib = require('app-root-path').require
 const editJsonFile = require('edit-json-file')
 const express = require('express')
+const url = require('url')
 const router = express.Router()
 const { OAuth2Client } = require('google-auth-library');
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
@@ -9,7 +10,7 @@ const User = reqlib('models/user')
 const DailyUserLog = reqlib('models/daily_user_log')
 
 const { getUser } = reqlib('middleware/auth')
-const { escapeRegExp } = reqlib('utils/utils')
+const { escapeRegExp, _fetch } = reqlib('utils/utils')
 const { sendMail } = reqlib('mailer')
 const discordBot = reqlib('discord_bot')
 require('dotenv').config()
@@ -82,6 +83,33 @@ router.post('/sign-in', async (req, res) => {
 
     res.json({ isNewUser })
   } catch(err) {
+    console.error(err)
+    res.status(500).json({ error: err })
+  }
+})
+
+router.get('/sign-in-chrome-ext', async (req, res) => {
+  /* Signs in from the AssignHub chrome extension */
+
+  try {
+    const { state: socketId, access_token: accessToken, token_type: tokenType } = req.query
+
+    const data = await _fetch('https://openidconnect.googleapis.com/v1/userinfo', {
+      method: 'GET',
+      headers: {
+        'Authorization': `${tokenType} ${accessToken}`
+      }
+    })
+
+    // TODO: make this create a new account if it doesn't exist
+    const user = await User.find({
+      email: data.email
+    }).lean()
+
+    req.session.userId = user[0]._id
+
+    res.end()
+  } catch (err) {
     console.error(err)
     res.status(500).json({ error: err })
   }
