@@ -5,6 +5,7 @@
       accordion
       mandatory
       flat
+      v-model="panel"
     >
       <v-expansion-panel v-if="friendRequests.incoming.length > 0">
         <v-expansion-panel-header disable-icon-rotate class="text-subtitle-2 pa-4">
@@ -188,7 +189,12 @@ export default {
     return {
       query: '',
       showSearch: false,
+      panel: 0, // Which panel is currently open
     }
+  },
+
+  created() {
+    this.setDefaultPanelOpen()
   },
 
   computed: {
@@ -221,6 +227,15 @@ export default {
         // Filter using search query
         return s.toLowerCase().includes(this.query.toLowerCase())
       })
+    },
+  },
+
+  methods: {
+    setDefaultPanelOpen() {
+      // Opens the "my friends" panel by default
+      this.panel = 0
+      if (this.friendRequests.incoming.length > 0) this.panel++
+      if (this.friendRequests.outgoing.length > 0) this.panel++
     },
   },
 }

@@ -30,7 +30,15 @@
         large
         v-on:click="handleChangePage(2)"
       >
-        <v-icon>mdi-account-group</v-icon>
+        <v-badge
+          overlap
+          :content="numIncomingFriendRequestsString"
+          :value="numIncomingFriendRequestsString"
+          bordered
+          style="z-index: 10;"
+        >
+          <v-icon>mdi-account-group</v-icon>
+        </v-badge>
       </v-btn>
 
       <v-spacer />
@@ -98,7 +106,15 @@ export default {
   },
 
   computed: {
-    ...mapState(['authUser']),
+    ...mapState(['authUser', 'friendRequests']),
+    numIncomingFriendRequestsString() {
+      if (this.friendRequests.incoming.length > 99) {
+        return '99+'
+      } else if (this.friendRequests.incoming.length === 0) {
+        return ''
+      }
+      return '' + this.friendRequests.incoming.length
+    }
   },
 
   methods: {
