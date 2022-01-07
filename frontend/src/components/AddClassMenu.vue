@@ -57,7 +57,7 @@
 import { CLASS_COLORS } from '@/constants'
 import { mapState, mapGetters } from 'vuex'
 
-import uscAddClassMenu from '@/components/school_specific/usc/AddClassMenu'
+import uscAddClassMenu from '@/components/school_specific/usc/AddClassMenuSearch'
 import berkeleyAddClassMenu from '@/components/school_specific/berkeley/AddClassMenu'
 
 export default {

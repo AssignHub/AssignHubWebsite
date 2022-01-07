@@ -33,6 +33,17 @@ router.post('/set-term', getUser, async (req, res) => {
   }
 })
 
+router.get('/search', getUser, getTerm, getSchoolMiddleware('searchClass'), async (req, res) => {
+  /* Returns an array containing all the sections of the specified courseId */
+
+  /* Query params:
+  *  courseId - the courseId to search
+  *  term - the desired term
+  */
+
+  res.json(res.locals.classSections)
+})
+
 router.post('/add', getUser, getTerm, getSchoolMiddleware('addClass'), async (req, res) => {
   // Requires authentication
 

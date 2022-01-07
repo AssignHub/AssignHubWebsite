@@ -1,6 +1,66 @@
 const TROJAN = require('trojan-course-api')
 const reqlib = require('app-root-path').require
 const Class = reqlib('/models/class')
+const { getInstructors } = require('./utils')
+
+exports.searchClass = async (req, res, next) => {
+  /* Sets res.locals.classSections to an array containing all the sections of the specified courseId */
+  // getTerm must be called before this middleware
+
+  /* Query params:
+  *  courseId - the courseId to search
+  */
+
+  const { courseId } = req.query
+  try {
+    const options = { term: res.locals.term }
+
+    try {
+      let sections = await TROJAN.course(courseId, options).then(data => {
+        return data.courses[courseId].sections
+      })
+
+      // Format sections
+      sections = Object.keys(sections).map(sectionId => {
+        const section = sections[sectionId]
+        
+        if (section.canceled) return null
+
+        const { blocks, type } = section
+        const instructors = getInstructors(section)
+        const typeMap = {
+          'Lec': 'Lecture',
+          'Dis': 'Discussion',
+          'Lab': 'Lab',
+          'Qz': 'Quiz',
+        }
+
+        return {
+          courseId, 
+          sectionId, 
+          blocks, 
+          type: typeMap[type], 
+          instructors
+        }
+      })
+
+      // Filter out null values
+      sections = sections.filter(Boolean)
+
+      res.locals.classSections = sections
+
+    } catch (err) {
+      // If course ID is wrong
+      res.status(404).json({ error: 'class-not-found' })
+      return
+    }
+
+    next()
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: err })
+  }
+}
 
 exports.addClass = async (req, res, next) => {
   // getTerm must be called before this middleware
@@ -46,22 +106,7 @@ exports.addClass = async (req, res, next) => {
         return
       }
 
-      let instructors = []
-      if (section.instructor) {
-        if (section.instructor.hasOwnProperty('length')) {
-          // instructor prop is an array of multiple instructors
-          section.instructor.forEach(instructor => instructors.push({
-            firstName: instructor.first_name,
-            lastName: instructor.last_name,
-          }))
-        } else {
-          // instructor prop contains a single instructor
-          instructors.push({
-            firstName: section.instructor.first_name,
-            lastName: section.instructor.last_name,
-          })
-        }
-      }
+      let instructors = getInstructors(section)
 
       const classData = {
         term: res.locals.term,
