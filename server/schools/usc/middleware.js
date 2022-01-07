@@ -15,45 +15,45 @@ exports.searchClass = async (req, res, next) => {
   try {
     const options = { term: res.locals.term }
 
+    let sections
     try {
-      let sections = await TROJAN.course(courseId, options).then(data => {
+      sections = await TROJAN.course(courseId, options).then(data => {
         return data.courses[courseId].sections
       })
-
-      // Format sections
-      sections = Object.keys(sections).map(sectionId => {
-        const section = sections[sectionId]
-        
-        if (section.canceled) return null
-
-        const { blocks, type } = section
-        const instructors = getInstructors(section)
-        const typeMap = {
-          'Lec': 'Lecture',
-          'Dis': 'Discussion',
-          'Lab': 'Lab',
-          'Qz': 'Quiz',
-        }
-
-        return {
-          courseId, 
-          sectionId, 
-          blocks, 
-          type: typeMap[type], 
-          instructors
-        }
-      })
-
-      // Filter out null values
-      sections = sections.filter(Boolean)
-
-      res.locals.classSections = sections
-
     } catch (err) {
       // If course ID is wrong
       res.status(404).json({ error: 'class-not-found' })
       return
     }
+
+    // Format sections
+    sections = Object.keys(sections).map(sectionId => {
+      const section = sections[sectionId]
+      
+      if (section.canceled) return null
+
+      const { blocks, type } = section
+      const instructors = getInstructors(section)
+      const typeMap = {
+        'Lec': 'Lecture',
+        'Dis': 'Discussion',
+        'Lab': 'Lab',
+        'Qz': 'Quiz',
+      }
+
+      return {
+        courseId, 
+        sectionId, 
+        blocks, 
+        type: typeMap[type], 
+        instructors
+      }
+    })
+
+    // Filter out null values
+    sections = sections.filter(Boolean)
+
+    res.locals.classSections = sections
 
     next()
   } catch (err) {

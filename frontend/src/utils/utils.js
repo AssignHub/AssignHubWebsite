@@ -123,6 +123,8 @@ export const getTimeString = (date) => {
 }
 
 export const to12Hr = (time) => {
+  if (!time) return ''
+
   const [ hour, min ] = time.split(':')
   let newHour;
   if (parseInt(hour) <= 11) {
@@ -141,12 +143,15 @@ export const blocksString = (_class) => {
   if (_class.asynchronous)
     return 'Asynchronous'
 
+  // Put slashes between days and convert H to TH
   const daysString = _class.blocks.map(block => {
     return block.day === 'H' ? 'TH' : block.day
-    //return this.dayOfWeekFromAbbr(block.day)
   }).join('/')
+
+  // Construct time string
   const { start, end } = _class.blocks[0]
   const timeString = to12Hr(start) + ' - ' + to12Hr(end)
+
   return daysString + ' | ' + timeString
 }
 

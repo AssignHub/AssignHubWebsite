@@ -20,7 +20,7 @@
         v-on="on"
       >+ Add Class</v-btn>
     </template>
-    <component :is="`${school}AddClassMenu`" :colors="colors" @close="menu = false" />
+    <component :is="`${school}AddClassMenu`" :colors="colors" :menu="menu" @close="menu = false" />
   </v-menu>
 </template>
 
