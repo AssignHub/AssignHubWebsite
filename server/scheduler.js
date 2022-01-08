@@ -4,6 +4,7 @@ const User = require('./models/user')
 const FriendRequest = require('./models/friend_request')
 const mailer = require('./mailer')
 const usc = require('./schools/usc')
+const berkeley = require('./schools/berkeley')
 const appRoot = require('app-root-path')
 
 exports.scheduleTasks = () => {
@@ -16,6 +17,12 @@ exports.scheduleTasks = () => {
   usc.utils.writeTermsToConfig()
   cron.schedule('0 0 * * *', () => {
     usc.utils.writeTermsToConfig()
+  })
+
+  // Write Berkeley classes to config
+  berkeley.utils.writeClassesToConfig()
+  cron.schedule('0 0 * * *', () => {
+    berkeley.utils.writeClassesToConfig()
   })
 
   // email friend request reminder after a certain time period
