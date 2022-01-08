@@ -41,6 +41,8 @@ router.get('/search', getUser, getTerm, getSchoolMiddleware('searchClass'), asyn
   *  term - the desired term
   */
 
+  // TODO: return something to show the user the sections they are already enrolled in
+
   res.json(res.locals.classSections)
 })
 
@@ -85,6 +87,80 @@ router.post('/add', getUser, getTerm, getSchoolMiddleware('addClass'), async (re
     emitToUser(res.locals.user._id, 'addClass', { ..._class.toJSON(), color: color, numMembers })
 
     res.status(201).json({ courseId: _class.courseId })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: err })
+  }
+})
+
+router.post('/add-multiple', getUser, async (req, res) => {
+  /* Adds all the given sections to the user's classes or nonLectureSections array depending on whether the section is a Lecture section or not */
+
+  /* Body params:
+  *  sections - an array of class sections to add, the format of which is
+  *  [{
+  *    term: String,
+  *    courseId: String,
+  *    sectionId: String,
+  *    type: String['Lecture', 'Discussion', 'Lab', 'Quiz'],
+  *    blocks: [{ day: String, start: String, end: String, location: String }],
+  *    instructors: [{ firstName: String, lastName: String }],
+  *  }]
+  *  color - the color, in hex format (e.g. #1fa3bc)
+  */
+  
+  const { sections, color } = req.body
+  try {
+    let lectureSection
+    for (const { term, courseId, sectionId, type, blocks, instructors } of sections) {
+      // Find class document if it exists or create a new one
+      let _class = await Class.findOne({ 
+        term,
+        courseId, 
+        sectionId,
+      })
+
+      if (!_class) {
+        _class = await new Class({
+          term,
+          courseId,
+          sectionId,
+          instructors,
+          blocks,
+        }).save()
+      }
+
+      // Perform some error checking to prevent user error
+      const curSections = type === 'Lecture' ? res.locals.user.classes : res.locals.user.nonLectureSections
+      
+      if (curSections.filter(e => e.class._id.equals(_class._id)).length > 0) {
+        // If user already enrolled in class
+        res.status(400).json({ error: 'already-in-class', sectionId })
+        return
+      }
+
+      if (type === 'Lecture' && curSections.findIndex(e => e.class.term === res.locals.term && e.class.courseId === _class.courseId) !== -1) {
+        // If user already enrolled in a class that has same courseId
+        res.status(400).json({ error: 'same-course-id' })
+        return
+      }
+
+      // Add section to user object
+      if (type === 'Lecture') {
+        lectureSection = _class
+        res.locals.user.classes.push({ class: _class._id, color: color })
+      } else {
+        res.locals.user.nonLectureSections.push({ class: _class._id })
+      }
+      await res.locals.user.save()
+
+    }
+    
+    // Let user know the class was added via sockets
+    const numMembers = await lectureSection.findMembers().lean().countDocuments()
+    emitToUser(res.locals.user._id, 'addClass', { ...lectureSection.toJSON(), color: color, numMembers })
+
+    res.status(201).json({ courseId: lectureSection.courseId })
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: err })
@@ -145,6 +221,7 @@ router.post('/join', getUser, getTerm, async (req, res) => {
   }
 })
 
+// TODO: need to return nonLectureSections as well
 router.get('/mine', getUser, async (req, res) => {
   // Requires authentication
   try {
@@ -196,6 +273,7 @@ router.get('/get/:courseId', getUser, getTerm, async (req, res) => {
   }
 })
 
+// TODO: need to delete nonLecture sections as well
 router.delete('/:classId', getUser, async (req, res) => {
   // Deletes the requested class
   // Requires authentication

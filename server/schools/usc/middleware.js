@@ -42,6 +42,7 @@ exports.searchClass = async (req, res, next) => {
       }
 
       return {
+        term: res.locals.term,
         courseId, 
         sectionId, 
         blocks, 
