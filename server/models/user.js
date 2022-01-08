@@ -27,6 +27,9 @@ const userSchema = new mongoose.Schema({
     class: { type: mongoose.Schema.Types.ObjectId, ref: 'Class', required: true },
     color: { type: String, required: true },
   }],
+  nonLectureSections: [{
+    class: { type: mongoose.Schema.Types.ObjectId, ref: 'Class', required: true},
+  }],
   assignments: [{ 
     assignment: { type: mongoose.Schema.Types.ObjectId, ref: 'Assignment', required: true },
     done: { type: Boolean, default: false }, 

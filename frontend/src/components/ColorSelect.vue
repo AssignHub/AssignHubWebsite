@@ -5,7 +5,7 @@
     outlined
     dense
     hide-details
-    label="Color"
+    :label="noLabel ? '' : 'Color'"
     :items="colors"
     :value="value"
     @input="(val) => $emit('input', val)"
@@ -31,6 +31,7 @@ export default {
     value: { type: String, required: true },
     colors: { type: Array, default: null },
     disabled: { type: Boolean, default: false },
+    noLabel: { type: Boolean, default: false },
     attrs: Object,
   },
 }

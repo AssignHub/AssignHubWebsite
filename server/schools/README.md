@@ -13,12 +13,14 @@ Contains the following middleware functions
 - Each element of the array should be of the following form:
 ```
 {
+  term : String,
   courseId : String, 
   sectionId : String, 
   blocks : [{
     day : String['M', 'T', 'W', 'H', 'F'],
     start : String, // e.g. "14:00"
     end : String, // e.g. "16:50"
+    location : String, 
   }], 
   type : String['Lecture', 'Discussion', 'Lab', 'Quiz'], 
   instructors : [{
