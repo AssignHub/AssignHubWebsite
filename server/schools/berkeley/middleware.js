@@ -15,10 +15,36 @@ exports.searchClass = async (req, res, next) => {
   try {
 
     const classes = getClasses()
-    
-    let sections 
+
+    let sections = []
     try {
-      sections = await axios.get(`https://berkeleytime.com/api/catalog/catalog_json/course_box/?course_id=${classes.get(courseId)}`).then(response => response.data.course.sections)
+
+      // Fetch all sections.
+      const data = await axios.get(`https://berkeleytime.com/api/catalog/catalog_json/course_box/?course_id=${classes.get(courseId)}`).then(response => response.data.course.sections)
+      
+      // Format sections to format described in general README.
+      data.forEach(section => {
+
+        let blocksData = []
+        
+        // Get all blocks from array of DOW (day of week).
+        section.word_days.split("").forEach(dow => blocksData.push({
+          day: dow,
+          start: section.start_time.substring(10, 15),
+          end: section.end_time.substring(10, 15)
+        }))
+
+        sections.push({
+          courseId: courseId,
+          sectionId: section.id,
+          blocks: blocksData,
+          type: section.kind,
+          instructors: [{
+            firstName: section.instructor.split(" ")[1],
+            lastName: section.instructor.split(" ")[0]
+          }]
+        })
+      })  
     } catch (err) {
       // If course ID is wrong
       res.status(404).json({ error: 'class-not-found' })
