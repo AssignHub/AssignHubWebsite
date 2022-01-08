@@ -17,8 +17,8 @@ Contains the following middleware functions
   sectionId : String, 
   blocks : [{
     day : String['M', 'T', 'W', 'H', 'F'],
-    start : String,
-    end : String,
+    start : String, // e.g. "14:00"
+    end : String, // e.g. "16:50"
   }], 
   type : String['Lecture', 'Discussion', 'Lab', 'Quiz'], 
   instructors : [{
