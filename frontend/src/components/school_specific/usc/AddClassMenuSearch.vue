@@ -41,7 +41,7 @@
           
           <v-spacer />
 
-          <ColorSelect class="white" v-model="color" :colors="colors" no-label style="width: 10px;" />
+          <ColorSelect v-if="enrolled.length === 0" class="white" v-model="color" :colors="colors" no-label />
         </v-card-title>
       </div>
     </v-expand-transition>
@@ -68,7 +68,7 @@
             :key="`${type}-${sectionId}`"
           >
             <v-divider v-if="i !== 0"/>
-            <v-list-item @click="select(sectionId)">
+            <v-list-item @click="select(sectionId)" :style="{ backgroundColor: enrolled.includes(sectionId) ? color : 'unset' }">
               <v-list-item-content>
                 <v-list-item-title>{{ `${sectionId} | ${type}` }}</v-list-item-title>
                 <v-list-item-subtitle v-if="instructors.length > 0">{{ instructorNames({ instructors }) }}</v-list-item-subtitle>
@@ -78,6 +78,7 @@
                 <v-checkbox
                   v-model="checked"
                   :value="sectionId"
+                  :color="enrolled.includes(sectionId) ? 'white' : ''"
                   hide-details
                   @click.stop
                   @mousedown.stop 
@@ -95,12 +96,12 @@
         <v-card-actions>
           <v-spacer />
           <v-btn 
-            :style="{opacity: checked.length > 0 ? 1 : 0}" 
+            :style="{opacity: hasChanged ? 1 : 0}" 
             color="primary" 
             :loading="loading"
             @click="addSections"
           >
-            Add {{ checked.length > 1 ? checked.length : 1 }} section{{ checked.length > 1 ? 's' : '' }}
+            {{ enrolled.length === 0 ? 'Add' : 'Update' }}
           </v-btn>
           <v-spacer />
         </v-card-actions>
@@ -151,10 +152,6 @@ export default {
       // Close menu if term has been changed
       this.$emit('close')
     },
-    colors: {
-      immediate: true,
-      handler() { this.color = this.colors[Math.floor(Math.random() * this.colors.length)] },
-    }
   },
 
   data() {
@@ -164,7 +161,8 @@ export default {
       courseId: '',
       color: '',
       sections: [],
-      checked: [],
+      enrolled: [], // Contains the already enrolled section ids for the given course id
+      checked: [], // Contains the currently checked section ids
       loading: false,
     }
   },
@@ -183,41 +181,109 @@ export default {
       
       return filtered
     },
+    change() {
+      /* Returns the difference between the enrolled and checked arrays,
+       * i.e. which sections have been added/removed from the enrolled array 
+       */
+      const change = {
+        added: [],
+        removed: [],
+      }
+
+      const checkedTmp = [...this.checked]
+      
+      // Search for removed sections, and remove them from checkedTmp if they exist
+      for (let sectionId of this.enrolled) {
+        const index = checkedTmp.indexOf(sectionId)
+        if (index === -1) {
+          change.removed.push(sectionId)
+        } else {
+          checkedTmp.splice(index, 1)
+        }
+      }
+
+      // The sections left over in checkedTmp are the newly added sections
+      change.added = [...checkedTmp]
+
+      return change
+    },
+    hasChanged() {
+      /* Returns whether checked has changed from enrolled */
+      return this.change.added.length > 0 || this.change.removed.length > 0
+    }
   },
 
   methods: {
     ...mapActions([ 'showInfo', 'showError' ]),
     instructorNames, blocksString,
-    addSections() {
-      const selectedSections = this.getSelectedSections()
+    async addSections() {
+      // Get the section objects to add or to remove
+      const addedSections = this.getSectionsFromIds(this.change.added)
+      const removedSections = this.getSectionsFromIds(this.change.removed).map(s => {
+        const copy = {...s}
+        delete copy.blocks
+        delete copy.instructors
+        return copy
+      })
 
+      // Display lecture error (if any)
+      if (this.checkLectureError()) {
+        return
+      }
+
+      /* Remove and then add the specified sections
+       * NOTE: the order is important so that graphically, a lecture section is removed before a new one is added (if there was a lecture section change)
+       */ 
       this.loading = true
-
-      post(`/classes/add-multiple`, {
-        sections: selectedSections,
-        color: this.color,
-      }).then(data => {
-        this.showInfo(`Successfully added "${data.courseId}"`)
+      try {
+        await post(`/classes/remove-sections`, {
+          sections: removedSections
+        })
+        await post(`/classes/add-sections`, {
+          sections: addedSections,
+          color: this.color,
+        })
+      
+        this.showInfo(`Successfully ${this.enrolled.length === 0 ? 'added' : 'updated'} "${this.courseId.toUpperCase()}"`)
         this.reset()
         this.loading = false
-      }).catch(err => {
-        if (err === 'already-in-class') {
-          // TODO: err.section is undefined because of how the post utils function works
-          this.showError(`You are already in ${this.courseId} section ${err.sectionId}!`)
-        } else if (err === 'same-course-id') {
-          this.showError(`You are already enrolled in another lecture section for "${this.courseId}"!`)
-        } else {
-          this.showError('Something went wrong when trying to add that class. Please try again later.')
-        }
+      } catch (err) {
+        this.showError('Something went wrong when trying to add that class. Please try again later.')
         this.loading = false
-      })
+      }
+    },
+    checkLectureError() {
+      /* Shows a message if incorrect # of lectures selected and returns true, otherwise returns false */
+      let numLectures = 0
+      for (const section of this.filteredSections['Lecture']) {
+        if (this.checked.includes(section.sectionId)) {
+          numLectures++
+        }
+      }
+
+      if (numLectures === 0) {
+        this.showError(`Please select a lecture section for ${this.courseId.toUpperCase()}`)
+        return true
+      } else if (numLectures > 1) {
+        this.showError(`You can only enroll in 1 lecture section for ${this.courseId.toUpperCase()}`)
+        return true
+      }
+
+      return false
     },
     getSections() {
       /* Fetches all the sections for the given courseId and stores them in this.sections */
       this.loading = true
-      get(`/classes/search?courseId=${this.courseId.toUpperCase()}&term=${this.term}`).then(sections => {
+      
+      get(`/classes/search?courseId=${this.courseId.toUpperCase()}&term=${this.term}`).then(({ sections, enrolledSectionIds, color }) => {
         this.sections = sections
-        this.checked = []
+        this.enrolled = [...enrolledSectionIds]
+        this.checked = [...enrolledSectionIds]
+        if (color) 
+          this.color = color
+        else
+          this.setRandomColor()
+
         this.loading = false
       }).catch(err => {
         this.sections = []
@@ -225,8 +291,9 @@ export default {
         this.loading = false
       })
     },
-    getSelectedSections() {
-      return this.checked.map(sectionId => {
+    getSectionsFromIds(selection) {
+      /* Returns an array of the sections given an array of sectionIds */
+      return selection.map(sectionId => {
         return this.sections.find(s => s.sectionId === sectionId)
       })
     },
@@ -245,6 +312,10 @@ export default {
       } else {
         this.checked.push(sectionId)
       }
+    },
+    setRandomColor() {
+      /* Sets this.color to a random color based on the available colors */
+      this.color = this.colors[Math.floor(Math.random() * this.colors.length)]
     },
   }
 }
