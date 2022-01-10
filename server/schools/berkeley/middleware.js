@@ -20,29 +20,46 @@ exports.searchClass = async (req, res, next) => {
     try {
 
       // Fetch all sections.
-      const data = await axios.get(`https://berkeleytime.com/api/catalog/catalog_json/course_box/?course_id=${classes.get(courseId)}`).then(response => response.data.course.sections)
+      const data = await axios.get(`https://berkeleytime.com/api/catalog/catalog_json/course_box/?course_id=${classes.get(courseId)}`).then(response => {
+        console.log(response.data.sections)
+      return response.data.sections})
       
       // Format sections to format described in general README.
       data.forEach(section => {
 
         let blocksData = []
+        let instructorData = []
         
         // Get all blocks from array of DOW (day of week).
-        section.word_days.split("").forEach(dow => blocksData.push({
-          day: dow,
-          start: section.start_time.substring(10, 15),
-          end: section.end_time.substring(10, 15)
-        }))
+        for (let i = 0; i < section.word_days.length; i++) {
+          let dow = section.word_days.charAt(i)
+          if (section.word_days.charAt(i) == 'T') {
+            if (section.word_days.charAt(i + 1) == 'h') {
+              dow = "H"
+            }
+            i++;
+          }
+          blocksData.push({
+            day: dow,
+            start: section.start_time.substring(11, 16),
+            end: section.end_time.substring(11, 16)
+          })
+        }
+
+        // Format instructor data from string.
+        section.instructor.split(", ").forEach(instructor => {
+          instructorData.push({
+            firstName: instructor.split(" ")[1],
+            lastName: instructor.split(" ")[0]
+          })
+        })
 
         sections.push({
           courseId: courseId,
           sectionId: section.id,
           blocks: blocksData,
           type: section.kind,
-          instructors: [{
-            firstName: section.instructor.split(" ")[1],
-            lastName: section.instructor.split(" ")[0]
-          }]
+          instructors: instructorData
         })
       })  
     } catch (err) {
