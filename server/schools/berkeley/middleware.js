@@ -20,8 +20,9 @@ exports.searchClass = async (req, res, next) => {
     try {
 
       // Fetch all sections.
+      console.log(classes.get(courseId))
       const data = await axios.get(`https://berkeleytime.com/api/catalog/catalog_json/course_box/?course_id=${classes.get(courseId)}`).then(response => {
-        console.log(response.data.sections)
+        
       return response.data.sections})
       
       // Format sections to format described in general README.
@@ -56,7 +57,7 @@ exports.searchClass = async (req, res, next) => {
 
         sections.push({
           courseId: courseId,
-          sectionId: section.id,
+          sectionId: section.ccn,
           blocks: blocksData,
           type: section.kind,
           instructors: instructorData
