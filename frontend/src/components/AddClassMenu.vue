@@ -14,6 +14,7 @@
       <v-btn
         :style="btnStyle"
         text
+        :disabled="disableAddClass"
         block
         class="grey lighten-2 add-btn"
         v-bind="attrs"
@@ -55,6 +56,7 @@
 <script>
 
 import { CLASS_COLORS } from '@/constants'
+import { getCurTerm } from '@/utils/utils'
 import { mapState, mapGetters } from 'vuex'
 
 import uscAddClassMenu from '@/components/school_specific/usc/AddClassMenuSearch'
@@ -79,7 +81,7 @@ export default {
   },
 
   computed: {
-    ...mapState([ 'authUser' ]),
+    ...mapState([ 'authUser', 'term' ]),
     ...mapGetters({ classes: 'termClasses' }),
     school() {
       if (process.env.NODE_ENV === 'development' && this.authUser.school == 'gmail') {
@@ -95,6 +97,10 @@ export default {
       }
       return colors
     },
+    disableAddClass() {
+      return this.term != getCurTerm()
+    }
+
   },
 }
 </script>
