@@ -50,14 +50,17 @@ export const EMOJIS = Object.freeze({
 export const BERKELEY_SEMESTERS = Object.freeze([
   {
     term: 2218,
+    text: "Fall 2021",
     end: "December 17, 2021"
   },
   {
     term: 2222,
+    text: "Spring 2022",
     end: "May 13, 2022"
   },
   {
     term: 2225,
+    text: "Summer 2022",
     end: "August 12, 2022"
   }
 ])

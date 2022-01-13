@@ -91,7 +91,7 @@ export const getCurTerm = () => {
     let semester = BERKELEY_SEMESTERS[i]
     let d = new Date(semester.end + " 23:59:59")
     if (d > Date.now()) {
-      return semester.term
+      return semester
     }
   }
   

@@ -98,7 +98,7 @@ export default {
       return colors
     },
     disableAddClass() {
-      return this.term != getCurTerm()
+      return this.term != getCurTerm().term
     }
 
   },
