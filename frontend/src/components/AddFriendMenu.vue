@@ -19,7 +19,7 @@
       >+ Add Friend</v-btn>
     </template>
     <v-card color="grey lighten-3" style="width:300px;">
-      <v-card-text class="">
+      <v-card-text>
         <v-text-field 
           autofocus
           v-model="query"

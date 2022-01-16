@@ -202,10 +202,10 @@ export default {
   },
 
   created() {
-    window.addEventListener('keyup', (e) => {
+    /*window.addEventListener('keyup', (e) => {
       if (e.key === 'ArrowRight') this.nextWeek()
       else if (e.key === 'ArrowLeft') this.prevWeek()
-    })
+    })*/
   },
 
   data() {

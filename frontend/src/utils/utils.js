@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import store from '@/store'
 import { socket } from '@/main'
-import { TUTORIAL_STEPS } from '@/constants'
+import { TUTORIAL_STEPS, BERKELEY_SEMESTERS } from '@/constants'
 
 export const serverURL = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : '/api'
 export const socketURL = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : '/'
@@ -82,19 +82,36 @@ export const fetchMethod = (method, route, body={}) => {
   })
 }
 
-export const getCurTerm = (terms) => {
+export const getCurTerm = () => {
   // Get current month and determine whether currently in spring, summer, or fall
   // 1 = spring, 2 = summer, 3 = fall
+
+  // TODO: remove this hardcoded berkeley stuff
+  if (store.state.authUser.school === 'berkeley') {
+    return getBerkeleyTerm()
+  }
 
   // TODO: need to account for quarter system
   let month = new Date().getMonth()
   let year = new Date().getFullYear()
   if (inRange(month, 0, 4))
-    return terms.find(t => t.text.toLowerCase().includes('spring'))
+    return store.state.terms.find(t => t.text.toLowerCase().includes('spring'))
   else if (inRange(month, 5, 6))
-    return terms.find(t => t.text.toLowerCase().includes('summer'))
+    return store.state.terms.find(t => t.text.toLowerCase().includes('summer'))
   else
-    return terms.find(t => t.text.toLowerCase().includes('fall'))
+    return store.state.terms.find(t => t.text.toLowerCase().includes('fall'))
+}
+
+export const getBerkeleyTerm = () => {
+  // Gets the current term based on the current date and Berkeley semesters
+
+  for (let i = 0; i < BERKELEY_SEMESTERS.length; i++) {
+    let semester = BERKELEY_SEMESTERS[i]
+    let d = new Date(semester.end + " 23:59:59")
+    if (d > Date.now()) {
+      return semester
+    }
+  }
 }
 
 export const stringReplaceByIndex = (origString, replaceString, beg, end) => {
@@ -123,6 +140,8 @@ export const getTimeString = (date) => {
 }
 
 export const to12Hr = (time) => {
+  if (!time) return ''
+
   const [ hour, min ] = time.split(':')
   let newHour;
   if (parseInt(hour) <= 11) {
@@ -141,12 +160,15 @@ export const blocksString = (_class) => {
   if (_class.asynchronous)
     return 'Asynchronous'
 
+  // Put slashes between days and convert H to TH
   const daysString = _class.blocks.map(block => {
     return block.day === 'H' ? 'TH' : block.day
-    //return this.dayOfWeekFromAbbr(block.day)
   }).join('/')
+
+  // Construct time string
   const { start, end } = _class.blocks[0]
   const timeString = to12Hr(start) + ' - ' + to12Hr(end)
+
   return daysString + ' | ' + timeString
 }
 

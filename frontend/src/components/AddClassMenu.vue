@@ -14,13 +14,14 @@
       <v-btn
         :style="btnStyle"
         text
+        :disabled="disableAddClass"
         block
         class="grey lighten-2 add-btn"
         v-bind="attrs"
         v-on="on"
       >+ Add Class</v-btn>
     </template>
-    <component :is="`${school}AddClassMenu`" :colors="colors" @close="menu = false" />
+    <AddClassMenuSearch :colors="colors" :menu="menu" @close="menu = false" />
   </v-menu>
 </template>
 
@@ -55,10 +56,10 @@
 <script>
 
 import { CLASS_COLORS } from '@/constants'
+import { getCurTerm } from '@/utils/utils'
 import { mapState, mapGetters } from 'vuex'
 
-import uscAddClassMenu from '@/components/school_specific/usc/AddClassMenu'
-import berkeleyAddClassMenu from '@/components/school_specific/berkeley/AddClassMenu'
+import AddClassMenuSearch from '@/components/school_specific/AddClassMenuSearch'
 
 export default {
   name: 'AddClassMenu',
@@ -68,8 +69,7 @@ export default {
   },
 
   components: {
-    uscAddClassMenu,
-    berkeleyAddClassMenu,
+    AddClassMenuSearch,
   },
 
   data() {
@@ -79,7 +79,7 @@ export default {
   },
 
   computed: {
-    ...mapState([ 'authUser' ]),
+    ...mapState([ 'authUser', 'term', ]),
     ...mapGetters({ classes: 'termClasses' }),
     school() {
       if (process.env.NODE_ENV === 'development' && this.authUser.school == 'gmail') {
@@ -95,6 +95,10 @@ export default {
       }
       return colors
     },
+    disableAddClass() {
+      return this.authUser.school === 'berkeley' && this.term != getCurTerm().term
+    }
+
   },
 }
 </script>

@@ -28,3 +28,25 @@ exports.writeTermsToConfig = async () => {
 exports.getTerms = () => {
   return editJsonFile(`${appRoot}/config/usc.json`).toObject().terms
 }
+
+exports.getInstructors = (section) => {
+  /* Returns an array of instructors based on whether there is a single instructor or there are multiple */
+  const instructors = []
+  if (section.instructor) {
+    if (section.instructor.hasOwnProperty('length')) {
+      // instructor prop is an array of multiple instructors
+      section.instructor.forEach(instructor => instructors.push({
+        firstName: instructor.first_name,
+        lastName: instructor.last_name,
+      }))
+    } else {
+      // instructor prop contains a single instructor
+      instructors.push({
+        firstName: section.instructor.first_name,
+        lastName: section.instructor.last_name,
+      })
+    }
+  }
+
+  return instructors
+}

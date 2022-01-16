@@ -251,7 +251,7 @@ export default new Vuex.Store({
         commit('setTerms', terms)
         let curTerm = window.localStorage.getItem('term')
         if (!curTerm || !terms.find(t => t.term == curTerm)) {
-          curTerm = getCurTerm(terms).term
+          curTerm = getCurTerm().term
         }
         return dispatch('changeTerm', curTerm)
       }).catch(err => {

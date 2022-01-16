@@ -5,7 +5,7 @@
     v-bind="{ ...$attrs }"
   >
     <v-list-item-avatar size="32" color="primary" class="text-center">
-      <v-img width="32px" cover :src="user.pic" />
+      <img referrerpolicy="no-referrer" width="32px" cover :src="user.pic" />
     </v-list-item-avatar>
     <v-list-item-content>
       <v-list-item-title>{{ user.firstName }} {{ user.lastName }}</v-list-item-title>

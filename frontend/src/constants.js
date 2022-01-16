@@ -46,11 +46,30 @@ export const EMOJIS = Object.freeze({
   [MOODS.Sunglasses]: require('@/assets/sunglasses.png'),
 })
 
+// An array of Berkeley semesters and their end dates
+export const BERKELEY_SEMESTERS = Object.freeze([
+  {
+    term: '2218',
+    text: 'Fall 2021',
+    end: 'December 17, 2021'
+  },
+  {
+    term: '2222',
+    text: 'Spring 2022',
+    end: 'May 13, 2022'
+  },
+  {
+    term: '2225',
+    text: 'Summer 2022',
+    end: 'August 12, 2022'
+  }
+])
+
 // An array of all the intro.js tutorial steps
 export const TUTORIAL_STEPS = Object.freeze([
   {
     element: '#tut-todo-list',
-    title: 'Todo list',
+    title: 'To-do list',
     intro: 'Click here to see all your upcoming assignments',
     position: 'right',
   },
