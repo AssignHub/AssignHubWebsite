@@ -82,9 +82,27 @@ export const fetchMethod = (method, route, body={}) => {
   })
 }
 
-
 export const getCurTerm = () => {
-  
+  // Get current month and determine whether currently in spring, summer, or fall
+  // 1 = spring, 2 = summer, 3 = fall
+
+  // TODO: remove this hardcoded berkeley stuff
+  if (store.state.authUser.school === 'berkeley') {
+    return getBerkeleyTerm()
+  }
+
+  // TODO: need to account for quarter system
+  let month = new Date().getMonth()
+  let year = new Date().getFullYear()
+  if (inRange(month, 0, 4))
+    return store.state.terms.find(t => t.text.toLowerCase().includes('spring'))
+  else if (inRange(month, 5, 6))
+    return store.state.terms.find(t => t.text.toLowerCase().includes('summer'))
+  else
+    return store.state.terms.find(t => t.text.toLowerCase().includes('fall'))
+}
+
+export const getBerkeleyTerm = () => {
   // Gets the current term based on the current date and Berkeley semesters
 
   for (let i = 0; i < BERKELEY_SEMESTERS.length; i++) {
@@ -94,8 +112,6 @@ export const getCurTerm = () => {
       return semester
     }
   }
-  
-
 }
 
 export const stringReplaceByIndex = (origString, replaceString, beg, end) => {

@@ -20,10 +20,7 @@ exports.searchClass = async (req, res, next) => {
     try {
 
       // Fetch all sections.
-      console.log(classes.get(courseId))
-      const data = await axios.get(`https://berkeleytime.com/api/catalog/catalog_json/course_box/?course_id=${classes.get(courseId)}`).then(response => {
-        
-      return response.data.sections})
+      const data = await axios.get(`https://berkeleytime.com/api/catalog/catalog_json/course_box/?course_id=${classes.get(courseId)}`).then(response => response.data.sections)
       
       // Format sections to format described in general README.
       data.forEach(section => {
@@ -48,14 +45,17 @@ exports.searchClass = async (req, res, next) => {
         }
 
         // Format instructor data from string.
-        section.instructor.split(", ").forEach(instructor => {
-          instructorData.push({
-            firstName: instructor.split(" ")[1],
-            lastName: instructor.split(" ")[0]
+        if (section.instructor) {
+          section.instructor.split(", ").forEach(instructor => {
+            instructorData.push({
+              firstName: instructor.split(" ")[1],
+              lastName: instructor.split(" ")[0]
+            })
           })
-        })
+        }
 
         sections.push({
+          term: res.locals.term,
           courseId: courseId,
           sectionId: section.ccn,
           blocks: blocksData,

@@ -1,8 +1,8 @@
-<!-- Dialog to search for USC classes -->
+<!-- Dialog to search for classes -->
 <!-- TODO: have a search bar where you can search by section number or professor name -->
 
 <template>
-  <v-card color="grey lighten-3">
+  <v-card id="class-search-dialog" color="grey lighten-3" >
 
     <v-expand-transition>
       <div v-if="sections.length === 0">
@@ -10,7 +10,7 @@
           <v-text-field
             id="search-class-text-field"
             v-model="courseId"
-            placeholder="Course ID (e.g. MATH-125)"
+            :placeholder="searchPlaceholder"
             prepend-inner-icon="mdi-magnify"
             autofocus
             solo
@@ -31,18 +31,31 @@
       </div>
     </v-expand-transition>
     <v-expand-transition>
-      <div v-if="sections.length > 0" id="course-id-header">
-        <v-card-title :style="{ backgroundColor: color }">
-          <v-btn icon @click="reset" class="mr-2">
-            <v-icon>mdi-arrow-left</v-icon>
-          </v-btn>
+      <div v-if="sections.length > 0" id="course-id-header" :style="{ backgroundColor: color }">
+        <v-card-text>
+          <div class="d-flex" style="align-items: center;">
+            <v-btn icon @click="reset" class="mr-2">
+              <v-icon>mdi-arrow-left</v-icon>
+            </v-btn>
 
-          {{ courseId }}
-          
-          <v-spacer />
+            <span class="text-h6">{{ courseId }}</span>
+            
+            <v-spacer />
 
-          <ColorSelect v-if="enrolled.length === 0" class="white" v-model="color" :colors="colors" no-label />
-        </v-card-title>
+            <ColorSelect v-if="enrolled.length === 0" class="white" v-model="color" :colors="colors" no-label />
+          </div>
+
+          <!--<v-text-field
+            placeholder="Search"
+            prepend-inner-icon="mdi-magnify"
+            :model="query"
+            autofocus
+            solo
+            dense
+            hide-details
+            autocomplete="off"
+          />-->
+        </v-card-text>
       </div>
     </v-expand-transition>
 
@@ -132,7 +145,7 @@ import ColorSelect from '@/components/ColorSelect'
 export default {
   name: 'UscAddClassMenuSearch',
 
-  emits: ['input'],
+  emits: ['input', 'close'],
 
   props: {
     menu: { type: Boolean, required: true }, // Whether menu is shown or not
@@ -159,6 +172,7 @@ export default {
       ORDER: ['Lecture', 'Discussion', 'Lab', 'Quiz'],
 
       courseId: '',
+      query: '', // The search query to search for a specific section
       color: '',
       sections: [],
       enrolled: [], // Contains the already enrolled section ids for the given course id
@@ -168,7 +182,7 @@ export default {
   },
 
   computed: {
-    ...mapState([ 'term' ]),
+    ...mapState([ 'authUser', 'term' ]),
     filteredSections() { 
       /* Organizes the sections by type */
       const filtered = {}
@@ -210,6 +224,17 @@ export default {
     hasChanged() {
       /* Returns whether checked has changed from enrolled */
       return this.change.added.length > 0 || this.change.removed.length > 0
+    },
+    searchPlaceholder() {
+      /* returns the placeholder to put in the main class search bar */
+      switch(this.authUser.school) {
+        case 'usc':
+          return 'Course ID (e.g. "MATH-125")'
+        case 'berkeley':
+          return 'Course ID (e.g. "EECS 126")'
+        default:
+          return ''
+      }
     }
   },
 

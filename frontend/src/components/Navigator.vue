@@ -5,41 +5,62 @@
       class="py-2"
       style="flex: 0 0 50px; min-width: 50px; display: flex; flex-flow: column; align-items: center;"
     >
-      <v-btn
-        id="tut-todo-list"
-        icon
-        :color="page == 0 ? 'blue' : 'gray'"
-        large
-        v-on:click="handleChangePage(0)"
-      >
-        <v-icon>mdi-clipboard-check</v-icon>
-      </v-btn>
-      <v-btn
-        id="tut-classes"
-        icon
-        :color="page == 1 ? 'blue' : 'gray'"
-        large
-        v-on:click="handleChangePage(1)"
-      >
-        <v-icon>mdi-school</v-icon>
-      </v-btn>
-      <v-btn
-        id="tut-friends"
-        icon
-        :color="page == 2 ? 'blue' : 'gray'"
-        large
-        v-on:click="handleChangePage(2)"
-      >
-        <v-badge
-          overlap
-          :content="numIncomingFriendRequestsString"
-          :value="numIncomingFriendRequestsString"
-          bordered
-          style="z-index: 10;"
-        >
-          <v-icon>mdi-account-group</v-icon>
-        </v-badge>
-      </v-btn>
+      <v-tooltip right>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            id="tut-todo-list"
+            icon
+            :color="page == 0 ? 'blue' : 'gray'"
+            large
+            v-bind="attrs"
+            v-on="on"
+            @click="handleChangePage(0)"
+          >
+            <v-icon>mdi-clipboard-check</v-icon>
+          </v-btn>
+        </template>
+        <span>To-do list</span>
+      </v-tooltip>
+      <v-tooltip right>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            id="tut-classes"
+            icon
+            :color="page == 1 ? 'blue' : 'gray'"
+            large
+            v-bind="attrs"
+            v-on="on"
+            @click="handleChangePage(1)"
+          >
+            <v-icon>mdi-school</v-icon>
+          </v-btn>
+        </template>
+        <span>Classes</span>
+      </v-tooltip>
+      <v-tooltip right>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            id="tut-friends"
+            icon
+            :color="page == 2 ? 'blue' : 'gray'"
+            large
+            v-bind="attrs"
+            v-on="on"
+            @click="handleChangePage(2)"
+          >
+            <v-badge
+              overlap
+              :content="numIncomingFriendRequestsString"
+              :value="numIncomingFriendRequestsString"
+              bordered
+              style="z-index: 10;"
+            >
+              <v-icon>mdi-account-group</v-icon>
+            </v-badge>
+          </v-btn>
+        </template>
+        <span>Friends</span>
+      </v-tooltip>
 
       <v-spacer />
 
@@ -105,6 +126,10 @@ export default {
     }
   },
 
+  created() {
+    this.page = window.localStorage.getItem('page') ?? -1
+  },
+
   computed: {
     ...mapState(['authUser', 'friendRequests']),
     numIncomingFriendRequestsString() {
@@ -122,8 +147,10 @@ export default {
     handleChangePage(page) {
       if (page != this.page) {
         this.page = page
+        window.localStorage.setItem('page', page)
       } else {
         this.page = -1
+        window.localStorage.setItem('page', -1)
       }
     },
   },
