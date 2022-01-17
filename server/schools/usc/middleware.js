@@ -29,6 +29,7 @@ exports.searchClass = async (req, res, next) => {
     // Define typeMap
     const typeMap = {
       'Lec': 'Lecture',
+      'Lec-Lab': 'Lecture',
       'Dis': 'Discussion',
       'Lab': 'Lab',
       'Qz': 'Quiz',

@@ -193,11 +193,21 @@ export const showTutorial = () => {
       steps: TUTORIAL_STEPS,
     })
     .onbeforechange(function(element) {
+      const curItem = this._introItems[this._currentStep]
+      
+      // Update school specific tutorial items
+      if (curItem.hasOwnProperty('schoolSpecific')) {
+        // Make sure school exists in school specific object
+        const school = store.state.authUser.school
+        if (curItem.schoolSpecific.hasOwnProperty(school)) {
+          // Update all specified props
+          for (const prop in curItem.schoolSpecific[school]) {
+            curItem[prop] = curItem.schoolSpecific[school][prop]
+          }
+        }
+      }
+      
       switch (element.id) {
-        case 'tut-classes':
-          // Change the tutorial text to reflect the school user goes to
-          this._introItems[this._currentStep].intro = getAddClassBlurb()
-          break
         case 'tut-add-assignment-btn':
           // Show the add assignment form
           document.getElementById('add-input-assignment-dialog').__vue__.show()
@@ -209,16 +219,6 @@ export const showTutorial = () => {
       }
     })
     .start()
-}
-
-export const getAddClassBlurb = () => {
-  // Programatically displays the tutorial tip for adding classes based on user's school
-  if (store.state.authUser.school === 'usc')
-    return 'Add your classes here by entering the course code and section number. This info can be found at <a href=\'https://my.usc.edu\' target=\'_blank\'>my.usc.edu</a>.'
-  else if (store.state.authUser.school === 'berkeley')
-    return 'Add your classes here by entering your Class #. This info can be found at <a href=\'https://classes.berkeley.edu/\' target=\'_blank\'>classes.berkeley.edu</a>.'
-  else
-    return 'Add and view your classes here'
 }
 
 export const handleCredentialResponse = ({ credential }) => {
