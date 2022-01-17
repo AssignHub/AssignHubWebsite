@@ -4,6 +4,18 @@
 <template>
   <v-card id="class-search-dialog" color="grey lighten-3" >
 
+    <!-- Term header -->
+    <div
+      :class="sections.length === 0 && 'grey'"
+      :style="sections.length > 0 && { backgroundColor: color }"
+    >
+      <div 
+        class="px-2 white--text text-overline"
+        :style="sections.length > 0 && { backgroundColor: 'rgba(120, 120, 120, 0.4)' }"  
+      >{{ termText }}</div>
+    </div>
+
+    <!-- Search class text field -->
     <v-expand-transition>
       <div v-if="sections.length === 0">
         <v-card-text>
@@ -30,6 +42,8 @@
         </v-card-text>
       </div>
     </v-expand-transition>
+
+    <!-- CourseId header (shown after searching) -->
     <v-expand-transition>
       <div v-if="sections.length > 0" id="course-id-header" :style="{ backgroundColor: color }">
         <v-card-text>
@@ -59,12 +73,15 @@
       </div>
     </v-expand-transition>
 
+    <!-- "No classes found" message -->
     <div v-if="sections.length === 0" class="pa-2 white" style="height: 400px">
       <v-fade-transition hide-on-leave>
         <div v-if="!loading" class="mt-4" style="text-align: center;">No classes found.</div>
         <v-skeleton-loader v-else type="list-item-three-line@4" />
       </v-fade-transition>
     </div>
+
+    <!-- List of sections -->
     <v-list v-else class="overflow-y-auto" dense style="height: 400px">
       <template v-for="type in ORDER">
         <template v-if="filteredSections[type] && filteredSections[type].length > 0">
@@ -114,6 +131,7 @@
       </template>
     </v-list>
     
+    <!-- Section for Add/Update button -->
     <v-expand-transition>
       <div v-if="sections.length > 0">
         <v-card-actions>
@@ -193,7 +211,7 @@ export default {
   },
 
   computed: {
-    ...mapState([ 'authUser', 'term' ]),
+    ...mapState([ 'authUser', 'term', 'terms' ]),
     filteredSections() { 
       /* Organizes the sections by type */
       const filtered = {}
@@ -238,7 +256,7 @@ export default {
     },
     searchPlaceholder() {
       /* returns the placeholder to put in the main class search bar */
-      switch(this.authUser.school) {
+      switch (this.authUser.school) {
         case 'usc':
           return 'Course ID (e.g. "MATH-125")'
         case 'berkeley':
@@ -246,7 +264,10 @@ export default {
         default:
           return ''
       }
-    }
+    },
+    termText() {
+      return this.terms.find(t => t.term === this.term).text
+    },
   },
 
   methods: {
