@@ -5,7 +5,7 @@ import store from './store'
 import vuetify from './plugins/vuetify'
 import VueSocketIO from 'vue-socket.io'
 import SocketIO from 'socket.io-client'
-import { socketURL, handleCredentialResponse } from '@/utils/utils'
+import { socketURL, handleCredentialResponse } from '@/utils'
 import VDragged from 'v-dragged'
 import 'intro.js/introjs.css';
 

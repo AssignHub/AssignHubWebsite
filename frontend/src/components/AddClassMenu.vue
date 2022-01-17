@@ -56,7 +56,7 @@
 <script>
 
 import { CLASS_COLORS } from '@/constants'
-import { getCurTerm } from '@/utils/utils'
+import { getCurTerm } from '@/utils'
 import { mapState, mapGetters } from 'vuex'
 
 import AddClassMenuSearch from '@/components/school_specific/AddClassMenuSearch'

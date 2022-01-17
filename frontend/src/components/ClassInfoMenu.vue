@@ -127,6 +127,7 @@
             >{{ instructorNames }}
           </div>
           <div><v-icon class="mr-1">mdi-clock</v-icon>{{ blocksString }}</div>
+          <div v-if="_class.blocks.length > 0 && _class.blocks[0].location"><v-icon class="mr-1">mdi-map-marker</v-icon>{{ _class.blocks[0].location }}</div>
         </v-card-text>
       </div>
     </v-expand-transition>
@@ -136,7 +137,7 @@
 <script>
 import UserListItem from '@/components/UserListItem'
 import { mapState, mapActions } from 'vuex'
-import { get, _delete, blocksString, instructorNames } from '@/utils/utils'
+import { get, _delete, blocksString, instructorNames } from '@/utils'
 
 export default {
   name: 'ClassInfoMenu',

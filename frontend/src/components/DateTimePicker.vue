@@ -48,7 +48,7 @@
 
 <script>
 import TimePicker from '@/components/TimePicker'
-import { setNumDigits, getDateString } from '@/utils/utils'
+import { setNumDigits, getDateString } from '@/utils'
 
 export default {
   name: 'DateTimePicker',

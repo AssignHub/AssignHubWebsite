@@ -72,7 +72,7 @@
 <script>
 // TODO: show a remove friend btn if already friends with this user
 import { mapState, mapMutations, mapActions } from 'vuex'
-import { post, _delete } from '@/utils/utils'
+import { post, _delete } from '@/utils'
 import { EMOJIS, CONTEXT_MENU_TYPES } from '@/constants'
 
 export default {

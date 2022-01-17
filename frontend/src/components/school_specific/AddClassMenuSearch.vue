@@ -84,8 +84,18 @@
             <v-list-item @click="select(sectionId)" :style="{ backgroundColor: enrolled.includes(sectionId) ? color : 'unset' }">
               <v-list-item-content>
                 <v-list-item-title>{{ `${sectionId} | ${type}` }}</v-list-item-title>
-                <v-list-item-subtitle v-if="instructors.length > 0">{{ instructorNames({ instructors }) }}</v-list-item-subtitle>
-                <v-list-item-subtitle v-if="blocks.length > 0">{{ blocksString({ blocks }) }}</v-list-item-subtitle>
+                <v-list-item-subtitle v-if="instructors.length > 0" class="font-weight-regular list-row">
+                  <v-icon small class="mr-1">mdi-clipboard-account</v-icon> 
+                  <div>{{ instructorNames({ instructors }) }}</div>
+                </v-list-item-subtitle>
+                <v-list-item-subtitle v-if="blocks.length > 0" class="font-weight-regular list-row">
+                  <v-icon small class="mr-1">mdi-clock</v-icon>
+                  <div>{{ blocksString({ blocks }) }}</div>
+                </v-list-item-subtitle>
+                <v-list-item-subtitle v-if="blocks.length > 0 && blocks[0].location" class="font-weight-regular list-row">
+                  <v-icon small class="mr-1">mdi-map-marker</v-icon>
+                  <div>{{ blocks[0].location }}</div>
+                </v-list-item-subtitle>
               </v-list-item-content>
               <v-list-item-action>
                 <v-checkbox
@@ -131,13 +141,14 @@
 </style>
 
 <style scoped>
-  .fade {
-    transition: opacity 0.2s;
+  .list-row {
+    display: flex;
+    align-items: center;
   }
 </style>
 
 <script>
-import { get, post, blocksString, instructorNames } from '@/utils/utils'
+import { get, post, blocksString, instructorNames } from '@/utils'
 import { mapState, mapActions } from 'vuex'
 
 import ColorSelect from '@/components/ColorSelect'

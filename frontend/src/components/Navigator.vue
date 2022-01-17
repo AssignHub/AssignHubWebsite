@@ -108,7 +108,7 @@ import FriendsList from '@/components/FriendsList'
 import Todo from '@/components/Todo'
 
 import { mapState, mapActions } from 'vuex'
-import { showTutorial } from '@/utils/utils'
+import { showTutorial } from '@/utils'
 
 export default {
   name: 'Navigator',

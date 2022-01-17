@@ -57,7 +57,7 @@
 <script>
 import ClassSelect from '@/components/ClassSelect'
 import DateTimePicker from '@/components/DateTimePicker'
-import { post, getTimeString, getDateString } from '@/utils/utils.js'
+import { post, getTimeString, getDateString } from '@/utils'
 import { mapGetters, mapActions } from 'vuex'
 
 export default {

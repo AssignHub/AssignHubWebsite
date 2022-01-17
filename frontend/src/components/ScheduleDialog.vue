@@ -107,7 +107,7 @@
 <script>
 import ScheduleEventMenu from '@/components/ScheduleEventMenu'
 import UserListItem from '@/components/UserListItem'
-import { get, getDateString } from '@/utils/utils'
+import { get, getDateString } from '@/utils'
 import { mapState, mapGetters, mapActions } from 'vuex'
 
 export default {

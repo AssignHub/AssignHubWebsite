@@ -18,6 +18,12 @@ exports.searchClass = async (req, res, next) => {
 
     let sections = []
     try {
+      // Define typeMap
+      const typeMap = {
+        'Lecture': 'Lecture',
+        'Discussion': 'Discussion',
+        'Laboratory': 'Lab',
+      }
 
       // Fetch all sections.
       const data = await axios.get(`https://berkeleytime.com/api/catalog/catalog_json/course_box/?course_id=${classes.get(courseId)}`).then(response => response.data.sections)
@@ -40,7 +46,8 @@ exports.searchClass = async (req, res, next) => {
           blocksData.push({
             day: dow,
             start: section.start_time.substring(11, 16),
-            end: section.end_time.substring(11, 16)
+            end: section.end_time.substring(11, 16),
+            location: section.location_name,
           })
         }
 
@@ -59,7 +66,7 @@ exports.searchClass = async (req, res, next) => {
           courseId: courseId,
           sectionId: section.ccn,
           blocks: blocksData,
-          type: section.kind,
+          type: typeMap[section.kind],
           instructors: instructorData
         })
       })  

@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import { get, post, blocksString, instructorNames } from '@/utils/utils.js'
+import { get, post, blocksString, instructorNames } from '@/utils'
 import { mapState, mapGetters, mapActions } from 'vuex'
 import { CLASS_COLORS } from '@/constants'
 
