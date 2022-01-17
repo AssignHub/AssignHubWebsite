@@ -122,7 +122,7 @@
           <v-expand-transition>
             <div v-if="completed[i]">
               <AssignmentCard
-                v-for="(a, j) in assignmentsByDaySeparated[i].done"
+                v-for="(a) in assignmentsByDaySeparated[i].done"
                 :key="`done-${a._id}`"
                 :class="'mt-2'"
                 :assignment="a"

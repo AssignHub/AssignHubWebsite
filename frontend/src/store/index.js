@@ -301,16 +301,26 @@ export default new Vuex.Store({
       return patch(`/assignments/${assignmentId}`, {
         ...assignmentData
       }).then(data => {
+
+        const updatedData = {
+          ...assignmentData,
+          _id: data._id,
+        }
+
+        // Only add class prop if class was updated to a valid class
+        if (assignmentData.class === 'no-class') {
+          updatedData.class = undefined
+        } else {
+          updatedData.class = {
+            _id: assignmentData.class,
+            courseId: getters.classById(assignmentData.class).courseId
+          }
+        }
+
+        // Update assignment on frontend
         commit('updateAssignment', {
           assignmentId,
-          updatedData: {
-            ...assignmentData,
-            class: {
-              _id: assignmentData.class,
-              courseId: getters.classById(assignmentData.class).courseId
-            },
-            _id: data._id,
-          },
+          updatedData
         })
         dispatch('showInfo', 'Assignment updated.')
       }).catch(err => {

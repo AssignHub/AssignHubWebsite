@@ -80,7 +80,7 @@ export default {
       handler() {
         if (this.editing && this.assignment) {
           this.name = this.assignment.name
-          this.curClass = this.assignment.class._id
+          this.curClass = this.assignment.class?._id ?? 'no-class'
           
           const date = new Date(this.assignment.dueDate)
           this.date = getDateString(date)

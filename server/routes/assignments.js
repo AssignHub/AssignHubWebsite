@@ -200,20 +200,33 @@ router.patch('/:assignmentId', getUser, async (req, res) => {
 
   const { assignmentId } = req.params
   try {
+    // Check if assignment exists in user document
     const index = res.locals.user.assignments.findIndex(a => a.assignment == assignmentId)
     if (index === -1) {
       res.status(400).json({ error: 'No such assignment' })
       return
     }
+
+    const assignmentData = req.body
     
+    // Update assignment object if class is no-class or not
+    if (assignmentData.class === 'no-class') {
+      assignmentData.noClass = true
+      assignmentData.class = undefined
+    } else {
+      assignmentData.noClass = false
+    }
+
+    // Update assignment based on whether it's public or not
     const assignment = await Assignment.findById(assignmentId).lean()
     if (!assignment.public) {
-      await Assignment.findByIdAndUpdate(assignmentId, req.body)
+      await Assignment.findByIdAndUpdate(assignmentId, assignmentData)
     } else {
+      // If assignment is public, create a new edited non-public assignment with updated properties
       const { _id, ...oldAssignmentData } = assignment
       const newAssignment = await new Assignment({
         ...oldAssignmentData,
-        ...req.body,
+        ...assignmentData,
         public: false,
       }).save()
       res.locals.user.hiddenAssignments.push(_id)
