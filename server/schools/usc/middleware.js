@@ -26,6 +26,14 @@ exports.searchClass = async (req, res, next) => {
       return
     }
 
+    // Define typeMap
+    const typeMap = {
+      'Lec': 'Lecture',
+      'Dis': 'Discussion',
+      'Lab': 'Lab',
+      'Qz': 'Quiz',
+    }
+
     // Format sections
     sections = Object.keys(sections).map(sectionId => {
       const section = sections[sectionId]
@@ -34,12 +42,6 @@ exports.searchClass = async (req, res, next) => {
 
       const { blocks, type } = section
       const instructors = getInstructors(section)
-      const typeMap = {
-        'Lec': 'Lecture',
-        'Dis': 'Discussion',
-        'Lab': 'Lab',
-        'Qz': 'Quiz',
-      }
 
       return {
         term: res.locals.term,

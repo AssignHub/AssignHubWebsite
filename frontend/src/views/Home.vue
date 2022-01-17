@@ -88,7 +88,7 @@ import Calendar from '@/components/Calendar'
 import InputAssignment from '../components/InputAssignment'
 import JoinClass from '../components/JoinClass'
 
-import { _delete, showTutorial } from '@/utils/utils'
+import { _delete, showTutorial } from '@/utils'
 import { mapGetters, mapState, mapMutations, mapActions } from 'vuex'
 import { CONTEXT_MENU_TYPES } from '@/constants'
 

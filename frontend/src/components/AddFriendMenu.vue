@@ -62,7 +62,7 @@
 
 <script>
 import UserListItem from '@/components/UserListItem'
-import { get } from '@/utils/utils'
+import { get } from '@/utils'
 import { mapState } from 'vuex'
 
 export default {

@@ -54,7 +54,7 @@
 
 <script>
 import AssignmentCard from '@/components/AssignmentCard'
-import { compareDateDay } from '@/utils/utils.js'
+import { compareDateDay } from '@/utils'
 import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
 import { CONTEXT_MENU_TYPES } from '@/constants'
 

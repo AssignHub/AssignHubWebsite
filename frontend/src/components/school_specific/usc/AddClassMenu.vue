@@ -66,7 +66,7 @@
 </style>
 
 <script>
-import { post } from '@/utils/utils'
+import { post } from '@/utils'
 import { mapState, mapActions } from 'vuex'
 
 import ColorSelect from '@/components/ColorSelect'

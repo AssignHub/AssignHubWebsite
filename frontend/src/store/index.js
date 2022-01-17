@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { get, post, patch, _delete, getCurTerm, socketReconnect } from '@/utils/utils'
+import { get, post, patch, _delete, getCurTerm, socketReconnect } from '@/utils'
 
 Vue.use(Vuex)
 

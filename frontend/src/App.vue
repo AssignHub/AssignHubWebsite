@@ -87,7 +87,7 @@ html {
 </style>
 
 <script>
-import { get, } from '@/utils/utils'
+import { get, } from '@/utils'
 import { mapState, mapMutations } from 'vuex'
 
 import AutoSnackbar from '@/components/AutoSnackbar'
