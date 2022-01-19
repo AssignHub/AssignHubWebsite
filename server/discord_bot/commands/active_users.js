@@ -1,6 +1,6 @@
 const reqlib = require('app-root-path').require
 const DailyUserLog = reqlib('models/daily_user_log')
-const User = reqlib('models/user')
+const { splitLongMessage } = require('../utils')
 
 module.exports = {
   name: '!active_users',
@@ -54,8 +54,8 @@ module.exports = {
     
     if (list) {
       // Display a list of all active users
-      let message = 'Active Users:\n'
-      message += '```'
+      msg.channel.send('Active Users:\n')
+      let message = ''
       for (const { date, users } of logs) {
         message += daysString[date.getUTCDay()] + ' '
         message += date.toISOString().substring(0,10) + ' | '
@@ -66,9 +66,10 @@ module.exports = {
           message += `\t- ${firstName} ${lastName} (${email})\n`
         }
       }
-      message += '```'
-
-      msg.channel.send(message)
+      
+      for (const m of splitLongMessage(message, '```')) {
+        msg.channel.send(m)
+      }
     } else {
       // Display a bar graph of active users over time
 
