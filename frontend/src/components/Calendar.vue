@@ -39,6 +39,16 @@
           :assignments-for-week="assignmentsByDay"
         />
 
+        <v-btn 
+          color="primary"
+          class="mr-4"
+          text
+          target="_blank"
+          href="https://forms.gle/g5FqXuCHBEFXsvHu6"
+        >
+          Give Feedback
+        </v-btn>
+
         <AuthUserMenu />
       </div>
       <div

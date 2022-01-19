@@ -154,12 +154,18 @@ router.post('/create-request', getUser, async (req, res) => {
   *  userId - the userId of the friend to add
   */
 
-  // TODO: check if request has already been sent to current user, and if so, res.redirect('accept-request')
-
   const { userId } = req.body
   try {
-    // Check if request has already been sent to current user by the "to" user
-    //await res.locals.user.populate('incomingFriendRequests').execPopulate()
+    // Accept request if request has already been sent to current user by the "to" user
+    const existing = await FriendRequest.find({
+      from: userId,
+      to: res.locals.user._id,
+    })
+
+    if (existing.length > 0) {
+      res.redirect(307, `${req.baseUrl}/accept-request?friendRequestId=${encodeURIComponent(existing[0]._id)}`)
+      return
+    }
 
     // Create new friend request object
     const request = await new FriendRequest({
@@ -198,11 +204,17 @@ router.post('/accept-request', getUser, async (req, res) => {
   // Accept friend request and delete friend request
   // Requires authentication
 
-  /* Body params:
+  /* Body OR Query params:
   *  friendRequestId - the id of the friend request
   */
   
-  const { friendRequestId } = req.body
+  // Get friendRequestId from either the body or the query
+  let { friendRequestId } = req.body
+  if (!friendRequestId) {
+    ({ friendRequestId } = req.query)
+    friendRequestId = decodeURIComponent(friendRequestId)
+  }
+
   try {
     // Populate friend request fields
     const friendRequest = await FriendRequest.findById(friendRequestId).populate('from').populate('to')
