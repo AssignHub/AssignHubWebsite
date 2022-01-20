@@ -94,7 +94,7 @@ export default {
       let categories = []
       let header
       while (true) {
-        arr = this.assignments.filter(a => daysBetween(a.dueDate, this.curDate) >= 7 * week).sort(sortAssignments)
+        arr = this.assignments.filter(a => daysBetween(a.dueDate, this.curDate) >= 7 * week + (week == 0 ? 2 : 0)).sort(sortAssignments)
         if (arr.length == 0) break
         if (week == 0) header = 'Due this week'
         else if (week == 1) header = 'Due next week'
