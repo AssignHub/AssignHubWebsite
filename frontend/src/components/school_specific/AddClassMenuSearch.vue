@@ -6,18 +6,18 @@
 
     <!-- Term header -->
     <div
-      :class="sections.length === 0 && 'grey'"
-      :style="sections.length > 0 && { backgroundColor: color }"
+      :class="!showSections && 'grey'"
+      :style="showSections && { backgroundColor: color }"
     >
       <div 
         class="px-2 white--text text-overline"
-        :style="sections.length > 0 && { backgroundColor: 'rgba(120, 120, 120, 0.4)' }"  
+        :style="showSections && { backgroundColor: 'rgba(120, 120, 120, 0.4)' }"  
       >{{ termText }}</div>
     </div>
 
     <!-- Search class text field -->
     <v-expand-transition>
-      <div v-if="sections.length === 0">
+      <div v-if="!showSections">
         <v-card-text>
           <v-text-field
             id="search-class-text-field"
@@ -45,7 +45,7 @@
 
     <!-- CourseId header (shown after searching) -->
     <v-expand-transition>
-      <div v-if="sections.length > 0" id="course-id-header" :style="{ backgroundColor: color }">
+      <div v-if="showSections" id="course-id-header" :style="{ backgroundColor: color }">
         <v-card-text>
           <div class="d-flex" style="align-items: center;">
             <v-btn icon @click="reset" class="mr-2">
@@ -74,12 +74,26 @@
     </v-expand-transition>
 
     <!-- "No classes found" message -->
-    <div v-if="sections.length === 0" class="pa-2 white" style="height: 400px">
+    <div v-if="!showSections && searchResults.length === 0" class="pa-2 white" style="height: 400px">
       <v-fade-transition hide-on-leave>
-        <div v-if="!loading" class="mt-4" style="text-align: center;">No classes found.</div>
+        <div v-if="!loading" class="mt-4" style="text-align: center;">
+          {{ !sections ? 'No classes found.' : 'No sections found for the given class.' }}</div>
         <v-skeleton-loader v-else type="list-item-three-line@4" />
       </v-fade-transition>
     </div>
+
+    <!-- Search results -->
+    <v-list v-else-if="!showSections && searchResults.length > 0" class="overflow-y-auto" style="height: 400px">
+      <span v-for="(curCourseId, i) in searchResults" :key="curCourseId">
+        <v-divider v-if="i !== 0"/>
+        <v-list-item @click="courseId = curCourseId; getSections()">
+          <v-list-item-title>{{ curCourseId }}</v-list-item-title>
+          <v-list-item-icon>
+            <v-icon>mdi-chevron-right</v-icon>
+          </v-list-item-icon>
+        </v-list-item>
+      </span>
+    </v-list>
 
     <!-- List of sections -->
     <v-list v-else class="overflow-y-auto" dense style="height: 400px">
@@ -133,7 +147,7 @@
     
     <!-- Section for Add/Update button -->
     <v-expand-transition>
-      <div v-if="sections.length > 0">
+      <div v-if="showSections">
         <v-card-actions>
           <v-spacer />
           <v-btn 
@@ -203,9 +217,10 @@ export default {
       courseId: '',
       query: '', // The search query to search for a specific section
       color: '',
-      sections: [],
+      sections: null, // null means class does not exist, empty array means no sections for the given class
       enrolled: [], // Contains the already enrolled section ids for the given course id
       checked: [], // Contains the currently checked section ids
+      searchResults: [], // Contains results from search, if courseId did not match exactly
       loading: false,
     }
   },
@@ -264,6 +279,10 @@ export default {
         default:
           return ''
       }
+    },
+    showSections() {
+      /* Returns whether to show the sections for a given class */
+      return this.sections && this.sections.length > 0
     },
     termText() {
       return this.terms.find(t => t.term === this.term).text
@@ -335,25 +354,33 @@ export default {
       try {
         const { sections, enrolledSectionIds, color } = await get(`/classes/sections?courseId=${this.courseId.toUpperCase()}&term=${this.term}`)
 
-        // courseId did match exactly
+        // courseId matched exactly, show course
         this.sections = sections
         this.enrolled = [...enrolledSectionIds]
         this.checked = [...enrolledSectionIds]
+        this.searchResults = []
+
         if (color) 
           this.color = color
         else
           this.setRandomColor()
 
         this.loading = false
-      } catch(err) {
-        this.sections = []
+      } catch (err) {
+        this.sections = null
+        this.enrolled = []
         this.checked = []
-        this.loading = false
+        this.searchResults = []
 
         // courseId not found, perform a search
-        const results = await get(`/classes/search?query=${this.courseId.toUpperCase()}&term=${this.term}`)
-        console.log(results)
-        this.loading = false
+        try {
+          const results = await get(`/classes/search?query=${this.courseId.toUpperCase()}&term=${this.term}`)
+          this.searchResults = results
+          this.loading = false
+        } catch (err) {
+          this.showError('Something went wrong when trying to search for that class! Please try again later.')
+          this.loading = false
+        }
       }
     },
     getSectionsFromIds(selection) {
@@ -364,8 +391,10 @@ export default {
     },
     reset() {
       /* Resets the dialog to its initial state */
-      this.sections = []
+      this.sections = null
       this.checked = []
+      this.enrolled = []
+      this.searchResults = []
       this.courseId = ''
       this.loading = false
     },
