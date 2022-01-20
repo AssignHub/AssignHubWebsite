@@ -9,6 +9,10 @@ module.exports = { utils: require('./utils'), middleware: require('./middleware'
 Contains the following middleware functions
 
 ### `searchClass(req, res, next)`
+- Sets `res.locals.searchClassResults` to an array of all courseIds that match the given search `query`, which is a query parameter
+- Array should be an array of strings representing the course ids
+
+### `getSections(req, res, next)`
 - Sets `res.locals.classSections` to an array containing all the sections of the specified `courseId`, which is a query parameter
 - Each element of the array should be of the following form:
 ```
@@ -31,7 +35,7 @@ Contains the following middleware functions
 ```
 
 ### `addClass(req, res, next)`
-- TODO
+- Deprecated
 
 ## utils.js
 Contains the following functions + any other util functions you want to create

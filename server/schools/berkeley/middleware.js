@@ -2,8 +2,44 @@ const reqlib = require('app-root-path').require
 const axios = require('axios')
 const { getClasses } = require('./utils')
 const Class = reqlib('/models/class')
+const { splitLast } = reqlib('utils/utils')
 
 exports.searchClass = async (req, res, next) => {
+  /* Sets `res.locals.searchClassResults` to an array of all courseIds that match the given search `query` */
+
+  const { query } = req.query
+
+  try {
+    // Format query into dept and courseNum
+    let querySplit = splitLast(query, ' ')
+    if (querySplit.length === 1) {
+      // dept and courseNum are not separated by a space, separate them for user
+      const numIndex = querySplit[0].search(/[0-9]/)
+      querySplit = [querySplit[0].substring(0, numIndex), querySplit[0].substring(numIndex)]
+    } 
+    const [queryDept, queryCourseNum] = querySplit
+
+    // Filter classes array based on query
+    const courseIds = [...getClasses().keys()]
+    res.locals.searchClassResults = courseIds.filter(c => {
+      const [dept, courseNum] = splitLast(c, ' ')
+      
+      // Construct regex for dept searching by placing wildcard between characters and at the end
+      // E.g. "CS" becomes "/^C.*S.*$/"
+      const deptRegex = new RegExp('^' + [...queryDept, ''].join('.*') + '$')
+      
+      // Match if dept regex passes and courseNum is exactly correct
+      return deptRegex.test(dept) && courseNum === queryCourseNum
+    })
+
+    next()
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: err })
+  }
+}
+
+exports.getSections = async (req, res, next) => {
   /* Sets res.locals.classSections to an array containing all the sections of the specified courseId */
 
   /* Query params:
