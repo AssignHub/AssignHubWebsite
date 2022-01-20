@@ -29,6 +29,12 @@ export const compareDateDay = (a, b) => {
   }
 }
 
+export const daysBetween = (a, b) => {
+  a = new Date(a)
+  b = new Date(b)
+  return Math.floor((a - b) / (1000 * 3600 * 24))
+}
+
 export const inRange = (val, a, b) => {
   // Checks if val is in between a and b
   return a <= val && val <= b
