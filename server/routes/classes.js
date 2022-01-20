@@ -34,6 +34,16 @@ router.post('/set-term', getUser, async (req, res) => {
 })
 
 router.get('/search', getUser, getTerm, getSchoolMiddleware('searchClass'), async (req, res) => {
+  /* Returns an array containing class results for the specified query */
+
+  /* Query params: 
+   * query - the search query
+   */
+
+  res.json(res.locals.searchClassResults)
+})
+
+router.get('/sections', getUser, getTerm, getSchoolMiddleware('getSections'), async (req, res) => {
   /* Returns an array containing all the sections of the specified courseId, as well as all the sections
    * currently enrolled in for the given courseId and term  
    */
@@ -44,30 +54,35 @@ router.get('/search', getUser, getTerm, getSchoolMiddleware('searchClass'), asyn
   */
   const { term, courseId } = req.query
 
-  // Populate classes and nonLectureSections
-  await res.locals.user.populate({
-    path: 'classes.class',
-    select: 'term courseId sectionId',
-  }).populate({
-    path: 'nonLectureSections.class',
-    select: 'term courseId sectionId',
-  }).execPopulate()
+  try {
+    // Populate classes and nonLectureSections
+    await res.locals.user.populate({
+      path: 'classes.class',
+      select: 'term courseId sectionId',
+    }).populate({
+      path: 'nonLectureSections.class',
+      select: 'term courseId sectionId',
+    }).execPopulate()
 
-  // Get the section ids of the sections currently enrolled in for the given courseId and term
-  const enrolledSections = [
-    ...res.locals.user.classes.filter(({ class: section }) => {
-      return section.term === term && section.courseId === courseId
-    }),
-    ...res.locals.user.nonLectureSections.filter(({ class: section }) => {
-      return section.term === term && section.courseId === courseId
-    })
-  ]
-  const enrolledSectionIds = enrolledSections.map(s => s.class.sectionId)
+    // Get the section ids of the sections currently enrolled in for the given courseId and term
+    const enrolledSections = [
+      ...res.locals.user.classes.filter(({ class: section }) => {
+        return section.term === term && section.courseId === courseId
+      }),
+      ...res.locals.user.nonLectureSections.filter(({ class: section }) => {
+        return section.term === term && section.courseId === courseId
+      })
+    ]
+    const enrolledSectionIds = enrolledSections.map(s => s.class.sectionId)
 
-  // Get the currently selected color if there are enrolled sections 
-  const color = enrolledSections.find(s => s.color)?.color
+    // Get the currently selected color if there are enrolled sections 
+    const color = enrolledSections.find(s => s.color)?.color
 
-  res.json({ sections: res.locals.classSections, enrolledSectionIds, color })
+    res.json({ sections: res.locals.classSections, enrolledSectionIds, color })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: err })
+  }
 })
 
 router.post('/add', getUser, getTerm, getSchoolMiddleware('addClass'), async (req, res) => {

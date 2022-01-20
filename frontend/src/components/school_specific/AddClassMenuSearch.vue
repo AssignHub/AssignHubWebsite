@@ -328,11 +328,14 @@ export default {
 
       return false
     },
-    getSections() {
+    async getSections() {
       /* Fetches all the sections for the given courseId and stores them in this.sections */
       this.loading = true
       
-      get(`/classes/search?courseId=${this.courseId.toUpperCase()}&term=${this.term}`).then(({ sections, enrolledSectionIds, color }) => {
+      try {
+        const { sections, enrolledSectionIds, color } = await get(`/classes/sections?courseId=${this.courseId.toUpperCase()}&term=${this.term}`)
+
+        // courseId did match exactly
         this.sections = sections
         this.enrolled = [...enrolledSectionIds]
         this.checked = [...enrolledSectionIds]
@@ -342,11 +345,16 @@ export default {
           this.setRandomColor()
 
         this.loading = false
-      }).catch(err => {
+      } catch(err) {
         this.sections = []
         this.checked = []
         this.loading = false
-      })
+
+        // courseId not found, perform a search
+        const results = await get(`/classes/search?query=${this.courseId.toUpperCase()}&term=${this.term}`)
+        console.log(results)
+        this.loading = false
+      }
     },
     getSectionsFromIds(selection) {
       /* Returns an array of the sections given an array of sectionIds */

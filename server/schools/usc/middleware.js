@@ -3,7 +3,15 @@ const reqlib = require('app-root-path').require
 const Class = reqlib('/models/class')
 const { getInstructors } = require('./utils')
 
-exports.searchClass = async (req, res, next) => {
+exports.searchClass = async(req, res, next) => {
+  /* Sets `res.locals.searchClassResults` to an array of all courseIds that match the given search `query` */
+
+  // USC API doesn't support search by class, so return empty array
+  res.locals.searchClassResults = []
+  next()
+}
+
+exports.getSections = async (req, res, next) => {
   /* Sets res.locals.classSections to an array containing all the sections of the specified courseId */
   // getTerm must be called before this middleware
 
