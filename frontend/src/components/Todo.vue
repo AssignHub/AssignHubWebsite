@@ -54,7 +54,7 @@
 
 <script>
 import AssignmentCard from '@/components/AssignmentCard'
-import { compareDateDay } from '@/utils'
+import { compareDateDay, sortAssignments } from '@/utils'
 import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
 import { CONTEXT_MENU_TYPES } from '@/constants'
 
@@ -78,19 +78,19 @@ export default {
     ...mapGetters({ classes: 'termClasses' }),
     overdue() {
       let arr = this.assignments.filter(a => compareDateDay(a.dueDate, this.curDate) < 0 && !a.done)
-      return this.sortByDate(arr)
+      return arr.sort(sortAssignments)
     },
     dueToday() {
       let arr = this.assignments.filter(a => compareDateDay(a.dueDate, this.curDate) === 0)
-      return this.sortByDate(arr)
+      return arr.sort(sortAssignments)
     },
     dueTomorrow() {
       let arr = this.assignments.filter(a => compareDateDay(a.dueDate, this.tomorrowDate) === 0) 
-      return this.sortByDate(arr)
+      return arr.sort(sortAssignments)
     },
     upcoming() {
       let arr = this.assignments.filter(a => compareDateDay(a.dueDate, this.tomorrowDate) > 0) 
-      return this.sortByDate(arr)
+      return arr.sort(sortAssignments)
     },
     tomorrowDate() {
       return new Date(this.curDate.getTime() + this.dayLength)
@@ -115,22 +115,6 @@ export default {
   methods: {
     ...mapMutations(['showContextMenu', 'hideContextMenu']),
     ...mapActions([ 'toggleAssignment' ]),
-    test() {
-      console.log('done')
-    },
-    sortByDate(arr) {
-      return arr.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
-    },
-    sortByDone(arr) {
-      return arr.sort((a, b) => {
-        if (a.done === b.done)
-          return 0
-        return a.done ? 1 : -1  
-      })
-    },
-    sortByDateAndDone(arr) {
-      return this.sortByDone(this.sortByDate(arr))
-    },
     timeString(a) {
       return new Date(a.dueDate).toLocaleTimeString([], {timeStyle: 'short'})
     },

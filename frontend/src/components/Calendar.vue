@@ -198,7 +198,7 @@
 import AssignmentCard from '@/components/AssignmentCard'
 import AuthUserMenu from '@/components/AuthUserMenu'
 import ProgressBar from '@/components/ProgressBar'
-import { compareDateDay, partition } from '@/utils'
+import { compareDateDay, partition, sortAssignments } from '@/utils'
 import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
 import { CONTEXT_MENU_TYPES } from '@/constants'
 
@@ -331,24 +331,7 @@ export default {
         .filter((a) => {
           return compareDateDay(a.dueDate, date) === 0 //&& !a.done
         })
-        .sort(
-          (a, b) => {
-            // First sort by time
-            const timeDiff = new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
-
-            // Then sort by course id
-            if (timeDiff === 0) {
-              // Return the other one first if courseId is undefined (to put tasks at the bottom), 
-              // otherwise return the first courseId alphabetically
-              const aId = a.class?.courseId
-              const bId = b.class?.courseId
-              if (!aId) return 1
-              if (!bId) return -1
-              return aId.localeCompare(bId)
-            }
-            return timeDiff
-          }
-        )
+        .sort(sortAssignments)
       const [done, todo] = partition(allAssignments, (a) => a.done)
       return { done, todo }
     },

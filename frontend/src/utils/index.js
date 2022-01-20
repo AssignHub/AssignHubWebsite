@@ -224,3 +224,22 @@ export const showTutorial = () => {
 export const handleCredentialResponse = ({ credential }) => {
   store.dispatch('signInGoogle', credential)
 }
+
+export const sortAssignments = (a, b) => {
+  /* Sorting function that sorts assignments first by due date, then by courseId */
+
+  // First sort by time
+  const timeDiff = new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
+
+  // Then sort by course id
+  if (timeDiff === 0) {
+    // Return the other one first if courseId is undefined (to put tasks at the bottom), 
+    // otherwise return the first courseId alphabetically
+    const aId = a.class?.courseId
+    const bId = b.class?.courseId
+    if (!aId) return 1
+    if (!bId) return -1
+    return aId.localeCompare(bId)
+  }
+  return timeDiff
+}
