@@ -122,12 +122,12 @@ export default {
 
   data() {
     return {
-      page: -1,
+      page: 1,
     }
   },
 
   created() {
-    this.page = window.localStorage.getItem('page') ?? -1
+    this.page = window.localStorage.getItem('page') ?? 1
   },
 
   computed: {

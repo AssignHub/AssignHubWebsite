@@ -69,13 +69,13 @@ export const BERKELEY_SEMESTERS = Object.freeze([
 export const TUTORIAL_STEPS = Object.freeze([
   {
     element: '#tut-todo-list',
-    title: 'To-do list',
+    title: 'To-do list 📝',
     intro: 'Click here to see all your upcoming assignments',
     position: 'right',
   },
   {
     element: '#tut-classes',
-    title: 'Classes',
+    title: 'Classes 👩‍🏫',
     intro: 'Add and view your classes here',
     position: 'right',
     schoolSpecific: {
@@ -89,31 +89,38 @@ export const TUTORIAL_STEPS = Object.freeze([
   },
   {
     element: '#tut-friends',
-    title: 'Friends',
+    title: 'Friends 🤝',
     intro: 'View all your friends and their schedules here',
     position: 'right',
   },
   {
     element: '#tut-add-assignment-btn',
-    title: 'Add assignments',
+    title: 'Add assignments ✔️',
     intro: 'Click here to add assignments',
   },
   {
     element: '#tut-add-assignment-form',
+    title: 'Add assignments ✔️',
     intro: 'Fill out the details for your assignment here',
   },
   {
     element: '#tut-crowdsource-btn',
+    title: 'Add assignments ✔️',
     intro: 'Click here to add crowdsourced assignments that your classmates have created',
   },
   {
     element: '#tut-calendar',
-    title: 'Calendar',
+    title: 'Calendar 📅',
     intro: 'View all of your assignment deadlines on this calendar',
   },
   {
     element: '#tut-help',
-    title: 'Help',
+    title: 'Help ❓',
     intro: 'Click here to view this tutorial again'
   },
+  {
+    element: '#tut-add-class',
+    title: 'First class! 🎉',
+    intro: 'Try adding your first class by clicking this button'
+  }
 ])
