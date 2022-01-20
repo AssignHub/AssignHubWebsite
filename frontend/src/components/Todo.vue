@@ -89,14 +89,18 @@ export default {
       return arr.sort(sortAssignments)
     },
     upcoming() {
-      let week = 1
+      let week = 0
       let arr = [""]
       let categories = []
+      let header
       while (true) {
         arr = this.assignments.filter(a => daysBetween(a.dueDate, this.curDate) >= 7 * week).sort(sortAssignments)
         if (arr.length == 0) break
+        if (week == 0) header = 'Due this week'
+        else if (week == 1) header = 'Due next week'
+        else header = `Due in ${week} weeks`
         categories.push({
-          header: 'Due ' + (week == 1 ? 'next week' : `in ${week} weeks`),
+          header: header,
           assignments: arr.filter(a => daysBetween(a.dueDate, this.curDate) < 7 * week + 7)
         })
         week++
