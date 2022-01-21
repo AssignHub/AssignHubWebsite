@@ -190,13 +190,13 @@ export const partition = (arr, filter) => {
   return [pass, fail]
 }
 
-export const showTutorial = () => {
+export const showTutorial = (newUser) => {
   introJs()
     .setOptions({
       disableInteraction: true,
       showBullets: false,
       showStepNumbers: true,
-      steps: TUTORIAL_STEPS,
+      steps: newUser ? TUTORIAL_STEPS : TUTORIAL_STEPS.filter(s => !s.onlyNewUser),
     })
     .onbeforechange(function(element) {
       const curItem = this._introItems[this._currentStep]
