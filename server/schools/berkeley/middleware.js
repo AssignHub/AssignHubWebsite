@@ -57,6 +57,7 @@ exports.getSections = async (req, res, next) => {
       // Define typeMap
       const typeMap = {
         'Lecture': 'Lecture',
+        'Web-Based Lecture': 'Lecture',
         'Discussion': 'Discussion',
         'Laboratory': 'Lab',
       }
