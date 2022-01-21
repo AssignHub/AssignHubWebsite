@@ -26,9 +26,9 @@ exports.scheduleTasks = () => {
   })
 
   // email friend request reminder after a certain time period
-  cron.schedule('11 6 * * *', async () => {
-    this.emailFriendRequestReminder()
-  })
+  // cron.schedule('11 6 * * *', async () => {
+  //   this.emailFriendRequestReminder()
+  // })
 }
 
 exports.resetMood = async () => {
