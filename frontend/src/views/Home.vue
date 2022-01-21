@@ -109,7 +109,7 @@ export default {
 
   mounted() {
     if (this.isNewUser) {
-      showTutorial()
+      showTutorial(true)
     }
 
     this.populateData()

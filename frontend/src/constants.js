@@ -121,6 +121,7 @@ export const TUTORIAL_STEPS = Object.freeze([
   {
     element: '#tut-add-class',
     title: 'First class! 🎉',
-    intro: 'Try adding your first class by clicking this button'
+    intro: 'Try adding your first class by clicking this button',
+    onlyNewUser: true
   }
 ])
