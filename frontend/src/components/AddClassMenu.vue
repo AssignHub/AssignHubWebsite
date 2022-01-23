@@ -12,6 +12,7 @@
   >
     <template v-slot:activator="{ on, attrs }">
       <v-btn
+        id="tut-add-class"
         :style="btnStyle"
         text
         :disabled="disableAddClass"

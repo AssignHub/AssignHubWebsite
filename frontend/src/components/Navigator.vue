@@ -68,7 +68,11 @@
         id="tut-help"
         icon
         large
-        v-on:click="showTutorial"
+        v-on:click="
+          () => {
+            showTutorial(false)
+          }
+        "
       >
         <v-icon>mdi-help-circle</v-icon>
       </v-btn>
@@ -122,12 +126,12 @@ export default {
 
   data() {
     return {
-      page: -1,
+      page: 1,
     }
   },
 
   created() {
-    this.page = window.localStorage.getItem('page') ?? -1
+    this.page = window.localStorage.getItem('page') ?? 1
   },
 
   computed: {
@@ -139,7 +143,7 @@ export default {
         return ''
       }
       return '' + this.friendRequests.incoming.length
-    }
+    },
   },
 
   methods: {
