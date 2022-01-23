@@ -1,3 +1,1 @@
-- need to make sure to test adding classes and make sure all required props are valid
-- test adding and removing non lecture sections to see if calendar updates properly
-- run script to fix classes that don't have type or school
+- run script to fix classes that don't have type or school (fix_legacy_classes.js)

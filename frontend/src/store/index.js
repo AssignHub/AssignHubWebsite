@@ -165,8 +165,18 @@ export default new Vuex.Store({
     SOCKET_addClass(state, _class) {
       state.classes.push(_class)
     }, 
-    SOCKET_removeClass(state, classId) {
-      state.classes = state.classes.filter(c => c._id !== classId)
+    SOCKET_removeClass(state, id) {
+      const indexToRemove = state.classes.findIndex(c => c._id === id)
+      const { term, courseId } = state.classes[indexToRemove]
+
+      state.nonLectureSections = state.nonLectureSections.filter(s => !(s.term === term && s.courseId === courseId))
+      state.classes.splice(indexToRemove, 1)
+    },
+    SOCKET_addNonLectureSection(state, section) {
+      state.nonLectureSections.push(section)
+    },
+    SOCKET_removeNonLectureSection(state, id) {
+      state.nonLectureSections = state.nonLectureSections.filter(s => s._id !== id)
     },
     SOCKET_addFriendRequest(state, friendRequest) {
       if (friendRequest.type === 'outgoing') 

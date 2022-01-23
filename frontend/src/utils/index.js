@@ -250,7 +250,7 @@ export const sortAssignments = (a, b) => {
   return timeDiff
 }
 
-export const getClassColor = (courseId) => {
+export const getClassColor = (courseId, classes=store.state.classes) => {
   /* Returns the color of a class based on its courseId */
-  return store.state.classes.find(c => c.courseId === courseId)?.color
+  return classes.find(c => c.courseId === courseId && c.color)?.color
 }

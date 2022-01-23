@@ -1,6 +1,9 @@
+const reqlib = require('app-root-path').require
+const axios = require('axios')
 const mongoose = require('mongoose')
-const Class = require('../models/class')
+const Class = reqlib('models/class')
 const TROJAN = require('trojan-course-api')
+const { getClasses } = reqlib('schools/berkeley/utils')
 require('dotenv').config()
 
 // Connect to database
@@ -12,11 +15,27 @@ db.on('open', async () => {
 
   const classes = await Class.collection.find().toArray()
 
+  const berkClasses = getClasses()
+
   for (const doc of classes) {
     const { term, sectionId, courseId } = doc
     let school, type
     if (term.length === 4) {
       school = 'berkeley'
+      
+      
+      
+      // Define typeMap
+      const typeMap = {
+        'Lecture': 'Lecture',
+        'Web-Based Lecture': 'Lecture',
+        'Discussion': 'Discussion',
+        'Laboratory': 'Lab',
+      }
+      const sections = await axios.get(`https://berkeleytime.com/api/catalog/catalog_json/course_box/?course_id=${berkClasses.get(courseId)}`).then(response => response.data.sections)
+
+      const section = sections.find(s => s.ccn == sectionId)
+      type = typeMap[section.kind]
     } else {
       school = 'usc'
 
@@ -37,11 +56,12 @@ db.on('open', async () => {
 
       type = typeMap[section.type]
     }
-    /*Class.collection.update({ _id: doc._id }, {
+    console.log(school, type)
+    Class.collection.update({ _id: doc._id }, {
       $set: {
         type,
         school,
       },
-    })*/
+    })
   }
 })

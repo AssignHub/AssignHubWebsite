@@ -65,6 +65,10 @@ router.get('/:uid/classes', getUser, getTerm, async (req, res) => {
         path: 'classes.class',
         match: { term: res.locals.term },
       })
+      .populate({
+        path: 'nonLectureSections.class',
+        match: { term: res.locals.term },
+      })
       .lean()
 
     // Get rid of null values and format
@@ -74,7 +78,13 @@ router.get('/:uid/classes', getUser, getTerm, async (req, res) => {
         return { ...classData, ...rest }
       })
 
-    res.json(classes)
+    const nonLectureSections = friend.nonLectureSections
+      .filter(c => c.class)
+      .map(({ _id, class: classData, ...rest }) => {
+        return { ...classData, ...rest }
+      })
+
+    res.json([ ...classes, ...nonLectureSections ])
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: err })
