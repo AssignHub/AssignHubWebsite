@@ -154,15 +154,19 @@ router.post('/add-sections', getUser, async (req, res) => {
     let lectureSection
     for (const { term, courseId, sectionId, type, blocks, instructors } of sections) {
       // Find class document if it exists or create a new one
-      let _class = await Class.findOne({ 
+      let _class = await Class.findOne({
+        school: res.locals.user.school,
         term,
+        type,
         courseId, 
         sectionId,
       })
 
       if (!_class) {
         _class = await new Class({
+          school: res.locals.user.school,
           term,
+          type,
           courseId,
           sectionId,
           instructors,
@@ -176,6 +180,7 @@ router.post('/add-sections', getUser, async (req, res) => {
         res.locals.user.classes.push({ class: _class._id, color: color })
       } else {
         res.locals.user.nonLectureSections.push({ class: _class._id })
+        emitToUser(res.locals.user._id, 'addNonLectureSection', { ..._class.toJSON() })
       }
     }
     await res.locals.user.save()
@@ -223,7 +228,11 @@ router.post('/remove-sections', getUser, async (req, res) => {
       const curSections = type === 'Lecture' ? res.locals.user.classes : res.locals.user.nonLectureSections
       const indexToRemove = curSections.findIndex(s => s.class.term === term && s.class.courseId === courseId && s.class.sectionId === sectionId)
 
-      if (type === 'Lecture') lectureClassId = curSections[indexToRemove].class._id
+      if (type === 'Lecture') 
+        lectureClassId = curSections[indexToRemove].class._id
+      else
+        emitToUser(res.locals.user._id, 'removeNonLectureSection', curSections[indexToRemove].class._id)
+
       curSections.splice(indexToRemove, 1)
     }
     await res.locals.user.save()
@@ -293,7 +302,6 @@ router.post('/join', getUser, getTerm, async (req, res) => {
   }
 })
 
-// TODO: need to return nonLectureSections as well
 router.get('/mine', getUser, async (req, res) => {
   // Requires authentication
   try {
@@ -301,6 +309,9 @@ router.get('/mine', getUser, async (req, res) => {
 
     await res.locals.user.populate({
       path: 'classes.class',
+      match: { term: { $in: terms } }
+    }).populate({
+      path: 'nonLectureSections.class',
       match: { term: { $in: terms } }
     }).execPopulate()
 
@@ -314,7 +325,9 @@ router.get('/mine', getUser, async (req, res) => {
     let classes = await res.locals.user.classes.filter(c => c.class !== null)
     classes = await Promise.all(classes.map((c) => formatClass(c)))
 
-    res.json(classes)
+    const nonLectureSections = await res.locals.user.nonLectureSections.filter(s => s.class !== null).map(s => s.class)
+
+    res.json({ classes, nonLectureSections })
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: err })
