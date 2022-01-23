@@ -26,12 +26,7 @@
 
           v-on="vOn"
         >
-          <template v-slot:event="{ event, timed, timeSummary, eventSummary }">
-            <!--<div
-              class="v-event"
-              v-html="eventSummary()"
-            >
-            </div>-->
+          <template v-slot:event="{ event, timed, timeSummary }">
             <div
               class="v-event"
             >
@@ -210,6 +205,9 @@ export default {
       this.events = []
       for (let _class of this.classes) {
         for (let block of _class.blocks) {
+          // Check for null
+          if (!block.day || !block.end || !block.start) continue
+
           const curDate = getDateString(this.getDateFromDayString(block.day))
           
           const event = {
