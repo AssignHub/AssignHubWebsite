@@ -1,0 +1,1 @@
+- run script to fix classes that don't have type or school (fix_legacy_classes.js)

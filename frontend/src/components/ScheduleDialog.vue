@@ -26,11 +26,19 @@
 
           v-on="vOn"
         >
-          <template v-slot:event="{ event, timed, eventSummary }">
-            <div
+          <template v-slot:event="{ event, timed, timeSummary, eventSummary }">
+            <!--<div
               class="v-event"
               v-html="eventSummary()"
-            ></div>
+            >
+            </div>-->
+            <div
+              class="v-event"
+            >
+              <div><b>{{ event.name }}</b></div>
+              <div>{{ event.type }}</div>
+              <div class="time-text" v-html="timeSummary()"></div>
+            </div>
             <div
               v-if="!friend && event.editable && timed"
               class="v-event-drag-bottom"
@@ -71,6 +79,10 @@
 </style>
 
 <style scoped lang="scss">
+.time-text {
+  font-size: 0.6rem;
+}
+
 .v-event {
   padding-left: 6px;
   user-select: none;
@@ -107,7 +119,7 @@
 <script>
 import ScheduleEventMenu from '@/components/ScheduleEventMenu'
 import UserListItem from '@/components/UserListItem'
-import { get, getDateString } from '@/utils'
+import { get, getDateString, getClassColor } from '@/utils'
 import { mapState, mapGetters, mapActions } from 'vuex'
 
 export default {
@@ -157,7 +169,7 @@ export default {
 
   computed: {
     ...mapState([ 'term', 'authUser' ]),
-    ...mapGetters({ authUserClasses: 'termClasses' }),
+    ...mapGetters({ authUserClasses: 'termClasses', authUserNonLectureSections: 'termNonLectureSections' }),
     startDate() {
       // Get the date object for Monday of this week
       return this.getDateFromDay(1)
@@ -195,14 +207,17 @@ export default {
     },
     setEvents() {
       // Adds events to the calendar based on this.classes
+      this.events = []
       for (let _class of this.classes) {
         for (let block of _class.blocks) {
           const curDate = getDateString(this.getDateFromDayString(block.day))
+          
           const event = {
             name: _class.courseId,
+            type: _class.type,
             start: new Date(`${curDate} ${block.start}`).getTime(),
             end: new Date(`${curDate} ${block.end}`).getTime(),
-            color: _class.color,
+            color: _class.color ?? getClassColor(_class.courseId, this.classes),
             timed: true,
             editable: false,
           }
@@ -334,22 +349,22 @@ export default {
           // Scroll calendar to a reasonable time, setTimeout ensures calendar has been mounted
           setTimeout(() => this.$refs.calendar.scrollToTime('08:00'))
 
-          if (!this.classes) {
-            if (this.friend) {
-              // Get friend's classes
+          if (this.friend) {
+            if (!this.classes) {
+              // Get friend's classes if haven't already loaded
               try {
                 this.classes = await get(`/friends/${this.friend._id}/classes?term=${this.term}`)
               } catch(err) {
                 this.showError('Something went wrong fetching this friend\'s schedule. Please try again later.')
               }
-            } else {
-              // Set classes to authUser's classes
-              this.classes = this.authUserClasses
             }
-
-            // Structure events array
-            this.setEvents();
+          } else {
+            // Set classes to authUser's classes
+            this.classes = [...this.authUserClasses, ...this.authUserNonLectureSections]
           }
+
+          // Structure events array
+          this.setEvents()
         } else {
           this.eventMenu.show = false
         }

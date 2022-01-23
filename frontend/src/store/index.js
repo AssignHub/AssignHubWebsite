@@ -29,6 +29,7 @@ const getDefaultState = () => {
     publicAssignments: [],
     numPendingAssignments: 0,
     classes: [],
+    nonLectureSections: [],
     isNewUser: false,
 
     // Friends
@@ -45,6 +46,9 @@ export default new Vuex.Store({
   getters: {
     termClasses(state) {
       return state.classes.filter(c => c.term === state.term)
+    },
+    termNonLectureSections(state) {
+      return state.nonLectureSections.filter(s => s.term === state.term)
     },
     assignmentById: (state) => (assignmentId) => state.assignments.find(a => a._id === assignmentId),
     classById: (state) => (classId) => state.classes.find(c => c._id === classId),
@@ -96,6 +100,9 @@ export default new Vuex.Store({
 
     setClasses(state, classes) {
       state.classes = classes
+    },
+    setNonLectureSections(state, nonLectureSections) {
+      state.nonLectureSections = nonLectureSections
     },
 
     setAssignments(state, assignments) {
@@ -158,8 +165,18 @@ export default new Vuex.Store({
     SOCKET_addClass(state, _class) {
       state.classes.push(_class)
     }, 
-    SOCKET_removeClass(state, classId) {
-      state.classes = state.classes.filter(c => c._id !== classId)
+    SOCKET_removeClass(state, id) {
+      const indexToRemove = state.classes.findIndex(c => c._id === id)
+      const { term, courseId } = state.classes[indexToRemove]
+
+      state.nonLectureSections = state.nonLectureSections.filter(s => !(s.term === term && s.courseId === courseId))
+      state.classes.splice(indexToRemove, 1)
+    },
+    SOCKET_addNonLectureSection(state, section) {
+      state.nonLectureSections.push(section)
+    },
+    SOCKET_removeNonLectureSection(state, id) {
+      state.nonLectureSections = state.nonLectureSections.filter(s => s._id !== id)
     },
     SOCKET_addFriendRequest(state, friendRequest) {
       if (friendRequest.type === 'outgoing') 
@@ -261,8 +278,9 @@ export default new Vuex.Store({
 
     // Classes
     getClasses({ commit, dispatch }) {
-      return get(`/classes/mine`).then(classes => {
+      return get(`/classes/mine`).then(({ classes, nonLectureSections }) => {
         commit('setClasses', classes)
+        commit('setNonLectureSections', nonLectureSections)
       }).catch(err => {
         dispatch('showError', 'There was an problem fetching your classes!')
       })
