@@ -56,6 +56,7 @@
       </v-card>
     </v-slide-y-reverse-transition>
 
+
     <v-btn
       id="tut-add-assignment-btn"
       ref="button"
@@ -67,8 +68,15 @@
       class="mr-1 mb-1"
       style="bottom: 16px;"
       @click="show"
-    >
+    ><v-badge
+              bordered
+              style="z-index: 51;"
+              :value="numPendingAssignments > 0"
+              color="blue"
+              absolute
+            >
       <v-icon>mdi-plus</v-icon>
+</v-badge>
     </v-btn>
   </span>
 </template>
