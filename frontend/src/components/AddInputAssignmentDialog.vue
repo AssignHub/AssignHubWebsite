@@ -61,22 +61,23 @@
       id="tut-add-assignment-btn"
       ref="button"
       fab
-      color="primary"
+      color="primary lighten-1"
       absolute
       bottom
       right
       class="mr-1 mb-1"
       style="bottom: 16px;"
       @click="show"
-    ><v-badge
-              bordered
-              style="z-index: 51;"
-              :value="numPendingAssignments > 0"
-              color="blue"
-              absolute
-            >
-      <v-icon>mdi-plus</v-icon>
-</v-badge>
+    >
+      <v-badge
+        style="z-index: 51;"
+        :content="_numPendingAssignments"
+        :value="numPendingAssignments > 0"
+        color="primary darken-1"
+        absolute
+      >
+        <v-icon>mdi-plus</v-icon>
+      </v-badge>
     </v-btn>
   </span>
 </template>
