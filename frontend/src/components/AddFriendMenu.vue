@@ -19,6 +19,20 @@
       >+ Add Friend</v-btn>
     </template>
     <v-card color="grey lighten-3" style="width:300px;">
+      <!-- Header -->
+      <div
+        class="grey d-flex"
+        style="align-items: center;"
+      >
+        <div 
+          class="px-2 white--text text-overline"
+        >Add friend</div>
+        <v-spacer />
+        <v-btn @click="menu = false" icon small color="white">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </div>
+
       <v-card-text>
         <v-text-field 
           autofocus
@@ -32,13 +46,9 @@
           hide-details
           @keydown.enter="search"
         ></v-text-field>
-        <div class="d-flex">
-          <v-spacer />
-          <v-btn text class="mr-2" @click="menu = false">Close</v-btn>
-          <v-btn color="primary" :disabled="!query" :loading="loading" @click="search">Search</v-btn>
-        </div>
+        <v-btn block color="primary" :disabled="!query" :loading="loading" @click="search">Search</v-btn>
       </v-card-text>
-      <v-list v-if="filteredResults.length > 0" class="overflow-y-auto" style="height: 200px">
+      <v-list v-if="filteredResults.length > 0" class="overflow-y-auto" style="height: 400px">
         <UserListItem
           v-for="user in filteredResults"
           :key="user._id"
@@ -46,7 +56,7 @@
           :btn-types="['add-friend']"
         />
       </v-list>
-      <div v-else class="text-center pa-4" style="height: 200px; background-color: white;">
+      <div v-else class="text-center pa-4" style="height: 400px; background-color: white;">
         No users found.
       </div>
     </v-card>

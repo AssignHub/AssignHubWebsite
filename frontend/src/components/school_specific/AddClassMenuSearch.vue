@@ -9,10 +9,15 @@
       :class="!showSections && 'grey'"
       :style="showSections && { backgroundColor: color }"
     >
-      <div 
-        class="px-2 white--text text-overline"
-        :style="showSections && { backgroundColor: 'rgba(120, 120, 120, 0.4)' }"  
-      >{{ termText }}</div>
+      <div class="d-flex" style="align-items: center;" :style="showSections && { backgroundColor: 'rgba(120, 120, 120, 0.4)' }">
+        <div 
+          class="px-2 white--text text-overline"
+        >{{ termText }}</div>
+        <v-spacer />
+        <v-btn @click="$emit('close')" icon small color="white">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </div>
     </div>
 
     <!-- Search class text field -->
@@ -34,9 +39,7 @@
             :disabled="loading"
           />
           <div class="d-flex">
-            <v-spacer />
-            <v-btn text class="mr-2" @click="$emit('close')">Close</v-btn>
-            <v-btn color="primary" :disabled="!courseId" :loading="loading" @click="getSections">Search</v-btn>
+            <v-btn block color="primary" :disabled="!courseId" :loading="loading" @click="getSections">Search</v-btn>
           </div>
           
         </v-card-text>
