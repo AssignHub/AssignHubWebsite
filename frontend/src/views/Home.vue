@@ -107,22 +107,37 @@ export default {
     id: { type: String, default: "-1" }
   },
 
+  created() {
+    this.populateData()
+
+    // Fetch public assignments on window focus if min amount of time has passed
+    window.addEventListener('focus', () => {
+      if (new Date().getTime() - this.MIN_FETCH_INTERVAL > this.lastFetched.getTime()) {
+        this.getPublicAssignments()
+        this.lastFetched = new Date()
+      }
+    })
+  },
+
   mounted() {
     if (this.isNewUser) {
       this.$nextTick(() => showTutorial(true))
     }
 
-    this.populateData()
     this.joinDialog = this.id != "-1"
   },
 
   data() {
     return {
-      CONTEXT_MENU_TYPES,
       tab: 0,
       editDialog: false,
       addInputDialog: false,
       joinDialog: false,
+      lastFetched: new Date(), // The last time published assignments were fetched
+
+      // Constants
+      CONTEXT_MENU_TYPES,
+      MIN_FETCH_INTERVAL: 60*1000, // This is the minimum time in ms we should wait before fetching again
     }
   },
 
@@ -134,7 +149,7 @@ export default {
   methods: {
     
     ...mapMutations([ 'hideContextMenu' ]),
-    ...mapActions([ 'populateData', 'showError' ]),
+    ...mapActions([ 'populateData', 'getPublicAssignments', 'showError' ]),
     removeAssignment(assignmentId) {
       _delete(`/assignments/${assignmentId}`).catch(err => {
         this.showError('There was a problem removing that assignment! Please try again later.')
