@@ -7,7 +7,6 @@ const { OAuth2Client } = require('google-auth-library');
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
 
 const User = reqlib('models/user')
-const DailyUserLog = reqlib('models/daily_user_log')
 
 const { getUser } = reqlib('middleware/auth')
 const { escapeRegExp, _fetch } = reqlib('utils/utils')
@@ -69,13 +68,6 @@ router.post('/sign-in', async (req, res) => {
       user = await new User(userData).save()
       console.log('New account created: ', profileData.email)
       discordBot.sendMessage(`:wave: ${profileData.given_name} ${profileData.family_name} (${profileData.email}) has joined AssignHub!`)
-    }
-
-    // Update daily user log if user not already added
-    const log = await DailyUserLog.findByDate({ date: new Date(), timezoneOffset })
-    if (!log.users.includes(user._id)) {
-      log.users.push(user._id)
-      await log.save()
     }
     
     // Start authenticated session

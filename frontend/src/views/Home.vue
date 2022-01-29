@@ -88,7 +88,7 @@ import Calendar from '@/components/Calendar'
 import InputAssignment from '../components/InputAssignment'
 import JoinClass from '../components/JoinClass'
 
-import { _delete, showTutorial } from '@/utils'
+import { _delete, showTutorial, setActive } from '@/utils'
 import { mapGetters, mapState, mapMutations, mapActions } from 'vuex'
 import { CONTEXT_MENU_TYPES } from '@/constants'
 
@@ -109,11 +109,15 @@ export default {
 
   created() {
     this.populateData()
+    setActive()
 
     // Fetch public assignments on window focus if min amount of time has passed
     window.addEventListener('focus', () => {
-      if (new Date().getTime() - this.MIN_FETCH_INTERVAL > this.lastFetched.getTime()) {
+      if (this.timeHasPassed(this.MIN_FETCH_INTERVAL, this.lastFetched)) {
         this.getPublicAssignments()
+        setActive()
+        this.updateCurDate()
+
         this.lastFetched = new Date()
       }
     })
@@ -134,6 +138,7 @@ export default {
       addInputDialog: false,
       joinDialog: false,
       lastFetched: new Date(), // The last time published assignments were fetched
+      lastSetActive: new Date(),
 
       // Constants
       CONTEXT_MENU_TYPES,
@@ -147,9 +152,8 @@ export default {
   },
 
   methods: {
-    
     ...mapMutations([ 'hideContextMenu' ]),
-    ...mapActions([ 'populateData', 'getPublicAssignments', 'showError' ]),
+    ...mapActions([ 'populateData', 'getPublicAssignments', 'updateCurDate', 'showError' ]),
     removeAssignment(assignmentId) {
       _delete(`/assignments/${assignmentId}`).catch(err => {
         this.showError('There was a problem removing that assignment! Please try again later.')
@@ -159,6 +163,10 @@ export default {
       _delete(`/friends/${friendId}`).catch(err => {
         this.showError('There was a problem removing that friend! Please try again later.')
       })
+    },
+    timeHasPassed(time, since) {
+      /* Returns a boolean indicating whether `time` ms has passsed since date `since` */
+      return new Date().getTime() - time > since.getTime()
     },
   },
 }

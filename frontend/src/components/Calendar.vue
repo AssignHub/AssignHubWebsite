@@ -236,14 +236,13 @@ export default {
       ],
       dayLength: 24 * 60 * 60 * 1000,
       weekOffset: 0,
-      curDate: new Date(),
       scrollAmt: 0,
       completed: [false, false, false, false, false, false, false],
     }
   },
 
   computed: {
-    ...mapState(['assignments', 'numPendingAssignments']),
+    ...mapState(['assignments', 'curDate', 'numPendingAssignments']),
     ...mapGetters({ classes: 'termClasses' }),
     curMonthYear() {
       /*

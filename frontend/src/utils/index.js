@@ -254,3 +254,8 @@ export const getClassColor = (courseId, classes=store.state.classes) => {
   /* Returns the color of a class based on its courseId */
   return classes.find(c => c.courseId === courseId && c.color)?.color
 }
+
+export const setActive = () => {
+  /* Tells the server that the current user is active */
+  return post('/general/set-active')
+}
