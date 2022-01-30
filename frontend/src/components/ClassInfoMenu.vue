@@ -44,16 +44,19 @@
                 class="blue--text"
                 v-if="!copyingLink"
                 @click="shareLinkClick()"
-                >Share link</v-btn
               >
+                Share link
+              </v-btn>
               <v-btn
                 text
                 small
                 class="blue--text mt-1"
                 @click="copyLink()"
                 v-if="shareLink && copyingLink"
-                >Copy <v-icon>mdi-link</v-icon></v-btn
               >
+                Copy <v-icon>mdi-link</v-icon>
+              </v-btn>
+
               <br />
               <v-dialog v-model="removeDialog" width="400" persistent>
                 <template v-slot:activator="{ on, attrs }">
