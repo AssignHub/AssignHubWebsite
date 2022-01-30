@@ -6,9 +6,35 @@ const { getInstructors } = require('./utils')
 exports.searchClass = async(req, res, next) => {
   /* Sets `res.locals.searchClassResults` to an array of all courseIds that match the given search `query` */
 
-  // USC API doesn't support search by class, so return empty array
-  res.locals.searchClassResults = []
-  next()
+  const { query } = req.query
+
+  try {
+    const { dept: queryDept, num, seq } = TROJAN.parseCourseId(query)
+    const queryCourseNum = seq ? num+seq : num
+
+    // Set class results to all the departments that match the deptRegex query, plus the given course number
+    // e.g. "CS170" returns ["CLAS-170", "CSLC-170", "CTCS-170", "CSCI-170"]
+    const deptRegex = new RegExp('^' + [...queryDept, ''].join('.*') + '$')
+    res.locals.searchClassResults = await TROJAN.depts({ term: res.locals.term }).then(({ departments }) => {
+      const arr = []
+      for (const key in departments) {
+        const { depts } = departments[key]
+        if (depts) {
+          for (const dept in depts) {
+            if (deptRegex.test(dept)) {
+              arr.push(`${dept}-${queryCourseNum}`)
+            }
+          }
+        }
+      }
+      return arr
+    })
+
+    next()
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: err })
+  }
 }
 
 exports.getSections = async (req, res, next) => {
@@ -23,10 +49,15 @@ exports.getSections = async (req, res, next) => {
   try {
     const options = { term: res.locals.term }
 
+    // Format courseId to the correct form e.g. CSCI104 ==> CSCI-104 
+    const { dept, num, seq } = TROJAN.parseCourseId(courseId)
+    const courseNum = seq ? num+seq : num
+    const courseIdFormatted = `${dept}-${courseNum}`
+
     let sections
     try {
-      sections = await TROJAN.course(courseId, options).then(data => {
-        return data.courses[courseId].sections
+      sections = await TROJAN.course(courseIdFormatted, options).then(data => {
+        return data.courses[courseIdFormatted].sections
       })
     } catch (err) {
       // If course ID is wrong
@@ -54,7 +85,7 @@ exports.getSections = async (req, res, next) => {
 
       return {
         term: res.locals.term,
-        courseId, 
+        courseId: courseIdFormatted, 
         sectionId, 
         blocks, 
         type: typeMap[type], 

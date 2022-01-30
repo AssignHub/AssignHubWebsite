@@ -3,7 +3,7 @@ const DailyUserLog = require('../models/daily_user_log')
 require('dotenv').config()
 
 // Connect to database
-mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false })
+/*mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false })
 const db = mongoose.connection
 db.on('error', err => console.error(err))
 db.on('open', async () => {
@@ -11,10 +11,25 @@ db.on('open', async () => {
 
   const log = await DailyUserLog.findByDate({ date: new Date(), timezoneOffset: new Date().getTimezoneOffset() })
   console.log(log)
+})*/
+
+const TROJAN = require('trojan-course-api')
+console.log(TROJAN.parseCourseId('cscii257a'))
+TROJAN.depts().then(({ departments }) => {
+  for (const key in departments) {
+    const { depts } = departments[key]
+    if (depts) {
+      for (const dept in depts) {
+        console.log(dept)
+      }
+    }
+  }
 })
 
-/*const TROJAN = require('trojan-course-api')
-TROJAN.courses('ENGR', { term: 20213 }).then(data => {
+//TROJAN.courses('CSCI', { term: 20221 }).then(console.log)
+//TROJAN.course('ENGR-100', { term: 20221 }).then(console.log)
+
+/*TROJAN.courses('ENGR', { term: 20213 }).then(data => {
   console.log(data)
 })*/
 
