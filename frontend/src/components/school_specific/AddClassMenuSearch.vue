@@ -55,7 +55,7 @@
               <v-icon>mdi-arrow-left</v-icon>
             </v-btn>
 
-            <span class="text-h6">{{ courseId }}</span>
+            <span class="text-h6">{{ sections[0].courseId }}</span>
             
             <v-spacer />
 
@@ -353,6 +353,7 @@ export default {
     async getSections() {
       /* Fetches all the sections for the given courseId and stores them in this.sections */
       this.loading = true
+      this.searchResults = []
       
       try {
         const { sections, enrolledSectionIds, color } = await get(`/classes/sections?courseId=${this.courseId.toUpperCase()}&term=${this.term}`)
