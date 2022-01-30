@@ -12,23 +12,27 @@ exports.searchClass = async(req, res, next) => {
     const { dept: queryDept, num, seq } = TROJAN.parseCourseId(query)
     const queryCourseNum = seq ? num+seq : num
 
-    // Set class results to all the departments that match the deptRegex query, plus the given course number
-    // e.g. "CS170" returns ["CLAS-170", "CSLC-170", "CTCS-170", "CSCI-170"]
-    const deptRegex = new RegExp('^' + [...queryDept, ''].join('.*') + '$')
-    res.locals.searchClassResults = await TROJAN.depts({ term: res.locals.term }).then(({ departments }) => {
-      const arr = []
-      for (const key in departments) {
-        const { depts } = departments[key]
-        if (depts) {
-          for (const dept in depts) {
-            if (deptRegex.test(dept)) {
-              arr.push(`${dept}-${queryCourseNum}`)
+    if (queryDept && queryCourseNum) {
+      // Set class results to all the departments that match the deptRegex query, plus the given course number
+      // e.g. "CS170" returns ["CLAS-170", "CSLC-170", "CTCS-170", "CSCI-170"]
+      const deptRegex = new RegExp('^' + [...queryDept, ''].join('.*') + '$')
+      res.locals.searchClassResults = await TROJAN.depts({ term: res.locals.term }).then(({ departments }) => {
+        const arr = []
+        for (const key in departments) {
+          const { depts } = departments[key]
+          if (depts) {
+            for (const dept in depts) {
+              if (deptRegex.test(dept)) {
+                arr.push(`${dept}-${queryCourseNum}`)
+              }
             }
           }
         }
-      }
-      return arr
-    })
+        return arr
+      })
+    } else {
+      res.locals.searchClassResults = []
+    }
 
     next()
   } catch (err) {
