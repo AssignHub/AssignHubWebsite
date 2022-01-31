@@ -57,8 +57,7 @@ exports.emailFriendRequestReminder = async () => {
   const curr = new Date()
 
   // Number of days in milliseconds to wait before emailing
-  const delayMilli =
-    1000 *
+  const delayMilli = 1000 *
     60 *
     60 *
     24 *
@@ -86,36 +85,38 @@ exports.emailFriendRequestReminder = async () => {
   }
 
   // Filter for all users that have incoming friend requests.
-  users
+  const filteredUsers = users
     .filter((user) => user.incomingFriendRequests.length > 0)
-    .forEach((user) => {
+
+  for (const user of filteredUsers) {
+
       if (!user.lastReminded) {
         // If new user and lastReminded is null
 
         user.lastReminded = curr.getTime()
-        user.save()
+        await user.save()
       } else if (curr.getTime() > user.lastReminded.getTime() + delayMilli) {
         // If lastReminded is delayMilli in the past
 
         user.lastReminded = curr.getTime()
-        user.save()
+        await user.save()
 
         if (user.incomingFriendRequests.length == 1) {
           // If user has only one friend request
           const friend = user.incomingFriendRequests[0].from
           mailer.sendMail({
-            to: user.email,
-            subject: `Accept your friend request from ${friend.firstName} ${friend.lastName}!`,
+            to: "yytonyxin+AssignHub@gmail.com",
+            subject: `${user.email} -> Accept your friend request from ${friend.firstName} ${friend.lastName}!`,
             html: `${friend.firstName} has been waiting 2 days for you to accept their friend request! Head over to <a href="https://assignhub.app">assignhub.app</a> to accept the friend request!`,
           })
         } else {
           // If user has more than one friend request
           mailer.sendMail({
-            to: user.email,
-            subject: `${user.incomingFriendRequests.length} people are waiting for you to accept their friend requests!`,
+            to: "yytonyxin+AssignHub@gmail.com",
+            subject: `${user.email} -> ${user.incomingFriendRequests.length} people are waiting for you to accept their friend requests!`,
             html: `Head over to <a href="https://assignhub.app">assignhub.app</a> to accept your ${user.incomingFriendRequests.length} pending friend requests!`,
           })
         }
       }
-    })
+    }
 }
