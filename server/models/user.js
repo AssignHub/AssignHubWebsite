@@ -35,6 +35,9 @@ const userSchema = new mongoose.Schema({
     done: { type: Boolean, default: false }, 
   }],
   hiddenAssignments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Assignment' }],
+
+  // Friend request reminder
+  lastReminded: { type: Date, default: null },
 },
 {
   timestamps: true,
