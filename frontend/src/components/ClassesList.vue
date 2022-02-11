@@ -60,8 +60,12 @@
           </div>
 
           <!-- Arrow -->
-          <div style="width: 15px; background-color: #9e9e9e; flex: 1" />
-          <div style="width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 20px solid #9e9e9e;" />
+          
+          <img 
+            draggable="false"
+            width="80"
+            :src="require('@/assets/add_class_arrow.svg')"
+          />
           
         </div>
         <v-list v-else dense class="grey lighten-5 mx-2 pb-0 overflow-y-auto" style="flex: 1 1 auto;">

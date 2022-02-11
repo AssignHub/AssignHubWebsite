@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="48.422962"
+   height="55.357346"
+   version="1.1"
+   id="svg842"
+   sodipodi:docname="add_class_arrow.svg"
+   inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview841"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:zoom="5.5066052"
+     inkscape:cx="-32.052416"
+     inkscape:cy="0.45400022"
+     inkscape:window-width="1920"
+     inkscape:window-height="1009"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg842" />
+  <defs
+     id="defs846" />
+  <g
+     fill="none"
+     stroke="#000000"
+     stroke-width="1.5"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     stroke-miterlimit="10"
+     id="g840"
+     transform="rotate(132.07484,20.14801,31.922241)">
+    <path
+       d="M 19.409,6.077 C 14.118,8.315 5.456,11.935 4.693,18.628 c -0.676,5.938 5.108,11.437 8.879,15.21 5.497,5.502 20.709109,16.474929 6.303,23.567 -5.253203,2.314061 -8.891872,3.164946 -14.6716975,4.481736"
+       id="path836"
+       sodipodi:nodetypes="ccccc" />
+    <path
+       d="M 19.307,13.743 C 19.733,9.376 23.285,6.91 24.504,2.894 21.327,3.305 14.848,3.847 11.826,2.353"
+       id="path838" />
+  </g>
+</svg>
