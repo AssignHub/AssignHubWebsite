@@ -52,7 +52,7 @@
     <div class="inner-container">
       <Navigator></Navigator>
 
-      <div style="flex: 10 0 300px; min-width: 0;">
+      <div v-if="$vuetify.breakpoint.name != 'xs'" style="flex: 10 0 300px; min-width: 0;">
         <Calendar class="mb-4" />
       </div>
 

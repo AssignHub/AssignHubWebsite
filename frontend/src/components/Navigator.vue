@@ -131,7 +131,13 @@ export default {
   },
 
   created() {
-    this.page = window.localStorage.getItem('page') ?? 1
+    const storedPage = window.localStorage.getItem('page')
+    // If on small screen set page to stored if >= 0
+    if (!this.isMobile) {
+      this.page = storedPage ?? 1
+    } else {
+      this.page = storedPage >= 0 ? storedPage : 0
+    }
   },
 
   computed: {
@@ -144,18 +150,33 @@ export default {
       }
       return '' + this.friendRequests.incoming.length
     },
+    isMobile() {
+      return this.$vuetify.breakpoint.name == 'xs'
+    }
+  },
+
+  watch: {
+    isMobile(val) {
+      if (val && this.page < 0) {
+        this.setPage(0)
+      }
+    }
   },
 
   methods: {
     showTutorial,
     handleChangePage(page) {
       if (page != this.page) {
-        this.page = page
-        window.localStorage.setItem('page', page)
+        this.setPage(page)
       } else {
-        this.page = -1
-        window.localStorage.setItem('page', -1)
+        if (!this.isMobile) {
+          this.setPage(-1)
+        }
       }
+    },
+    setPage(page) {
+      this.page = page
+      window.localStorage.setItem('page', page)
     },
   },
 }
