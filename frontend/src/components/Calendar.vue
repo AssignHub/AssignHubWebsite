@@ -3,6 +3,7 @@
   <div
     id="tut-calendar"
     class="outer-container"
+    style="position: relative;"
   >
     <v-card>
       <div class="calendar-header pa-2">
@@ -16,16 +17,16 @@
         <v-expand-x-transition mode="out-in">
           <div :key="headerKey" style="white-space: nowrap;">
             <template v-for="(item, i) in monthHeader">
-              <span :key="`dash-${i}`" v-if="i !== 0" class="mr-4 text-h4"
+              <span :key="`dash-${i}`" v-if="i !== 0" class="mr-4 text-h4 text-unselectable"
                 >-</span
               >
-              <span :key="`month-${i}`" class="month-text text-h3 mr-4"
+              <span :key="`month-${i}`" class="month-text text-h3 mr-4 text-unselectable"
                 ><b>{{ item.month }}</b></span
               >
               <span
                 :key="`year-${i}`"
                 v-if="item.year"
-                class="year-text text-h4 mr-4"
+                class="year-text text-h4 mr-4 text-unselectable"
                 >{{ item.year }}</span
               >
             </template>
@@ -60,20 +61,20 @@
           style="flex: 0 0 auto;"
         >
           <div
-            class="col-day"
+            class="col-day day-header"
             :class="i !== 0 && 'left-border'"
             v-for="(day, i) in daysOfWeek"
             :key="i"
           >
             <div class="top-border pa-2">
               <div
-                class="text-center text-h5 mb-n2"
+                class="text-center text-h5 mb-n2 text-unselectable"
                 :class="getClassFromOffset(day.offset)"
               >
                 {{ day.name }}
               </div>
               <div
-                class="text-center text-h7"
+                class="text-center text-h7 text-unselectable"
                 :class="getClassFromOffset(day.offset)"
               >
                 {{ day.date.getDate() }}
@@ -98,6 +99,7 @@
           <AssignmentCard
             v-for="(a, j) in assignmentsByDaySeparated[i].todo"
             :key="`todo-${a._id}`"
+            v-dragged="(e) => drag(e, a._id)"
             :class="j !== 0 && 'mt-2'"
             :assignment="a"
             :disabled="a.done"
@@ -237,7 +239,10 @@ export default {
       dayLength: 24 * 60 * 60 * 1000,
       weekOffset: 0,
       scrollAmt: 0,
-      completed: [false, false, false, false, false, false, false],
+      completed: [false, false, false, false, false, false, false], // Whether completed drop down is open
+      dragEl: null, // The element currently being dragged,
+      startDrag: { x: null, y: null },
+      dragThreshold: 20,
     }
   },
 
@@ -319,15 +324,71 @@ export default {
       /* returns array containing the assignments for the week by day */
       return this.assignmentsByDaySeparated.map((a) => [...a.done, ...a.todo])
     },
+    dayBoundaries() {
+      /* returns array containing the x value boundaries of calendar columns */
+      const boundaries = []
+      const headers = document.getElementsByClassName('day-header')
+      for (const header of headers) {
+        const { left } = header.getBoundingClientRect()
+        boundaries.push(left)
+      }
+      boundaries.sort((a, b) => a-b).splice(0, 1)
+      return boundaries
+    },
   },
 
   methods: {
     ...mapMutations(['hideContextMenu', 'showContextMenu']),
     ...mapActions(['toggleAssignment']),
+    drag({ el, deltaX, deltaY, clientX, clientY, offsetX, offsetY, first, last }, assignmentId) {
+      if (first) {
+        // Set start drag position
+        this.startDrag = { x: clientX, y: clientY }
+
+        // Create a new absolutely positioned element to drag around
+        this.dragEl = el.cloneNode(true)
+        const calendarEl = document.getElementById('tut-calendar')
+        calendarEl.appendChild(this.dragEl)
+
+        // Get values to use later in determining element style
+        const { left: calendarX, top: calendarY } = calendarEl.getBoundingClientRect()
+        const { width: origWidth, left: origX, top: origY } = el.getBoundingClientRect() 
+
+        // Set styles of new element
+        this.dragEl.style.width = origWidth + 'px'
+        this.dragEl.style.position = 'absolute'
+        this.dragEl.style.left = clientX-calendarX + origX-clientX + 'px' 
+        this.dragEl.style.top = clientY-calendarY + origY-clientY + 'px'
+        this.dragEl.style.opacity = 0.5
+        return 
+      }
+      if (last) {
+        // Remove dragEl
+        this.dragEl.remove()
+        this.dragEl = null
+
+        // Check if diff is lower than drag threshold, and toggle assignment accordingly
+        const diffX = this.startDrag.x - clientX
+        const diffY = this.startDrag.y - clientY
+        if (Math.abs(diffX) < this.dragThreshold && Math.abs(diffY) < this.dragThreshold) {
+          this._toggleAssignment(assignmentId)
+        }
+
+        // TODO: move assignment to a new day when dragged to a new day 
+        return
+      }
+
+      // Drag element to mouse position
+      var l = +window.getComputedStyle(this.dragEl)['left'].slice(0, -2) || 0
+      var t = +window.getComputedStyle(this.dragEl)['top'].slice(0, -2) || 0
+      this.dragEl.style.left = l + deltaX + 'px'
+      this.dragEl.style.top = t + deltaY + 'px'
+    },
     getDateWithOffset(offset) {
       return new Date(this.curDate.getTime() + offset * this.dayLength)
     },
     getAssignmentsForDate(date) {
+      // TODO: make this more efficient instead of iterating through all the assignments for every day
       const allAssignments = this.assignments
         .filter((a) => {
           return compareDateDay(a.dueDate, date) === 0 //&& !a.done

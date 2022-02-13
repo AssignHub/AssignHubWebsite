@@ -6,18 +6,18 @@
     @mousedown="(e) => $emit('mousedown', e)"
     class="pa-0"
   >
-    <div class="courseId pl-1">
+    <div class="courseId pl-1 text-unselectable">
       {{ courseId }}
     </div>
     <v-card-text>
       <v-row>
         <v-col class="pa-0">
           <div 
-            class="text-caption font-weight-bold"
+            class="text-caption font-weight-bold text-unselectable"
             :style="{textDecoration: disabled ? 'line-through' : 'unset'}"
           >{{ assignment.name }}</div>
-          <div class="text-caption">{{ dateString }}{{ timeString }}</div>
-          <div v-if="showCreator" class="text-caption">{{ creatorString }}</div>
+          <div class="text-caption text-unselectable">{{ dateString }}{{ timeString }}</div>
+          <div v-if="showCreator" class="text-caption text-unselectable">{{ creatorString }}</div>
         </v-col>
         <v-col 
           v-if="toAdd" 
