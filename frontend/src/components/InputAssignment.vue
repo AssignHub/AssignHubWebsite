@@ -74,6 +74,23 @@ export default {
     DateTimePicker,
   },
 
+  data() {
+    return {
+      name: '',
+      curClass: '',
+      date: getDateString(new Date()),
+      time: '23:59',
+      doPublish: false,
+      loading: false,
+    }
+  },
+
+  mounted() {
+    this.$root.$on('addAssignmentOnDate', (data) => {
+      this.date = getDateString(data)
+    });
+  },
+
   watch: {
     assignment: {
       immediate: true,
@@ -88,17 +105,6 @@ export default {
         }
       },
     },
-  },
-
-  data() {
-    return {
-      name: '',
-      curClass: '',
-      date: getDateString(new Date()),
-      time: '23:59',
-      doPublish: false,
-      loading: false,
-    }
   },
 
   computed: {

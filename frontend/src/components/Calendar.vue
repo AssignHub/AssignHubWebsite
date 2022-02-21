@@ -60,10 +60,11 @@
           style="flex: 0 0 auto;"
         >
           <div
-            class="col-day"
+            class="col-day clickable"
             :class="i !== 0 && 'left-border'"
             v-for="(day, i) in daysOfWeek"
             :key="i"
+            @click="$root.$emit('addAssignmentOnDate', day.date)"
           >
             <div class="top-border pa-2">
               <div
@@ -191,6 +192,10 @@
 
 .col-day {
   width: 14.28% !important;
+}
+
+.clickable:hover {
+  cursor: pointer;
 }
 </style>
 
