@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import { get, post, patch, _delete, getCurTerm, socketReconnect } from '@/utils'
+import { CLASS_COLORS } from '@/constants'
 
 Vue.use(Vuex)
 
@@ -53,6 +54,14 @@ export default new Vuex.Store({
     },
     assignmentById: (state) => (assignmentId) => state.assignments.find(a => a._id === assignmentId),
     classById: (state) => (classId) => state.classes.find(c => c._id === classId),
+    availableColors: (state, getters) => {
+      let colors = [...CLASS_COLORS]
+      for (let c of getters.termClasses) {
+        let i = colors.indexOf(c.color)
+        if (i > -1) colors.splice(i, 1)
+      }
+      return colors
+    }
   },
   mutations: {
     resetState(state) {
