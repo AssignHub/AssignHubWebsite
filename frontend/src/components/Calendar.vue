@@ -248,7 +248,7 @@ export default {
 
   computed: {
     ...mapState(['assignments', 'curDate', 'numPendingAssignments']),
-    ...mapGetters({ classes: 'termClasses' }),
+    ...mapGetters({ classes: 'termClasses', assignmentById: 'assignmentById' }),
     curMonthYear() {
       /*
        * Returns an object containing the beginning/ending month for the currently
@@ -362,27 +362,46 @@ export default {
         this.dragEl.style.opacity = 0.5
         return 
       }
-      if (last) {
-        // Remove dragEl
-        this.dragEl.remove()
-        this.dragEl = null
 
-        // Check if diff is lower than drag threshold, and toggle assignment accordingly
+      if (last) {
+        // Check if diff is lower than drag threshold, and toggle assignment
         const diffX = this.startDrag.x - clientX
         const diffY = this.startDrag.y - clientY
         if (Math.abs(diffX) < this.dragThreshold && Math.abs(diffY) < this.dragThreshold) {
           this._toggleAssignment(assignmentId)
-        }
+        } else {
+          // Move assignment to a new day when dragged to a new day 
+          const { left, width } = this.dragEl.getBoundingClientRect()
+          const day = this.getDayFromX(left + width/2)
 
-        // TODO: move assignment to a new day when dragged to a new day 
+          const assignment = this.assignmentById(assignmentId)
+          console.log(assignment)
+          console.log('CHANGE DAY TO', day)
+        }
+        
+        // Remove dragEl
+        this.dragEl.remove()
+        this.dragEl = null
         return
       }
 
       // Drag element to mouse position
-      var l = +window.getComputedStyle(this.dragEl)['left'].slice(0, -2) || 0
-      var t = +window.getComputedStyle(this.dragEl)['top'].slice(0, -2) || 0
-      this.dragEl.style.left = l + deltaX + 'px'
-      this.dragEl.style.top = t + deltaY + 'px'
+      const dragElLeft = +window.getComputedStyle(this.dragEl)['left'].slice(0, -2) || 0
+      const dragElTop = +window.getComputedStyle(this.dragEl)['top'].slice(0, -2) || 0
+      this.dragEl.style.left = dragElLeft + deltaX + 'px'
+      this.dragEl.style.top = dragElTop + deltaY + 'px'
+    },
+    getDayFromX(xPos) {
+      /* Returns an integer representing the day column associated with the given x position 
+       * 0 = monday, 6 = sunday
+       */
+
+      for (let i = 0; i < this.dayBoundaries.length; i++) {
+        if (xPos < this.dayBoundaries[i]) {
+          return i
+        }
+      }
+      return this.dayBoundaries.length
     },
     getDateWithOffset(offset) {
       return new Date(this.curDate.getTime() + offset * this.dayLength)
