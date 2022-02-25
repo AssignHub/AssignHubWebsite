@@ -248,7 +248,7 @@ export default {
 
   computed: {
     ...mapState(['assignments', 'curDate', 'numPendingAssignments']),
-    ...mapGetters({ classes: 'termClasses', assignmentById: 'assignmentById' }),
+    ...mapGetters({ classes: 'termClasses', assignmentById: 'assignmentById'  }),
     curMonthYear() {
       /*
        * Returns an object containing the beginning/ending month for the currently
@@ -338,7 +338,7 @@ export default {
   },
 
   methods: {
-    ...mapMutations(['hideContextMenu', 'showContextMenu']),
+    ...mapMutations(['hideContextMenu', 'showContextMenu', 'updateAssignment']),
     ...mapActions(['toggleAssignment']),
     drag({ el, deltaX, deltaY, clientX, clientY, offsetX, offsetY, first, last }, assignmentId) {
       if (first) {
@@ -372,11 +372,16 @@ export default {
         } else {
           // Move assignment to a new day when dragged to a new day 
           const { left, width } = this.dragEl.getBoundingClientRect()
-          const day = this.getDayFromX(left + width/2)
+          const newDay = this.getDayFromX(left + width/2)
+          const oldDay = this.getDayFromX(this.startDrag.x)
+          const offset = newDay - oldDay
 
-          const assignment = this.assignmentById(assignmentId)
-          console.log(assignment)
-          console.log('CHANGE DAY TO', day)
+          const { dueDate: oldDate } = this.assignmentById(assignmentId)
+          const newDate = new Date(new Date(oldDate).getTime() + offset*this.dayLength)
+          this.updateAssignment({
+            assignmentId,
+            updatedData: { dueDate: newDate } 
+          })
         }
         
         // Remove dragEl
