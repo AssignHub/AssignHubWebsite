@@ -101,7 +101,7 @@ export default {
       // replaces certain button types based on whether friend request has already been sent
       return this.btnTypes.map(type => {
         if (type === 'add-friend') {
-          if (this.friendRequests.outgoing.find(req => req.to._id === this.user._id)) {
+          if (this.friendRequests.outgoing.find(req => req.to && req.to._id === this.user._id)) {
             return 'request-sent'
           } else if (this.friends.find(f => f._id === this.user._id)) {
             return 'already-friend'
