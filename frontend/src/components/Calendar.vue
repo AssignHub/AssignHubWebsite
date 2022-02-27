@@ -247,7 +247,7 @@ export default {
   },
 
   computed: {
-    ...mapState(['assignments', 'curDate', 'numPendingAssignments']),
+    ...mapState(['assignments', 'curDate', 'numPendingAssignments', 'mouseButtons']),
     ...mapGetters({ classes: 'termClasses', assignmentById: 'assignmentById'  }),
     curMonthYear() {
       /*
@@ -342,7 +342,9 @@ export default {
     ...mapMutations({ updateAssignmentFrontend: 'updateAssignment' }),
     ...mapActions(['toggleAssignment', 'updateAssignment']),
     drag({ el, deltaX, deltaY, clientX, clientY, offsetX, offsetY, first, last }, assignmentId) {
-      if (first) {
+      /* Drag event for when assignment is dragged */
+      
+      if (first && this.mouseButtons === 1) {
         // Set start drag position
         this.startDrag = { x: clientX, y: clientY }
 
@@ -363,6 +365,9 @@ export default {
         this.dragEl.style.opacity = 0.5
         return 
       }
+
+      // Null check
+      if (!this.dragEl) return
 
       if (last) {
         // Check if diff is lower than drag threshold, and toggle assignment

@@ -40,6 +40,9 @@ const getDefaultState = () => {
       incoming: [],
       outgoing: [],
     },
+
+    // Mouse
+    mouseButtons: 0,
   }
 }
 
@@ -168,6 +171,9 @@ export default new Vuex.Store({
     // Other
     setCurDate(state, date) {
       state.curDate = date
+    },
+    setMouseButtons(state, mouseButtons) {
+      state.mouseButtons = mouseButtons
     },
 
     // Websockets

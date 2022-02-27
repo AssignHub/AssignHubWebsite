@@ -116,6 +116,15 @@ export default {
       this.setAuthUser(null)
     })
     
+    // Events
+    window.addEventListener('mousedown', (e) => {
+      this.setMouseButtons(e.buttons)
+    }, { capture: true })
+
+    window.addEventListener('mouseup', (e) => {
+      this.setMouseButtons(e.buttons)
+    }, { capture: true })
+
     this.loaded = true
   },
 
@@ -145,7 +154,7 @@ export default {
   },
 
   methods: {
-    ...mapMutations([ 'setAuthUser' ]),
+    ...mapMutations([ 'setAuthUser', 'setMouseButtons' ]),
     redirectAuthUser() {
       let authRoutes = ['Home']
       let noAuthRoutes = ['SignIn']
