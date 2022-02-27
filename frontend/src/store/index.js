@@ -341,12 +341,14 @@ export default new Vuex.Store({
         }
 
         // Only add class prop if class was updated to a valid class
-        if (assignmentData.class === 'no-class') {
-          updatedData.class = undefined
-        } else {
-          updatedData.class = {
-            _id: assignmentData.class,
-            courseId: getters.classById(assignmentData.class).courseId
+        if (assignmentData.class) {
+          if (assignmentData.class === 'no-class') {
+            updatedData.class = undefined
+          } else {
+            updatedData.class = {
+              _id: assignmentData.class,
+              courseId: getters.classById(assignmentData.class).courseId
+            }
           }
         }
 

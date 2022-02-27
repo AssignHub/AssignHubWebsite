@@ -338,8 +338,9 @@ export default {
   },
 
   methods: {
-    ...mapMutations(['hideContextMenu', 'showContextMenu', 'updateAssignment']),
-    ...mapActions(['toggleAssignment']),
+    ...mapMutations(['hideContextMenu', 'showContextMenu']),
+    ...mapMutations({ updateAssignmentFrontend: 'updateAssignment' }),
+    ...mapActions(['toggleAssignment', 'updateAssignment']),
     drag({ el, deltaX, deltaY, clientX, clientY, offsetX, offsetY, first, last }, assignmentId) {
       if (first) {
         // Set start drag position
@@ -376,12 +377,13 @@ export default {
           const oldDay = this.getDayFromX(this.startDrag.x)
           const offset = newDay - oldDay
 
-          const { dueDate: oldDate } = this.assignmentById(assignmentId)
-          const newDate = new Date(new Date(oldDate).getTime() + offset*this.dayLength)
-          this.updateAssignment({
-            assignmentId,
-            updatedData: { dueDate: newDate } 
-          })
+          if (offset !== 0) {
+            const { dueDate: oldDate } = this.assignmentById(assignmentId)
+            const newDate = new Date(new Date(oldDate).getTime() + offset*this.dayLength)
+            this.updateAssignment({
+              assignmentId, dueDate: newDate
+            })
+          }
         }
         
         // Remove dragEl
