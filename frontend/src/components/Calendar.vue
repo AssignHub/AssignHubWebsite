@@ -200,7 +200,7 @@
 import AssignmentCard from '@/components/AssignmentCard'
 import AuthUserMenu from '@/components/AuthUserMenu'
 import ProgressBar from '@/components/ProgressBar'
-import { compareDateDay, partition, sortAssignments } from '@/utils'
+import { compareDateDay, partition, sortAssignments, getDateInfo } from '@/utils'
 import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
 import { CONTEXT_MENU_TYPES } from '@/constants'
 
@@ -240,9 +240,12 @@ export default {
       weekOffset: 0,
       scrollAmt: 0,
       completed: [false, false, false, false, false, false, false], // Whether completed drop down is open
+      
       dragEl: null, // The element currently being dragged,
-      startDrag: { x: null, y: null },
-      dragThreshold: 20,
+      startDrag: { x: null, y: null }, // Start location of drag
+      dragThreshold: 20, // Amount of distance we must drag assignment before actually drags (instead of toggling)
+      dragTimeout: null, // Timeout for when assignment dragged to the edge of the screen (to switch weeks)
+      dragInterval: 1000, // Interval to wait between calls of dragTimeout
     }
   },
 
@@ -343,7 +346,7 @@ export default {
     ...mapActions(['toggleAssignment', 'updateAssignment']),
     drag({ el, deltaX, deltaY, clientX, clientY, offsetX, offsetY, first, last }, assignmentId) {
       /* Drag event for when assignment is dragged */
-      
+
       if (first && this.mouseButtons === 1) {
         // Set start drag position
         this.startDrag = { x: clientX, y: clientY }
@@ -370,23 +373,33 @@ export default {
       if (!this.dragEl) return
 
       if (last) {
+        // Clear drag timeout
+        clearTimeout(this.dragTimeout)
+        this.dragTimeout = null
+
+        // Get new date that we have dragged to 
+        const { left, width } = this.dragEl.getBoundingClientRect()
+        const newDay = this.getDayFromX(left + width/2)
+        const newDate = this.daysOfWeek[newDay].date
+        const { dueDate: oldDate } = this.assignmentById(assignmentId)
+
+        const isSameDay = compareDateDay(oldDate, newDate) === 0
+
         // Check if diff is lower than drag threshold, and toggle assignment
         const diffX = this.startDrag.x - clientX
         const diffY = this.startDrag.y - clientY
-        if (Math.abs(diffX) < this.dragThreshold && Math.abs(diffY) < this.dragThreshold) {
+        if (isSameDay && Math.abs(diffX) < this.dragThreshold && Math.abs(diffY) < this.dragThreshold) {
           this._toggleAssignment(assignmentId)
         } else {
           // Move assignment to a new day when dragged to a new day 
-          const { left, width } = this.dragEl.getBoundingClientRect()
-          const newDay = this.getDayFromX(left + width/2)
-          const oldDay = this.getDayFromX(this.startDrag.x)
-          const offset = newDay - oldDay
-
-          if (offset !== 0) {
-            const { dueDate: oldDate } = this.assignmentById(assignmentId)
-            const newDate = new Date(new Date(oldDate).getTime() + offset*this.dayLength)
+          if (!isSameDay) {
+            // Use the hours/minutes from the old date and the date/month/year from the new date
+            const { hours, minutes } = getDateInfo(oldDate)
+            const { date, month, year } = getDateInfo(newDate)
+            const dueDate = new Date(year, month, date, hours, minutes)
+            
             this.updateAssignment({
-              assignmentId, dueDate: newDate
+              assignmentId, dueDate,
             })
           }
         }
@@ -402,6 +415,31 @@ export default {
       const dragElTop = +window.getComputedStyle(this.dragEl)['top'].slice(0, -2) || 0
       this.dragEl.style.left = dragElLeft + deltaX + 'px'
       this.dragEl.style.top = dragElTop + deltaY + 'px'
+
+      // Start drag timer when dragging assignment to edge of calendar 
+      const { left, width } = this.dragEl.getBoundingClientRect()
+      const curDay = this.getDayFromX(left + width/2)
+      if (curDay === 0 || curDay === 6) {
+        if (!this.dragTimeout)
+          this.dragTimeout = setTimeout(this.dragEdge, this.dragInterval)
+      } else {
+        clearTimeout(this.dragTimeout)
+        this.dragTimeout = null
+      }
+    },
+    dragEdge() {
+      /* Moves to the prev/next week based on where the dragged assignment is currently.
+       * Called on a timeout.
+       */
+      const { left, width } = this.dragEl.getBoundingClientRect()
+      const curDay = this.getDayFromX(left + width/2)
+      if (curDay === 0) {
+        this.prevWeek()
+        this.dragTimeout = setTimeout(this.dragEdge, this.dragInterval)
+      } else if (curDay === 6) {
+        this.nextWeek()
+        this.dragTimeout = setTimeout(this.dragEdge, this.dragInterval)
+      }
     },
     getDayFromX(xPos) {
       /* Returns an integer representing the day column associated with the given x position 
