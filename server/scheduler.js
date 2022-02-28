@@ -26,9 +26,9 @@ exports.scheduleTasks = () => {
   })
 
   // Email friend request reminders at 6:11AM UTC every day
-  cron.schedule('11 6 * * *', async () => {
+  /*cron.schedule('11 6 * * *', async () => {
     this.emailFriendRequestReminder()
-  })
+  })*/
 
 }
 
