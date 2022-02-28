@@ -3,6 +3,7 @@
   <div
     id="tut-calendar"
     class="outer-container"
+    style="position: relative;"
   >
     <v-card>
       <div class="calendar-header pa-2">
@@ -16,16 +17,16 @@
         <v-expand-x-transition mode="out-in">
           <div :key="headerKey" style="white-space: nowrap;">
             <template v-for="(item, i) in monthHeader">
-              <span :key="`dash-${i}`" v-if="i !== 0" class="mr-4 text-h4"
+              <span :key="`dash-${i}`" v-if="i !== 0" class="mr-4 text-h4 text-unselectable"
                 >-</span
               >
-              <span :key="`month-${i}`" class="month-text text-h3 mr-4"
+              <span :key="`month-${i}`" class="month-text text-h3 mr-4 text-unselectable"
                 ><b>{{ item.month }}</b></span
               >
               <span
                 :key="`year-${i}`"
                 v-if="item.year"
-                class="year-text text-h4 mr-4"
+                class="year-text text-h4 mr-4 text-unselectable"
                 >{{ item.year }}</span
               >
             </template>
@@ -60,7 +61,7 @@
           style="flex: 0 0 auto;"
         >
           <div
-            class="col-day clickable"
+            class="col-day day-header clickable"
             :class="i !== 0 && 'left-border'"
             v-for="(day, i) in daysOfWeek"
             :key="i"
@@ -68,13 +69,13 @@
           >
             <div class="top-border pa-2">
               <div
-                class="text-center text-h5 mb-n2"
+                class="text-center text-h5 mb-n2 text-unselectable"
                 :class="getClassFromOffset(day.offset)"
               >
                 {{ day.name }}
               </div>
               <div
-                class="text-center text-h7"
+                class="text-center text-h7 text-unselectable"
                 :class="getClassFromOffset(day.offset)"
               >
                 {{ day.date.getDate() }}
@@ -99,6 +100,7 @@
           <AssignmentCard
             v-for="(a, j) in assignmentsByDaySeparated[i].todo"
             :key="`todo-${a._id}`"
+            v-dragged="(e) => drag(e, a._id)"
             :class="j !== 0 && 'mt-2'"
             :assignment="a"
             :disabled="a.done"
@@ -203,7 +205,7 @@
 import AssignmentCard from '@/components/AssignmentCard'
 import AuthUserMenu from '@/components/AuthUserMenu'
 import ProgressBar from '@/components/ProgressBar'
-import { compareDateDay, partition, sortAssignments } from '@/utils'
+import { compareDateDay, partition, sortAssignments, getDateInfo } from '@/utils'
 import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
 import { CONTEXT_MENU_TYPES } from '@/constants'
 
@@ -242,13 +244,19 @@ export default {
       dayLength: 24 * 60 * 60 * 1000,
       weekOffset: 0,
       scrollAmt: 0,
-      completed: [false, false, false, false, false, false, false],
+      completed: [false, false, false, false, false, false, false], // Whether completed drop down is open
+      
+      dragEl: null, // The element currently being dragged,
+      startDrag: { x: null, y: null }, // Start location of drag
+      dragThreshold: 20, // Amount of distance we must drag assignment before actually drags (instead of toggling)
+      dragTimeout: null, // Timeout for when assignment dragged to the edge of the screen (to switch weeks)
+      dragInterval: 1000, // Interval to wait between calls of dragTimeout
     }
   },
 
   computed: {
-    ...mapState(['assignments', 'curDate', 'numPendingAssignments']),
-    ...mapGetters({ classes: 'termClasses' }),
+    ...mapState(['assignments', 'curDate', 'numPendingAssignments', 'mouseButtons']),
+    ...mapGetters({ classes: 'termClasses', assignmentById: 'assignmentById'  }),
     curMonthYear() {
       /*
        * Returns an object containing the beginning/ending month for the currently
@@ -295,11 +303,13 @@ export default {
     },
     daysOfWeek() {
       /* Returns an array containing information for the days of the current week */
-      const curDayNum = this.curDate.getDay()
-      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+      let curDayNum = this.curDate.getDay()
+      if (curDayNum === 0) curDayNum = 7  // Make sunday the last day instead of the first day
+
+      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
       const daysOfWeek = []
 
-      for (let i = 0; i < days.length; i++) {
+      for (let i = 1; i < days.length; i++) {
         const curDayOffset = this.weekOffset * 7 + i - curDayNum
         daysOfWeek.push({
           name: days[i],
@@ -322,15 +332,137 @@ export default {
       /* returns array containing the assignments for the week by day */
       return this.assignmentsByDaySeparated.map((a) => [...a.done, ...a.todo])
     },
+    dayBoundaries() {
+      /* returns array containing the x value boundaries of calendar columns */
+      const boundaries = []
+      const headers = document.getElementsByClassName('day-header')
+      for (const header of headers) {
+        const { left } = header.getBoundingClientRect()
+        boundaries.push(left)
+      }
+      boundaries.sort((a, b) => a-b).splice(0, 1)
+      return boundaries
+    },
   },
 
   methods: {
     ...mapMutations(['hideContextMenu', 'showContextMenu']),
-    ...mapActions(['toggleAssignment']),
+    ...mapMutations({ updateAssignmentFrontend: 'updateAssignment' }),
+    ...mapActions(['toggleAssignment', 'updateAssignment']),
+    drag({ el, deltaX, deltaY, clientX, clientY, offsetX, offsetY, first, last }, assignmentId) {
+      /* Drag event for when assignment is dragged */
+
+      if (first && this.mouseButtons === 1) {
+        // Set start drag position
+        this.startDrag = { x: clientX, y: clientY }
+
+        // Create a new absolutely positioned element to drag around
+        this.dragEl = el.cloneNode(true)
+        const calendarEl = document.getElementById('tut-calendar')
+        calendarEl.appendChild(this.dragEl)
+
+        // Get values to use later in determining element style
+        const { left: calendarX, top: calendarY } = calendarEl.getBoundingClientRect()
+        const { width: origWidth, left: origX, top: origY } = el.getBoundingClientRect() 
+
+        // Set styles of new element
+        this.dragEl.style.width = origWidth + 'px'
+        this.dragEl.style.position = 'absolute'
+        this.dragEl.style.left = clientX-calendarX + origX-clientX + 'px' 
+        this.dragEl.style.top = clientY-calendarY + origY-clientY + 'px'
+        this.dragEl.style.opacity = 0.5
+        return 
+      }
+
+      // Null check
+      if (!this.dragEl) return
+
+      if (last) {
+        // Clear drag timeout
+        clearTimeout(this.dragTimeout)
+        this.dragTimeout = null
+
+        // Get new date that we have dragged to 
+        const { left, width } = this.dragEl.getBoundingClientRect()
+        const newDay = this.getDayFromX(left + width/2)
+        const newDate = this.daysOfWeek[newDay].date
+        const { dueDate: oldDate } = this.assignmentById(assignmentId)
+
+        const isSameDay = compareDateDay(oldDate, newDate) === 0
+
+        // Check if diff is lower than drag threshold, and toggle assignment
+        const diffX = this.startDrag.x - clientX
+        const diffY = this.startDrag.y - clientY
+        if (isSameDay && Math.abs(diffX) < this.dragThreshold && Math.abs(diffY) < this.dragThreshold) {
+          this._toggleAssignment(assignmentId)
+        } else {
+          // Move assignment to a new day when dragged to a new day 
+          if (!isSameDay) {
+            // Use the hours/minutes from the old date and the date/month/year from the new date
+            const { hours, minutes } = getDateInfo(oldDate)
+            const { date, month, year } = getDateInfo(newDate)
+            const dueDate = new Date(year, month, date, hours, minutes)
+            
+            this.updateAssignment({
+              assignmentId, dueDate,
+            })
+          }
+        }
+        
+        // Remove dragEl
+        this.dragEl.remove()
+        this.dragEl = null
+        return
+      }
+
+      // Drag element to mouse position
+      const dragElLeft = +window.getComputedStyle(this.dragEl)['left'].slice(0, -2) || 0
+      const dragElTop = +window.getComputedStyle(this.dragEl)['top'].slice(0, -2) || 0
+      this.dragEl.style.left = dragElLeft + deltaX + 'px'
+      this.dragEl.style.top = dragElTop + deltaY + 'px'
+
+      // Start drag timer when dragging assignment to edge of calendar 
+      const { left, width } = this.dragEl.getBoundingClientRect()
+      const curDay = this.getDayFromX(left + width/2)
+      if (curDay === 0 || curDay === 6) {
+        if (!this.dragTimeout)
+          this.dragTimeout = setTimeout(this.dragEdge, this.dragInterval)
+      } else {
+        clearTimeout(this.dragTimeout)
+        this.dragTimeout = null
+      }
+    },
+    dragEdge() {
+      /* Moves to the prev/next week based on where the dragged assignment is currently.
+       * Called on a timeout.
+       */
+      const { left, width } = this.dragEl.getBoundingClientRect()
+      const curDay = this.getDayFromX(left + width/2)
+      if (curDay === 0) {
+        this.prevWeek()
+        this.dragTimeout = setTimeout(this.dragEdge, this.dragInterval)
+      } else if (curDay === 6) {
+        this.nextWeek()
+        this.dragTimeout = setTimeout(this.dragEdge, this.dragInterval)
+      }
+    },
+    getDayFromX(xPos) {
+      /* Returns an integer representing the day column associated with the given x position 
+       * 0 = monday, 6 = sunday
+       */
+
+      for (let i = 0; i < this.dayBoundaries.length; i++) {
+        if (xPos < this.dayBoundaries[i]) {
+          return i
+        }
+      }
+      return this.dayBoundaries.length
+    },
     getDateWithOffset(offset) {
       return new Date(this.curDate.getTime() + offset * this.dayLength)
     },
     getAssignmentsForDate(date) {
+      // TODO: make this more efficient instead of iterating through all the assignments for every day
       const allAssignments = this.assignments
         .filter((a) => {
           return compareDateDay(a.dueDate, date) === 0 //&& !a.done

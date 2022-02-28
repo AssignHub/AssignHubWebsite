@@ -50,8 +50,23 @@
             </template>
           </ScheduleDialog>
         </div>
-        <div v-if="classes.length === 0" class="text-center text-caption pt-6 px-2">
+        <div v-if="classes.length === 0" class="text-center text-caption pt-6 px-2 d-flex" style="height: 100%; flex-direction: column; align-items: center;">
+          <div>
           You are not in any classes.
+          </div>
+          <div style="flex: 5"/>
+          <div class="mb-2">
+            Start by adding one below!
+          </div>
+
+          <!-- Arrow -->
+          
+          <img 
+            draggable="false"
+            width="80"
+            :src="require('@/assets/add_class_arrow.svg')"
+          />
+          
         </div>
         <v-list v-else dense class="grey lighten-5 mx-2 pb-0 overflow-y-auto" style="flex: 1 1 auto;">
           <v-list-item

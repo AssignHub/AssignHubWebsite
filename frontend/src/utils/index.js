@@ -259,3 +259,25 @@ export const setActive = () => {
   /* Tells the server that the current user is active */
   return post('/general/set-active')
 }
+
+export const getDateInfo = (date) => {
+  const d = new Date(date)
+  
+  return {
+    seconds: d.getSeconds(),
+    minutes: d.getMinutes(),
+    hours: d.getHours(),
+    day: d.getDay(),
+    date: d.getDate(),
+    month: d.getMonth(),
+    year: d.getFullYear(),
+    
+    UTCSeconds: d.getUTCSeconds(),
+    UTCMinutes: d.getUTCMinutes(),
+    UTCHours: d.getUTCHours(),
+    UTCDay: d.getUTCDay(),
+    UTCDate: d.getUTCDate(),
+    UTCMonth: d.getUTCMonth(),
+    UTCYear: d.getUTCFullYear(),
+  }
+}

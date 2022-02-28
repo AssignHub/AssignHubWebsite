@@ -49,6 +49,13 @@ html {
   box-shadow: inset 0px 0px 8px rgba(0, 0, 0, 0.25) !important;
 }
 
+.text-unselectable {
+  -webkit-user-select: none; /* Safari */        
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE10+/Edge */
+  user-select: none; /* Standard */
+}
+
 /* Scrollbar stuff */
 * {
   scrollbar-width: thin;
@@ -109,6 +116,15 @@ export default {
       this.setAuthUser(null)
     })
     
+    // Events
+    window.addEventListener('mousedown', (e) => {
+      this.setMouseButtons(e.buttons)
+    }, { capture: true })
+
+    window.addEventListener('mouseup', (e) => {
+      this.setMouseButtons(e.buttons)
+    }, { capture: true })
+
     this.loaded = true
   },
 
@@ -138,7 +154,7 @@ export default {
   },
 
   methods: {
-    ...mapMutations([ 'setAuthUser' ]),
+    ...mapMutations([ 'setAuthUser', 'setMouseButtons' ]),
     redirectAuthUser() {
       let authRoutes = ['Home']
       let noAuthRoutes = ['SignIn']

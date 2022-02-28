@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import { get, post, patch, _delete, getCurTerm, socketReconnect } from '@/utils'
+import { CLASS_COLORS } from '@/constants'
 
 Vue.use(Vuex)
 
@@ -39,6 +40,9 @@ const getDefaultState = () => {
       incoming: [],
       outgoing: [],
     },
+
+    // Mouse
+    mouseButtons: 0,
   }
 }
 
@@ -53,6 +57,14 @@ export default new Vuex.Store({
     },
     assignmentById: (state) => (assignmentId) => state.assignments.find(a => a._id === assignmentId),
     classById: (state) => (classId) => state.classes.find(c => c._id === classId),
+    availableColors: (state, getters) => {
+      let colors = [...CLASS_COLORS]
+      for (let c of getters.termClasses) {
+        let i = colors.indexOf(c.color)
+        if (i > -1) colors.splice(i, 1)
+      }
+      return colors
+    }
   },
   mutations: {
     resetState(state) {
@@ -159,6 +171,9 @@ export default new Vuex.Store({
     // Other
     setCurDate(state, date) {
       state.curDate = date
+    },
+    setMouseButtons(state, mouseButtons) {
+      state.mouseButtons = mouseButtons
     },
 
     // Websockets
@@ -332,12 +347,14 @@ export default new Vuex.Store({
         }
 
         // Only add class prop if class was updated to a valid class
-        if (assignmentData.class === 'no-class') {
-          updatedData.class = undefined
-        } else {
-          updatedData.class = {
-            _id: assignmentData.class,
-            courseId: getters.classById(assignmentData.class).courseId
+        if (assignmentData.class) {
+          if (assignmentData.class === 'no-class') {
+            updatedData.class = undefined
+          } else {
+            updatedData.class = {
+              _id: assignmentData.class,
+              courseId: getters.classById(assignmentData.class).courseId
+            }
           }
         }
 

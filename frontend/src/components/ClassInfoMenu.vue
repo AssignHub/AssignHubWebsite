@@ -24,6 +24,7 @@
             :close-on-content-click="false"
             transition="slide-y-transition"
             id="classMenu"
+            @input="(open) => {if (open) {copyingLink = false; shareLink = false;}}"
           >
             <template v-slot:activator="{ on, attrs }">
               <v-btn plain icon v-bind="attrs" v-on="on">
@@ -34,27 +35,40 @@
             </template>
 
             <v-list align="center" justify="center">
+              <v-btn
+                text
+                small
+                block
+                @click="edit"
+              >
+                Edit
+              </v-btn>
+
               <span v-if="shareLink">
                 <input id="linkToCopy" class="mx-2 my-0" v-model="link" />
                 <br />
               </span>
               <v-btn
+                block
                 text
                 small
                 class="blue--text"
                 v-if="!copyingLink"
                 @click="shareLinkClick()"
-                >Share link</v-btn
               >
+                Share link
+              </v-btn>
               <v-btn
+                block
                 text
                 small
                 class="blue--text mt-1"
                 @click="copyLink()"
                 v-if="shareLink && copyingLink"
-                >Copy <v-icon>mdi-link</v-icon></v-btn
               >
-              <br />
+                Copy <v-icon>mdi-link</v-icon>
+              </v-btn>
+
               <v-dialog v-model="removeDialog" width="400" persistent>
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn text small class="red--text" v-bind="attrs" v-on="on"
@@ -193,6 +207,9 @@ export default {
       'getPublicAssignments',
       'showInfo',
     ]),
+    edit() {
+      this.$root.$emit('searchClass', this._class.courseId)
+    },
     getMembers() {
       if (!this.gotMembers) {
         this.gotMembers = true

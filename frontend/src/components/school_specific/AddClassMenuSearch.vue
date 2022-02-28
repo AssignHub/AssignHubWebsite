@@ -2,7 +2,7 @@
 <!-- TODO: have a search bar where you can search by section number or professor name -->
 
 <template>
-  <v-card id="class-search-dialog" color="grey lighten-3" >
+  <v-card color="grey lighten-3" >
 
     <!-- Term header -->
     <div
@@ -14,7 +14,7 @@
           class="px-2 white--text text-overline"
         >{{ termText }}</div>
         <v-spacer />
-        <v-btn @click="$emit('close')" icon small color="white">
+        <v-btn @click="hide" icon small color="white">
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </div>
@@ -89,7 +89,7 @@
     <v-list v-else-if="!showSections && searchResults.length > 0" class="overflow-y-auto" style="height: 400px">
       <span v-for="(curCourseId, i) in searchResults" :key="curCourseId">
         <v-divider v-if="i !== 0"/>
-        <v-list-item @click="courseId = curCourseId; getSections()">
+        <v-list-item @click="search(curCourseId)">
           <v-list-item-title>{{ curCourseId }}</v-list-item-title>
           <v-list-item-icon>
             <v-icon>mdi-chevron-right</v-icon>
@@ -184,22 +184,28 @@
 
 <script>
 import { get, post, blocksString, instructorNames } from '@/utils'
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapGetters, mapActions } from 'vuex'
 
 import ColorSelect from '@/components/ColorSelect'
 
 export default {
   name: 'UscAddClassMenuSearch',
 
-  emits: ['input', 'close'],
+  emits: ['input', 'hide', 'show'],
 
   props: {
     menu: { type: Boolean, required: true }, // Whether menu is shown or not
-    colors: { type: Array, required: true }, // Array of available colors to set classes to
   },
 
   components: {
     ColorSelect,
+  },
+
+  created() {
+    this.$root.$on('searchClass', (courseId) => {
+      this.show()
+      this.search(courseId)
+    })
   },
 
   watch: {
@@ -209,7 +215,7 @@ export default {
     },
     term() {
       // Close menu if term has been changed
-      this.$emit('close')
+      this.$emit('hide')
     },
   },
 
@@ -230,6 +236,7 @@ export default {
 
   computed: {
     ...mapState([ 'authUser', 'term', 'terms' ]),
+    ...mapGetters({ colors: 'availableColors' }),
     filteredSections() { 
       /* Organizes the sections by type */
       const filtered = {}
@@ -402,6 +409,11 @@ export default {
       this.courseId = ''
       this.loading = false
     },
+    search(courseId) {
+      /* Programmatically searches for the given courseId */
+      this.courseId = courseId
+      this.getSections()
+    },
     select(sectionId) {
       /* Add sectionId to the array of selected sections */
       const index = this.checked.indexOf(sectionId)
@@ -414,6 +426,12 @@ export default {
     setRandomColor() {
       /* Sets this.color to a random color based on the available colors */
       this.color = this.colors[Math.floor(Math.random() * this.colors.length)]
+    },
+    show() {
+      this.$emit('show')
+    },
+    hide() {
+      this.$emit('hide')
     },
   }
 }

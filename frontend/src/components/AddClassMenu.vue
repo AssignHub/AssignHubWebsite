@@ -22,7 +22,7 @@
         v-on="on"
       >+ Add Class</v-btn>
     </template>
-    <AddClassMenuSearch :colors="colors" :menu="menu" @close="menu = false" />
+    <AddClassMenuSearch :menu="menu" @show="menu = true" @hide="menu = false" />
   </v-menu>
 </template>
 
@@ -55,8 +55,6 @@
 </style>
 
 <script>
-
-import { CLASS_COLORS } from '@/constants'
 import { getCurTerm } from '@/utils'
 import { mapState, mapGetters } from 'vuex'
 
@@ -73,6 +71,14 @@ export default {
     AddClassMenuSearch,
   },
 
+  watch: {
+    term() {
+      // A little hack to ensure that the AddClassMenuSearch component is created
+      this.menu = true
+      this.$nextTick(() => this.menu=false)
+    },
+  },
+
   data() {
     return {
       menu: false,
@@ -81,20 +87,11 @@ export default {
 
   computed: {
     ...mapState([ 'authUser', 'term', ]),
-    ...mapGetters({ classes: 'termClasses' }),
     school() {
       if (process.env.NODE_ENV === 'development' && this.authUser.school == 'gmail') {
         return 'usc'
       }
       return this.authUser.school
-    },
-    colors() {
-      let colors = [...CLASS_COLORS]
-      for (let c of this.classes) {
-        let i = colors.indexOf(c.color)
-        if (i > -1) colors.splice(i, 1)
-      }
-      return colors
     },
     disableAddClass() {
       return this.authUser.school === 'berkeley' && this.term != getCurTerm().term

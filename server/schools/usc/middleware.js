@@ -58,6 +58,8 @@ exports.getSections = async (req, res, next) => {
     const courseNum = seq ? num+seq : num
     const courseIdFormatted = `${dept}-${courseNum}`
 
+    
+
     let sections
     try {
       sections = await TROJAN.course(courseIdFormatted, options).then(data => {
