@@ -116,6 +116,12 @@ export default {
     InputAssignment,
   },
 
+  mounted() {
+    this.$root.$on('addAssignmentOnDate', (data) => {
+      this.show()
+    });
+  },
+
   watch: {
     value() {
       if (!this.value) {
