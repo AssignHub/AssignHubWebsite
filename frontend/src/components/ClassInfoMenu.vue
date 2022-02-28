@@ -209,9 +209,6 @@ export default {
     ]),
     edit() {
       this.$root.$emit('searchClass', this._class.courseId)
-      return
-      document.getElementById('class-search-dialog').__vue__.show()
-      document.getElementById('class-search-dialog').__vue__.search(this._class.courseId)
     },
     getMembers() {
       if (!this.gotMembers) {
