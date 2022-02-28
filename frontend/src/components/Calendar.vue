@@ -14,6 +14,12 @@
           <v-icon>mdi-chevron-right</v-icon>
         </v-btn>
 
+        <v-btn
+          class="mr-2"
+          outlined
+          @click="weekOffset = 0"
+        >Today</v-btn>
+
         <v-expand-x-transition mode="out-in">
           <div :key="headerKey" style="white-space: nowrap;">
             <template v-for="(item, i) in monthHeader">
@@ -47,7 +53,7 @@
           target="_blank"
           href="https://forms.gle/g5FqXuCHBEFXsvHu6"
         >
-          Give Feedback
+          Feedback
         </v-btn>
 
         <AuthUserMenu />
