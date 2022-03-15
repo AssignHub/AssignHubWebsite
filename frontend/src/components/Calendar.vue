@@ -1,9 +1,6 @@
 <!-- Displays assignments in a calendar view -->
 <template>
-  <div
-    id="tut-calendar"
-    class="outer-container"
-  >
+  <div id="tut-calendar" class="outer-container">
     <v-card>
       <div class="calendar-header pa-2">
         <v-btn icon small class="ml-2" @click="prevWeek">
@@ -39,7 +36,7 @@
           :assignments-for-week="assignmentsByDay"
         />
 
-        <v-btn 
+        <v-btn
           color="primary"
           class="mr-4"
           text
@@ -66,7 +63,8 @@
             :key="i"
             @click="$root.$emit('addAssignmentOnDate', day.date)"
           >
-            <div class="top-border pa-2">
+          <v-hover v-slot="{ hover }">
+            <div class="top-border pa-2" style="position: relative;">
               <div
                 class="text-center text-h5 mb-n2"
                 :class="getClassFromOffset(day.offset)"
@@ -79,7 +77,21 @@
               >
                 {{ day.date.getDate() }}
               </div>
-            </div>
+              <v-fade-transition>
+              <v-btn
+                class="mx-2"
+                fab
+                dark
+                x-small
+      color="primary lighten-1"
+                v-if="hover"
+                style="position: absolute; right: 5px; top: 15px;"
+              >
+                <v-icon dark>
+                  mdi-plus
+                </v-icon>
+              </v-btn></v-fade-transition>
+            </div></v-hover>
           </div>
         </div>
       </div>
@@ -133,7 +145,7 @@
           <v-expand-transition>
             <div v-if="completed[i]">
               <AssignmentCard
-                v-for="(a) in assignmentsByDaySeparated[i].done"
+                v-for="a in assignmentsByDaySeparated[i].done"
                 :key="`done-${a._id}`"
                 :class="'mt-2'"
                 :assignment="a"
