@@ -11,6 +11,7 @@ const User = reqlib('models/user')
 const { getUser } = reqlib('middleware/auth')
 const { escapeRegExp, _fetch } = reqlib('utils/utils')
 const { sendMail } = reqlib('mailer')
+const { getEmailsMap } = reqlib('schools/emails_map')
 const discordBot = reqlib('discord_bot')
 require('dotenv').config()
 
@@ -30,6 +31,7 @@ router.post('/sign-in', async (req, res) => {
     const profileData = ticket.getPayload()
     
     // Restrict emails
+    let school
     const allowedEmails = editJsonFile(`${__dirname}/../config/general.json`).toObject().allowedEmails
     let emailAllowed = false
     for (let email of allowedEmails) {
@@ -39,13 +41,21 @@ router.post('/sign-in', async (req, res) => {
         break
       }
     }
+
+    // Check hardcoded emails 
+    const emailsMap = getEmailsMap()
+    if (emailsMap.has(profileData.email)) {
+      school = emailsMap.get(profileData.email)
+      emailAllowed = true
+    }
+
     if (process.env.NODE_ENV !== 'development' && !emailAllowed) {
       res.status(403).json({ error: 'email-not-allowed' })
       return
     }
 
     // Find user if exists and update user data
-    const school = profileData.email.match(/(?:[.@](.+?))+\..+/)[1]
+    if (!school) school = profileData.email.match(/(?:[.@](.+?))+\..+/)[1]
     const userData = { 
       lastSignIn: new Date(),
       timezoneOffset,
