@@ -94,3 +94,5 @@ require('./scheduler').scheduleTasks()
 
 // Discord bot
 require('./discord_bot').init()
+
+require('./schools/emails_map').init()

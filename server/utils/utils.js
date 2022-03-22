@@ -1,4 +1,5 @@
 const fetch = require('node-fetch')
+const { promises: { readdir } } = require('fs')
 require('dotenv').config()
 
 exports._fetch = (path, options) => fetch(path, options)
@@ -28,4 +29,10 @@ exports.splitLast = (string, char=' ') => {
   const lastIndex = string.lastIndexOf(char)
   if (lastIndex === -1) return [ string ]
   return [string.substring(0, lastIndex), string.substring(lastIndex+1)]
+}
+
+exports.getDirectories = async (path) => {
+  return (await readdir(path, { withFileTypes: true }))
+    .filter(dirent => dirent.isDirectory())
+    .map(dirent => dirent.name)
 }
