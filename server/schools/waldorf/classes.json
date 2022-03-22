@@ -1,0 +1,44 @@
+{
+  "classes": [
+    {
+      "courseId": "Main Lesson",
+      "sectionId": "12",
+      "blocks": [
+        {
+          "dow": "M",
+          "start": "08:00",
+          "end": "09:45",
+          "location": "Da Vinci"
+        },
+        {
+            "dow": "T",
+            "start": "08:00",
+            "end": "09:45",
+            "location": "Da Vinci"
+          }
+      ],
+      "type": "Lecture",
+      "instructors": []
+    },
+    {
+        "courseId": "Handbells",
+        "sectionId": "9/10/11/12",
+        "blocks": [
+          {
+            "dow": "M",
+            "start": "08:00:00",
+            "end": "09:45:00",
+            "location": "Da Vinci"
+          },
+          {
+              "dow": "W",
+              "start": "08:00:00",
+              "end": "09:45:00",
+              "location": "Da Vinci"
+            }
+        ],
+        "type": "Lecture",
+        "instructors": []
+      }
+  ]
+}
