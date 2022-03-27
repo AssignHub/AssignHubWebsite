@@ -5,40 +5,524 @@
       "sectionId": "12",
       "blocks": [
         {
-          "dow": "M",
+          "day": "M",
           "start": "08:00",
           "end": "09:45",
-          "location": "Da Vinci"
+          "location": ""
         },
         {
-            "dow": "T",
-            "start": "08:00",
-            "end": "09:45",
-            "location": "Da Vinci"
-          }
+          "day": "T",
+          "start": "08:00",
+          "end": "09:45",
+          "location": ""
+        },
+        {
+          "day": "W",
+          "start": "08:00",
+          "end": "09:45",
+          "location": ""
+        },
+        {
+          "day": "H",
+          "start": "08:00",
+          "end": "09:45",
+          "location": ""
+        },
+        {
+          "day": "F",
+          "start": "08:00",
+          "end": "09:45",
+          "location": ""
+        }
       ],
       "type": "Lecture",
       "instructors": []
     },
     {
-        "courseId": "Handbells",
-        "sectionId": "9/10/11/12",
-        "blocks": [
-          {
-            "dow": "M",
-            "start": "08:00:00",
-            "end": "09:45:00",
-            "location": "Da Vinci"
-          },
-          {
-              "dow": "W",
-              "start": "08:00:00",
-              "end": "09:45:00",
-              "location": "Da Vinci"
-            }
-        ],
-        "type": "Lecture",
-        "instructors": []
-      }
+      "courseId": "Algebra II",
+      "sectionId": "11/12",
+      "blocks": [
+        {
+          "day": "M",
+          "start": "10:00",
+          "end": "10:50",
+          "location": ""
+        },
+        {
+          "day": "T",
+          "start": "11:55",
+          "end": "12:45",
+          "location": ""
+        },
+        {
+          "day": "W",
+          "start": "13:25",
+          "end": "14:15",
+          "location": ""
+        },
+        {
+          "day": "H",
+          "start": "11:55",
+          "end": "12:45",
+          "location": ""
+        },
+        {
+          "day": "F",
+          "start": "13:25",
+          "end": "14:15",
+          "location": ""
+        }
+      ],
+      "type": "Lecture",
+      "instructors": []
+    },
+    {
+      "courseId": "PreCalculus",
+      "sectionId": "11/12",
+      "blocks": [
+        {
+          "day": "M",
+          "start": "10:00",
+          "end": "10:50",
+          "location": ""
+        },
+        {
+          "day": "T",
+          "start": "11:55",
+          "end": "12:45",
+          "location": ""
+        },
+        {
+          "day": "W",
+          "start": "13:25",
+          "end": "14:15",
+          "location": ""
+        },
+        {
+          "day": "H",
+          "start": "11:55",
+          "end": "12:45",
+          "location": ""
+        },
+        {
+          "day": "F",
+          "start": "13:25",
+          "end": "14:15",
+          "location": ""
+        }
+      ],
+      "type": "Lecture",
+      "instructors": []
+    },
+    {
+      "courseId": "Calculus",
+      "sectionId": "11/12",
+      "blocks": [
+        {
+          "day": "M",
+          "start": "10:00",
+          "end": "10:50",
+          "location": ""
+        },
+        {
+          "day": "T",
+          "start": "11:55",
+          "end": "12:45",
+          "location": ""
+        },
+        {
+          "day": "W",
+          "start": "13:25",
+          "end": "14:15",
+          "location": ""
+        },
+        {
+          "day": "H",
+          "start": "11:55",
+          "end": "12:45",
+          "location": ""
+        },
+        {
+          "day": "F",
+          "start": "13:25",
+          "end": "14:15",
+          "location": ""
+        }
+      ],
+      "type": "Lecture",
+      "instructors": []
+    },
+    {
+      "courseId": "Earth Arts",
+      "sectionId": "12",
+      "blocks": [
+        {
+          "day": "M",
+          "start": "11:00",
+          "end": "11:50",
+          "location": ""
+        },
+        {
+          "day": "M",
+          "start": "11:55",
+          "end": "12:45",
+          "location": ""
+        },
+        {
+          "day": "H",
+          "start": "10:00",
+          "end": "10:45",
+          "location": ""
+        },
+        {
+          "day": "H",
+          "start": "11:00",
+          "end": "11:50",
+          "location": ""
+        }
+      ],
+      "type": "Lecture",
+      "instructors": []
+    },
+    {
+      "courseId": "Clay",
+      "sectionId": "12",
+      "blocks": [
+        {
+          "day": "M",
+          "start": "11:00",
+          "end": "11:50",
+          "location": ""
+        },
+        {
+          "day": "M",
+          "start": "11:55",
+          "end": "12:45",
+          "location": ""
+        },
+        {
+          "day": "H",
+          "start": "10:00",
+          "end": "10:45",
+          "location": ""
+        },
+        {
+          "day": "H",
+          "start": "11:00",
+          "end": "11:50",
+          "location": ""
+        }
+      ],
+      "type": "Lecture",
+      "instructors": []
+    },
+    {
+      "courseId": "Spanish 11/12-I",
+      "sectionId": "11/12",
+      "blocks": [
+        {
+          "day": "M",
+          "start": "13:25",
+          "end": "14:15",
+          "location": ""
+        },
+        {
+          "day": "T",
+          "start": "11:00",
+          "end": "11:50",
+          "location": ""
+        },
+        {
+          "day": "H",
+          "start": "13:25",
+          "end": "14:15",
+          "location": ""
+        },
+        {
+          "day": "F",
+          "start": "11:55",
+          "end": "12:45",
+          "location": ""
+        }
+      ],
+      "type": "Lecture",
+      "instructors": []
+    },
+    {
+      "courseId": "Spanish 11/12-II",
+      "sectionId": "11/12",
+      "blocks": [
+        {
+          "day": "M",
+          "start": "13:25",
+          "end": "14:15",
+          "location": ""
+        },
+        {
+          "day": "T",
+          "start": "11:00",
+          "end": "11:50",
+          "location": ""
+        },
+        {
+          "day": "H",
+          "start": "13:25",
+          "end": "14:15",
+          "location": ""
+        },
+        {
+          "day": "F",
+          "start": "11:55",
+          "end": "12:45",
+          "location": ""
+        }
+      ],
+      "type": "Lecture",
+      "instructors": []
+    },
+    {
+      "courseId": "SSE",
+      "sectionId": "12",
+      "blocks": [
+        {
+          "day": "M",
+          "start": "13:25",
+          "end": "14:15",
+          "location": ""
+        },
+        {
+          "day": "T",
+          "start": "10:00",
+          "end": "10:50",
+          "location": ""
+        },
+        {
+          "day": "T",
+          "start": "11:00",
+          "end": "11:50",
+          "location": ""
+        },
+        {
+          "day": "F",
+          "start": "11:55",
+          "end": "12:45",
+          "location": ""
+        }
+      ],
+      "type": "Lecture",
+      "instructors": []
+    },
+    {
+      "courseId": "Handbells",
+      "sectionId": "9/10/11/12",
+      "blocks": [
+        {
+          "day": "M",
+          "start": "14:20",
+          "end": "15:10",
+          "location": ""
+        },
+        {
+          "day": "W",
+          "start": "14:20",
+          "end": "15:10",
+          "location": ""
+        }
+      ],
+      "type": "Lecture",
+      "instructors": []
+    },
+    {
+      "courseId": "Improv",
+      "sectionId": "9/10/11/12",
+      "blocks": [
+        {
+          "day": "M",
+          "start": "14:20",
+          "end": "15:10",
+          "location": ""
+        },
+        {
+          "day": "W",
+          "start": "14:20",
+          "end": "15:10",
+          "location": ""
+        }
+      ],
+      "type": "Lecture",
+      "instructors": []
+    },
+    {
+      "courseId": "Orchestra",
+      "sectionId": "9/10/11/12",
+      "blocks": [
+        {
+          "day": "M",
+          "start": "14:20",
+          "end": "15:10",
+          "location": ""
+        },
+        {
+          "day": "W",
+          "start": "14:20",
+          "end": "15:10",
+          "location": ""
+        }
+      ],
+      "type": "Lecture",
+      "instructors": []
+    },
+    {
+      "courseId": "Performance Eurythmy",
+      "sectionId": "9/10/11/12",
+      "blocks": [
+        {
+          "day": "T",
+          "start": "14:20",
+          "end": "15:10",
+          "location": ""
+        },
+        {
+          "day": "H",
+          "start": "14:20",
+          "end": "15:10",
+          "location": ""
+        }
+      ],
+      "type": "Lecture",
+      "instructors": []
+    },
+    {
+      "courseId": "Guitar",
+      "sectionId": "9/10/11/12",
+      "blocks": [
+        {
+          "day": "T",
+          "start": "14:20",
+          "end": "15:10",
+          "location": ""
+        },
+        {
+          "day": "H",
+          "start": "14:20",
+          "end": "15:10",
+          "location": ""
+        }
+      ],
+      "type": "Lecture",
+      "instructors": []
+    },
+    {
+      "courseId": "Chorus",
+      "sectionId": "9/10/11/12",
+      "blocks": [
+        {
+          "day": "T",
+          "start": "14:20",
+          "end": "15:10",
+          "location": ""
+        },
+        {
+          "day": "H",
+          "start": "14:20",
+          "end": "15:10",
+          "location": ""
+        }
+      ],
+      "type": "Lecture",
+      "instructors": []
+    },
+    {
+      "courseId": "Jazz",
+      "sectionId": "9/10/11/12",
+      "blocks": [
+        {
+          "day": "T",
+          "start": "14:20",
+          "end": "15:10",
+          "location": ""
+        },
+        {
+          "day": "H",
+          "start": "14:20",
+          "end": "15:10",
+          "location": ""
+        }
+      ],
+      "type": "Lecture",
+      "instructors": []
+    },
+    {
+      "courseId": "Wellness",
+      "sectionId": "12",
+      "blocks": [
+        {
+          "day": "T",
+          "start": "10:00",
+          "end": "10:50",
+          "location": ""
+        },
+        {
+          "day": "H",
+          "start": "13:25",
+          "end": "14:15",
+          "location": ""
+        }
+      ],
+      "type": "Lecture",
+      "instructors": []
+    },
+    {
+      "courseId": "Eurythmy",
+      "sectionId": "12",
+      "blocks": [
+        {
+          "day": "T",
+          "start": "13:25",
+          "end": "14:15",
+          "location": ""
+        },
+        {
+          "day": "F",
+          "start": "14:20",
+          "end": "15:10",
+          "location": ""
+        }
+      ],
+      "type": "Lecture",
+      "instructors": []
+    },
+    {
+      "courseId": "Digital Literacy",
+      "sectionId": "12",
+      "blocks": [
+        {
+          "day": "W",
+          "start": "10:00",
+          "end": "10:50",
+          "location": ""
+        },
+        {
+          "day": "W",
+          "start": "11:00",
+          "end": "11:50",
+          "location": ""
+        },
+        {
+          "day": "F",
+          "start": "10:00",
+          "end": "10:50",
+          "location": ""
+        },
+        {
+          "day": "F",
+          "start": "11:00",
+          "end": "11:50",
+          "location": ""
+        }
+      ],
+      "type": "Lecture",
+      "instructors": []
+    }
   ]
 }
