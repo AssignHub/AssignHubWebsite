@@ -8,8 +8,8 @@ source $SCRIPT_DIR/shared.sh
 ROOT_FOLDER_SERVER_LOCATION="/assignhub"
 
 # SCP some miscellaneous gitignored files
-scp -i $AWS_KEY_LOCATION -r $SCRIPT_DIR/../server/schools/waldorf/allowed_emails.json $SERVER_HOST:~/
-ssh $SERVER_HOST -i $AWS_KEY_LOCATION "sudo mv ~/allowed_emails.json $ROOT_FOLDER_SERVER_LOCATION/server/schools/waldorf/"
+# scp -i $AWS_KEY_LOCATION -r $SCRIPT_DIR/../server/schools/waldorf/allowed_emails.json $SERVER_HOST:~/
+# ssh $SERVER_HOST -i $AWS_KEY_LOCATION "sudo mv ~/allowed_emails.json $ROOT_FOLDER_SERVER_LOCATION/server/schools/waldorf/"
 
 # Git pull on server, npm install, and restart server process
 echo "Deploying server..."
