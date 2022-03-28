@@ -51,3 +51,6 @@ Contains the following functions + any other util functions you want to create
   }
 ]
 ```
+
+## allowed_emails.json
+Contains an array of hardcoded emails in the case where students do not have school emails associated with a certain domain name
