@@ -1,6 +1,7 @@
 // Array containing all the possible colors users can set their classes to
 export const CLASS_COLORS = Object.freeze([
   '#E57373', 
+  '#D979D1',
   //'#F06292', 
   '#BA68C8', 
   //'#9575CD', 
