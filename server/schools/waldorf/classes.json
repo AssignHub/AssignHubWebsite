@@ -153,39 +153,7 @@
       "instructors": []
     },
     {
-      "courseId": "Earth Arts",
-      "sectionId": "12",
-      "blocks": [
-        {
-          "day": "M",
-          "start": "11:00",
-          "end": "11:50",
-          "location": ""
-        },
-        {
-          "day": "M",
-          "start": "11:55",
-          "end": "12:45",
-          "location": ""
-        },
-        {
-          "day": "H",
-          "start": "10:00",
-          "end": "10:45",
-          "location": ""
-        },
-        {
-          "day": "H",
-          "start": "11:00",
-          "end": "11:50",
-          "location": ""
-        }
-      ],
-      "type": "Lecture",
-      "instructors": []
-    },
-    {
-      "courseId": "Clay",
+      "courseId": "Art",
       "sectionId": "12",
       "blocks": [
         {
@@ -493,7 +461,7 @@
       "instructors": []
     },
     {
-      "courseId": "Digital Literacy",
+      "courseId": "Humanities",
       "sectionId": "12",
       "blocks": [
         {
