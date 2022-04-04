@@ -81,7 +81,7 @@ export const TUTORIAL_STEPS = Object.freeze([
     position: 'right',
     schoolSpecific: {
       usc: {
-        intro: 'Add your classes here by entering the course code and selecting your sections. This info can be found at <a href=\'https://my.usc.edu\' target=\'_blank\'>my.usc.edu</a>.',
+        intro: 'Add your classes here by entering the course code (e.g. MATH-125) and selecting your sections.',
       },
       berkeley: {
         intro: 'Add your classes here by entering the course code and selecting your sections. This info can be found at <a href=\'https://classes.berkeley.edu/\' target=\'_blank\'>classes.berkeley.edu</a>.',
