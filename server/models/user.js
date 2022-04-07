@@ -33,6 +33,7 @@ const userSchema = new mongoose.Schema({
   assignments: [{ 
     assignment: { type: mongoose.Schema.Types.ObjectId, ref: 'Assignment', required: true },
     done: { type: Boolean, default: false }, 
+    recurringDone: [{ type: Date }],
   }],
   hiddenAssignments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Assignment' }],
 

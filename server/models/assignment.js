@@ -7,6 +7,15 @@ const assignmentSchema = new mongoose.Schema({
   dueDate: { type: Date, required: true },
   public: { type: Boolean, required: true },
   noClass: { type: Boolean, default: false },
+  
+  // Recurring assignments
+  recurring: { type: Boolean, default: false },
+  recurrence: {
+    start: { type: Date },
+    end: { type: Date },
+    days: [{ type: String }],
+    time: { type: String },
+  }
 })
 
 module.exports = mongoose.model('Assignment', assignmentSchema)
