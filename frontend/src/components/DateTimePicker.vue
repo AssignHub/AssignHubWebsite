@@ -2,36 +2,13 @@
   <v-container class="px-0">
     <v-row>
       <v-col cols="12" md="6" class="pt-0 pb-4 pb-md-0">
-        <v-menu 
-          ref="menu"
-          v-model="menu"
-          :close-on-content-click="false"
-          transition="fade-transition"
-          offset-y
-          top
-        >
-          <template v-slot:activator="{ on, attrs }">
-            <v-text-field
-              :label="dateLabel"
-              prepend-inner-icon="mdi-calendar"
-              readonly
-              hide-details
-              outlined
-              v-bind="attrs"
-              v-on="on"
-              :disabled="isDisabled"
-              :dense="dense"
-              :value="dateString"
-            >
-            </v-text-field>
-          </template>
-          <v-date-picker
-            no-title
-            :value="date"
-            :min="minDate"
-            @input="(date) => {$emit('update:date', date); menu=false}"
-          ></v-date-picker>
-        </v-menu>
+        <DatePicker 
+          :label="dateLabel"
+          :disabled="isDisabled"
+          :dense="dense"
+          :value="date"
+          @input="(date) => $emit('update:date', date)"
+        />
       </v-col>
       <v-col cols="12" md="6" class="py-0 pl-md-0">
         <TimePicker 
@@ -48,7 +25,7 @@
 
 <script>
 import TimePicker from '@/components/TimePicker'
-import { setNumDigits, getDateString } from '@/utils'
+import DatePicker from '@/components/DatePicker'
 
 export default {
   name: 'DateTimePicker',
@@ -63,24 +40,8 @@ export default {
   },
 
   components: {
+    DatePicker,
     TimePicker,
-  },
-
-  data() {
-    return {
-      menu: false,
-      minDate: getDateString(new Date()),
-    }
-  },
-
-  computed: {
-    dateString() {
-      if (!this.date)
-        return ''
-      let s = (this.date ? this.date : '')
-      const [year, month, day] = this.date.split('-')
-      return month + '/' + day + '/' + year.substring(2)
-    },
   },
 }
 </script>

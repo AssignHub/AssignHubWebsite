@@ -4,6 +4,10 @@
     <v-card-title v-if="!editing">Input Assignment</v-card-title>
     <v-card-title v-else>Edit Assignment</v-card-title>
     <v-card-text>
+      <v-radio-group v-model="assignmentType" row class="mt-0">
+        <v-radio label="One-time" value="one-time"></v-radio>
+        <v-radio label="Recurring" value="recurring"></v-radio>
+      </v-radio-group>
       <v-text-field
         v-model="name"
         label="Assignment name"
@@ -23,6 +27,7 @@
         class="mb-4"
         dense
       />
+      <DaySelect class="mb-4" />
       <DateTimePicker 
         dateLabel="Due date"
         timeLabel="Time"
@@ -57,6 +62,7 @@
 <script>
 import ClassSelect from '@/components/ClassSelect'
 import DateTimePicker from '@/components/DateTimePicker'
+import DaySelect from '@/components/DaySelect'
 import { post, getTimeString, getDateString } from '@/utils'
 import { mapGetters, mapActions } from 'vuex'
 
@@ -72,10 +78,12 @@ export default {
   components: {
     ClassSelect,
     DateTimePicker,
+    DaySelect,
   },
 
   data() {
     return {
+      assignmentType: 'one-time',
       name: '',
       curClass: '',
       date: getDateString(new Date()),

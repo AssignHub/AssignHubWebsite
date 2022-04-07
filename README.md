@@ -40,3 +40,7 @@ Content-Type: application/json
 ### Backend
 1. Make sure you are on the `master` branch
 2. Run `./deploy_scripts/deploy_server.sh SERVER_HOST AWS_KEY_LOCATION`
+
+## Deployed Server
+- Uses nginx
+- [Installing mongoDB](https://linuxize.com/post/how-to-install-mongodb-on-ubuntu-18-04/)
