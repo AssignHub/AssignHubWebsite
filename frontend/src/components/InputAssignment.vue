@@ -27,26 +27,76 @@
         class="mb-4"
         dense
       />
-      <DaySelect class="mb-4" />
-      <DateTimePicker 
-        dateLabel="Due date"
-        timeLabel="Time"
-        :date.sync="date"
-        :time.sync="time"
-        :is-disabled="loading"
-        class="mb-4"
-        dense
-      />
-      <v-checkbox
-        v-if="!editing"
-        v-model="doPublish"
-        label="Publish"
-        class="mt-0"
-        hint="Let others use this assignment"
-        persistent-hint
-        :disabled="loading || curClass === 'no-class'"
-      >
-      </v-checkbox>
+      <v-expand-transition>
+        <div v-show="!isRecurring">
+
+          <div class="d-flex mb-4" style="column-gap: 8px;">
+            <div style="flex: 1;">
+              <DatePicker
+                v-model="date"
+                label="Due date"
+                :disabled="loading"
+                dense
+              />
+            </div>
+            <div style="flex: 1;">
+              <TimePicker
+                v-model="time"
+                label="Time"
+                :disabled="loading"
+                dense
+              />
+            </div>
+          </div>
+          <v-checkbox
+            v-if="!editing"
+            v-model="doPublish"
+            label="Publish"
+            class="mt-0"
+            hint="Let others use this assignment"
+            persistent-hint
+            :disabled="loading || curClass === 'no-class'"
+          >
+          </v-checkbox>
+
+        </div>
+      </v-expand-transition>
+      <v-expand-transition>
+        <div v-show="isRecurring">
+          
+          <DaySelect 
+            class="mb-4" 
+            :disabled="loading"
+          />
+          <TimePicker
+            v-model="time"
+            label="Time"
+            class="mb-4"
+            :disabled="loading" 
+            dense
+          />
+          <div class="d-flex mb-4" style="column-gap: 8px;">
+            <div style="flex: 1;">
+              <DatePicker
+                v-model="startDate"
+                label="Start date"
+                :disabled="loading"
+                dense
+              />
+            </div>
+            <div style="flex: 1;">
+              <DatePicker
+                v-model="endDate"
+                label="End date"
+                :disabled="loading"
+                dense
+              />
+            </div>
+          </div>
+
+        </div>
+      </v-expand-transition>
+      
       <v-card-actions class="pa-0">
         <v-spacer></v-spacer>
         <v-btn
@@ -61,7 +111,8 @@
 
 <script>
 import ClassSelect from '@/components/ClassSelect'
-import DateTimePicker from '@/components/DateTimePicker'
+import TimePicker from '@/components/TimePicker'
+import DatePicker from '@/components/DatePicker'
 import DaySelect from '@/components/DaySelect'
 import { post, getTimeString, getDateString } from '@/utils'
 import { mapGetters, mapActions } from 'vuex'
@@ -77,7 +128,8 @@ export default {
 
   components: {
     ClassSelect,
-    DateTimePicker,
+    DatePicker,
+    TimePicker,
     DaySelect,
   },
 
@@ -87,6 +139,8 @@ export default {
       name: '',
       curClass: '',
       date: getDateString(new Date()),
+      startDate: getDateString(new Date()),
+      endDate: getDateString(new Date()),
       time: '23:59',
       doPublish: false,
       loading: false,
@@ -125,6 +179,9 @@ export default {
         ...this.classes,
         { _id: 'no-class', color: '#eee', courseId: 'None' }
       ]
+    },
+    isRecurring() {
+      return this.assignmentType === 'recurring'
     },
   },
 

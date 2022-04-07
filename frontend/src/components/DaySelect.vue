@@ -1,6 +1,7 @@
 <template>
   <v-btn-toggle color="primary" multiple borderless rounded dense>
     <v-btn
+      :disabled="disabled"
       rounded
       icon
       v-for="(d, i) in days" :key="i"
@@ -31,6 +32,10 @@
 <script>
 export default {
   name: 'DaySelect',
+
+  props: {
+    disabled: { type: Boolean, default: false },
+  },
 
   data() {
     return {
