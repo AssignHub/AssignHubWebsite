@@ -2,12 +2,14 @@
 
 const express = require('express')
 const router = express.Router()
+const reqlib = require('app-root-path').require
 const { emitToUser } = require('../websockets')
 const Assignment = require('../models/assignment')
 const Class = require('../models/class')
 const { getUser } = require('../middleware/auth')
 
 const { getTerm } = require('../middleware/general')
+const { compareDateDay } = require('utils/utils')
 
 router.get('/mine', getUser, getTerm, async (req, res) => {
   // Get all user's assignments for the current term
@@ -209,7 +211,16 @@ router.post('/:assignmentId/toggle', getUser, async (req, res) => {
       res.status(400).json({ error: 'No such assignment' })
       return
     }
-    res.locals.user.assignments[index].done = !res.locals.user.assignments[index].done
+    if (!res.locals.user.assignments[index].recurring) {
+      res.locals.user.assignments[index].done = !res.locals.user.assignments[index].done
+    } else {
+      const doneIndex = res.locals.user.assignments[index].recurringDone.findIndex(date => compareDateDay(dueDate, date) === 0)
+      if (doneIndex === -1) {
+        res.locals.user.assignments[index].recurringDone.push(dueDate)
+      } else {
+        res.locals.user.assignments[index].recurringDone.splice(doneIndex, 1)
+      }
+    }
     await res.locals.user.save()
 
     res.end()    

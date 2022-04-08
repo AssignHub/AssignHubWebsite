@@ -36,3 +36,16 @@ exports.getDirectories = async (path) => {
     .filter(dirent => dirent.isDirectory())
     .map(dirent => dirent.name)
 }
+
+exports.compareDateDay = (a, b) => {
+  // returns -1 if a is before b, 1 if a is after b, 0 otherwise
+  a = new Date(a)
+  b = new Date(b)
+  if (a.getFullYear() !== b.getFullYear()) {
+    return a.getFullYear() - b.getFullYear()
+  } else if (a.getMonth() !== b.getMonth()) {
+    return a.getMonth() - b.getMonth()
+  } else {
+    return a.getDate() - b.getDate()
+  }
+}
