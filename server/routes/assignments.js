@@ -92,16 +92,35 @@ router.post('/create', getUser, async (req, res) => {
   *  name - name of assignment
   *  dueDate - due date of assignment
   *  public - whether assignment is public (shared with everybody in your class)
+  *  recurring - whether assignment is recurring
+  *  startDate - start date of recurring assignment
+  *  endDate - end date of recurring assignment
+  *  time - due time of recurring assignment
+  *  days - days which recurring assignment is due (0 = Sunday, 1 = Monday)
   */
-  const {classId, name, dueDate, public} = req.body
+  const {classId, name, dueDate, public, recurring, startDate, endDate, time, days} = req.body
 
   try {
-    const assignmentData = {
+    let assignmentData = {
       creator: res.locals.user._id, 
       class: classId, 
       name, 
       dueDate, 
       public
+    }
+
+    // Set recurrence properties
+    if (recurring) {
+      assignmentData = {
+        ...assignmentData,
+        recurring,
+        recurrence: {
+          startDate,
+          endDate,
+          days,
+          time,
+        }
+      }
     }
 
     // Only check if class exists if class id is not no-class
@@ -177,7 +196,13 @@ router.post('/:assignmentId/toggle', getUser, async (req, res) => {
   // Toggle the done state of assignment
   // Requires authentication
 
+  /* Body params:
+  *  dueDate - due date of the specific recurring assignment, since there can be more than one recurring assignment
+  */
+
   const { assignmentId } = req.params
+  const { dueDate } = req.body
+
   try {
     const index = res.locals.user.assignments.findIndex(a => a.assignment == assignmentId)
     if (index === -1) {

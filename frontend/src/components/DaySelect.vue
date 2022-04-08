@@ -1,8 +1,14 @@
 <template>
-  <v-btn-toggle color="primary" multiple borderless rounded dense>
+  <v-btn-toggle 
+    :value="value"
+    @change="val => $emit('input', val)"
+    color="primary" 
+    multiple 
+    borderless 
+    rounded 
+    dense
+  >
     <v-btn
-      :disabled="disabled"
-      rounded
       icon
       v-for="(d, i) in days" :key="i"
     >{{ d }}</v-btn>
@@ -33,14 +39,17 @@
 export default {
   name: 'DaySelect',
 
+  emits: ['input'],
+
   props: {
     disabled: { type: Boolean, default: false },
+    value: { type: Array, default: [] },
   },
 
   data() {
     return {
       days: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
     }
-  }
+  },
 }
 </script>

@@ -327,9 +327,14 @@ export default new Vuex.Store({
         dispatch('showError', 'There was an problem fetching public assignments!')
       })
     },
-    toggleAssignment({ commit, dispatch }, assignmentId) {
+    toggleAssignment({ getters, commit, dispatch }, assignmentId) {
+      // Only send dueDate parameter if assignment is recurring
+      const { recurring, dueDate } = getters.assignmentById(assignmentId)
+      let data = {}
+      if (recurring) data = { dueDate }
+
       commit('toggleAssignment', assignmentId)
-      return post(`/assignments/${assignmentId}/toggle`).catch(err => {
+      return post(`/assignments/${assignmentId}/toggle`, data).catch(err => {
         // Toggle back to original state if error
         commit('toggleAssignment', assignmentId)
         dispatch('showError', 'There was an problem toggling that assignment! Please try again later.')

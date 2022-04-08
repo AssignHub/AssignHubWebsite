@@ -211,7 +211,7 @@
 import AssignmentCard from '@/components/AssignmentCard'
 import AuthUserMenu from '@/components/AuthUserMenu'
 import ProgressBar from '@/components/ProgressBar'
-import { compareDateDay, partition, sortAssignments, getDateInfo } from '@/utils'
+import { compareDateDay, partition, sortAssignments, getDateInfo, getDateString } from '@/utils'
 import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
 import { CONTEXT_MENU_TYPES } from '@/constants'
 
@@ -331,6 +331,8 @@ export default {
       for (let day of this.daysOfWeek) {
         arr.push(this.getAssignmentsForDate(day.date))
       }
+      console.log(arr)
+      console.log(this.assignments)
       return arr
     },
     assignmentsByDay() {
@@ -408,6 +410,8 @@ export default {
             const { date, month, year } = getDateInfo(newDate)
             const dueDate = new Date(year, month, date, hours, minutes)
             
+            // TODO: make sure we update recurring assignments appropriately
+            // (maybe create a new assignment if dragged)
             this.updateAssignment({
               assignmentId, dueDate,
             })
@@ -470,7 +474,22 @@ export default {
       // TODO: make this more efficient instead of iterating through all the assignments for every day
       const allAssignments = this.assignments
         .filter((a) => {
-          return compareDateDay(a.dueDate, date) === 0 //&& !a.done
+          if (!a.recurring) {
+            // Check if due date is the same day as the given date
+            return compareDateDay(a.dueDate, date) === 0 //&& !a.done
+          } else {
+            // Check if assignment is within the given recurrence
+            const { startDate, endDate, days, time } = a.recurrence
+            if (
+              compareDateDay(startDate, date) <= 0 && 
+              compareDateDay(endDate, date) >= 0 &&
+              days.includes(date.getDay())
+            ) {
+              a.dueDate = Date.parse(getDateString(date) + 'T' + time)
+              return true
+            }
+          }
+          return false
         })
         .sort(sortAssignments)
       const [done, todo] = partition(allAssignments, (a) => a.done)

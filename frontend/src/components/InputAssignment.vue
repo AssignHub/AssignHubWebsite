@@ -65,6 +65,7 @@
         <div v-show="isRecurring">
           
           <DaySelect 
+            v-model="days"
             class="mb-4" 
             :disabled="loading"
           />
@@ -141,6 +142,7 @@ export default {
       date: getDateString(new Date()),
       startDate: getDateString(new Date()),
       endDate: getDateString(new Date()),
+      days: [],
       time: '23:59',
       doPublish: false,
       loading: false,
@@ -164,6 +166,8 @@ export default {
           const date = new Date(this.assignment.dueDate)
           this.date = getDateString(date)
           this.time = getTimeString(date)
+
+          // TODO: detect if assignment is recurring or not
         }
       },
     },
@@ -190,6 +194,8 @@ export default {
     submit() {
       let classId = this.curClass
       let dueDate = Date.parse(this.date + 'T' + this.time)
+      let startDate = Date.parse(this.startDate + 'T00:00')
+      let endDate = Date.parse(this.endDate + 'T00:00')
       
       if (this.editing) {
         let updatedAssignment = {
@@ -208,10 +214,27 @@ export default {
         let assignment = {
           classId,
           name: this.name,
-          dueDate,
-          public: this.doPublish,
         }
         
+        if (!this.isRecurring) {
+          assignment = {
+            ...assignment,
+            dueDate,
+            public: this.doPublish,
+          }
+        } else {
+          assignment = {
+            ...assignment,
+            recurring: true,
+            startDate,
+            endDate,
+            time: this.time,
+            days: this.days.sort((a, b) => a-b),
+            public: false,
+          }
+        }
+
+
         this.loading = true
         post('/assignments/create', assignment).then(() => {
           this.resetForm()
