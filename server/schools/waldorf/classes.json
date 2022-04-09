@@ -491,6 +491,156 @@
       ],
       "type": "Lecture",
       "instructors": []
+    },
+    {
+      "courseId": "Main Lesson",
+      "sectionId": "11",
+      "blocks": [
+        {
+          "day": "M",
+          "start": "08:00",
+          "end": "09:05",
+          "location": ""
+        },
+        {
+          "day": "T",
+          "start": "08:00",
+          "end": "09:05",
+          "location": ""
+        },
+        {
+          "day": "W",
+          "start": "08:00",
+          "end": "09:05",
+          "location": ""
+        },
+        {
+          "day": "H",
+          "start": "08:00",
+          "end": "09:05",
+          "location": ""
+        },
+        {
+          "day": "F",
+          "start": "08:00",
+          "end": "09:05",
+          "location": ""
+        }
+      ],
+      "type": "Lecture",
+      "instructors": []
+    },
+    {
+      "courseId": "Arts",
+      "sectionId": "11",
+      "blocks": [
+        {
+          "day": "M",
+          "start": "11:00",
+          "end": "11:50",
+          "location": ""
+        },
+        {
+          "day": "M",
+          "start": "11:55",
+          "end": "12:45",
+          "location": ""
+        },
+        {
+          "day": "H",
+          "start": "11:00",
+          "end": "11:50",
+          "location": ""
+        },
+        {
+          "day": "H",
+          "start": "11:55",
+          "end": "12:45",
+          "location": ""
+        }
+      ],
+      "type": "Lecture",
+      "instructors": []
+    },
+    {
+      "courseId": "Eurythmy",
+      "sectionId": "11",
+      "blocks": [
+        {
+          "day": "T",
+          "start": "10:00",
+          "end": "10:50",
+          "location": ""
+        },
+        {
+          "day": "W",
+          "start": "11:55",
+          "end": "12:45",
+          "location": ""
+        }
+      ],
+      "type": "Lecture",
+      "instructors": []
+    },
+    {
+      "courseId": "Wellness",
+      "sectionId": "11",
+      "blocks": [
+        {
+          "day": "T",
+          "start": "13:25",
+          "end": "14:45",
+          "location": ""
+        }
+      ],
+      "type": "Lecture",
+      "instructors": []
+    },
+    {
+      "courseId": "Humanities",
+      "sectionId": "11",
+      "blocks": [
+        {
+          "day": "W",
+          "start": "10:00",
+          "end": "10:50",
+          "location": ""
+        },
+        {
+          "day": "W",
+          "start": "11:00",
+          "end": "11:50",
+          "location": ""
+        },
+        {
+          "day": "F",
+          "start": "10:00",
+          "end": "10:50",
+          "location": ""
+        },
+        {
+          "day": "F",
+          "start": "11:00",
+          "end": "11:50",
+          "location": ""
+        }
+      ],
+      "type": "Lecture",
+      "instructors": []
+    },
+    {
+      "courseId": "PE",
+      "sectionId": "11",
+      "blocks": [
+        {
+          "day": "F",
+          "start": "14:20",
+          "end": "15:10",
+          "location": ""
+        }
+      ],
+      "type": "Lecture",
+      "instructors": []
     }
   ]
 }
