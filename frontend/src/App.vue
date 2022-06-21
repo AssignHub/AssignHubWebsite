@@ -1,176 +1,119 @@
+<script setup lang="ts">
+import { RouterLink, RouterView } from 'vue-router'
+import HelloWorld from '@/components/HelloWorld.vue'
+</script>
+
 <template>
-  <v-app v-if="loaded">
-    <AutoSnackbar color="error" :text="error" />
-    <AutoSnackbar color="info" :text="info" />
+  <header>
+    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
 
-    <!--<v-app-bar
-      v-if="authUser"
-      app
-      color="white darken-2"
-      dark
-    >
-      <div class="d-flex align-center">
-        <v-img
-          alt="Vuetify Logo"
-          class="shrink mr-2"
-          contain
-          src="@/assets/logo.png"
-          transition="scale-transition"
-          width="100"
-        />
-      </div>
+    <div class="wrapper">
+      <HelloWorld msg="You did it!" />
 
-      <v-spacer></v-spacer>
+      <nav>
+        <RouterLink to="/">Home</RouterLink>
+        <RouterLink to="/about">About</RouterLink>
+      </nav>
+    </div>
+  </header>
 
-      <v-btn 
-        color="primary"
-        class="mr-4"
-        text
-        target="_blank"
-        href="https://forms.gle/g5FqXuCHBEFXsvHu6"
-      >
-        Give Feedback
-      </v-btn>
-    </v-app-bar>-->
-
-    <v-main style="height: 0vh;">
-      <router-view />
-    </v-main>
-  </v-app>
+  <RouterView />
 </template>
 
 <style>
-html {
-  overflow-y: auto !important;
-  
+@import '@/assets/base.css';
+
+#app {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+
+  font-weight: normal;
 }
 
-.inner-shadow {
-  box-shadow: inset 0px 0px 8px rgba(0, 0, 0, 0.25) !important;
+header {
+  line-height: 1.5;
+  max-height: 100vh;
 }
 
-.text-unselectable {
-  -webkit-user-select: none; /* Safari */        
-  -moz-user-select: none; /* Firefox */
-  -ms-user-select: none; /* IE10+/Edge */
-  user-select: none; /* Standard */
+.logo {
+  display: block;
+  margin: 0 auto 2rem;
 }
 
-/* Scrollbar stuff */
-* {
-  scrollbar-width: thin;
+a,
+.green {
+  text-decoration: none;
+  color: hsla(160, 100%, 37%, 1);
+  transition: 0.4s;
 }
 
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+@media (hover: hover) {
+  a:hover {
+    background-color: hsla(160, 100%, 37%, 0.2);
+  }
 }
 
-::-webkit-scrollbar-track {
-  background: #f1f1f1; 
+nav {
+  width: 100%;
+  font-size: 12px;
+  text-align: center;
+  margin-top: 2rem;
 }
 
-::-webkit-scrollbar-thumb {
-  background: #CCC; 
+nav a.router-link-exact-active {
+  color: var(--color-text);
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #888; 
+nav a.router-link-exact-active:hover {
+  background-color: transparent;
 }
 
-.scrollbar-hidden {
-  overflow-y: scroll;
-  scrollbar-color: white white;
+nav a {
+  display: inline-block;
+  padding: 0 1rem;
+  border-left: 1px solid var(--color-border);
 }
 
-.scrollbar-hidden::-webkit-scrollbar {
-  visibility: hidden !important;
+nav a:first-of-type {
+  border: 0;
 }
 
-.scrollbar-hidden::-webkit-scrollbar-track {
-  visibility: hidden !important;
-}
+@media (min-width: 1024px) {
+  body {
+    display: flex;
+    place-items: center;
+  }
 
+  #app {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 0 2rem;
+  }
+
+  header {
+    display: flex;
+    place-items: center;
+    padding-right: calc(var(--section-gap) / 2);
+  }
+
+  header .wrapper {
+    display: flex;
+    place-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .logo {
+    margin: 0 2rem 0 0;
+  }
+
+  nav {
+    text-align: left;
+    margin-left: -1rem;
+    font-size: 1rem;
+
+    padding: 1rem 0;
+    margin-top: 1rem;
+  }
+}
 </style>
-
-<script>
-import { get, } from '@/utils'
-import { mapState, mapMutations } from 'vuex'
-
-import AutoSnackbar from '@/components/AutoSnackbar'
-
-export default {
-  name: 'App',
-
-  components: {
-    AutoSnackbar,
-  },
-
-  async created() {
-
-    // TODO: move this to vuex
-    await get(`/auth/profile`).then(authUser => {
-      this.setAuthUser(authUser)
-    }).catch(err => {
-      // Forbidden, user not signed in
-      this.setAuthUser(null)
-    })
-    
-    // Events
-    window.addEventListener('mousedown', (e) => {
-      this.setMouseButtons(e.buttons)
-    }, { capture: true })
-
-    window.addEventListener('mouseup', (e) => {
-      this.setMouseButtons(e.buttons)
-    }, { capture: true })
-
-    this.loaded = true
-  },
-
-  watch: {
-    authUser: {
-      immediate: true,
-      handler() {
-        this.redirectAuthUser()
-      }
-    },
-    $route: {
-      immediate: true,
-      handler() {
-        this.redirectAuthUser()
-      }
-    },
-  },
-
-  data() {
-    return {
-      loaded: false,
-    }
-  },
-
-  computed: {
-    ...mapState(['authUser', 'error', 'info'])
-  },
-
-  methods: {
-    ...mapMutations([ 'setAuthUser', 'setMouseButtons' ]),
-    redirectAuthUser() {
-      let authRoutes = ['Home']
-      let noAuthRoutes = ['SignIn']
-
-      if (!this.authUser) {
-        if (this.$route.name == 'Join') {
-          this.$router.replace({ name: 'SignIn', query: { join: this.$route.params.id } })
-        } else if (authRoutes.includes(this.$route.name))
-            this.$router.replace({ name: 'SignIn' })
-      } else {
-        if (this.$route.query.join) {
-          this.$router.replace({ path: `join/${this.$route.query.join}` })
-        } else if (noAuthRoutes.includes(this.$route.name))
-          this.$router.replace({ name: 'Home' })
-      }
-    },
-  },
-}
-</script>
