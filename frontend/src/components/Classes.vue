@@ -4,7 +4,7 @@
 
 <template>
   <div class="">
-    <div>
+    <div v-for="i in 100">
       Hello
     </div>
   </div>
