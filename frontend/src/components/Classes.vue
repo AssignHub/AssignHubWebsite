@@ -26,7 +26,7 @@ const classes = ref([
 </script>
 
 <template>
-  <div class="tw-p-6 tw-max-w-xs">
+  <div class="tw-p-4 tw-max-w-xs">
     <div class="tw-text-xl tw-font-semibold tw-mb-4">Classes</div>
     <ClassCard 
       class="tw-mb-2"
