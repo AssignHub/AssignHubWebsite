@@ -4,3 +4,10 @@ export type Class = {
   name: string
   color: string
 }
+
+export type NavbarItemData = {
+  name?: string
+  icon: string
+  iconSelected: string
+  onClick: Function
+}

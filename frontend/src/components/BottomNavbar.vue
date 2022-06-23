@@ -1,13 +1,7 @@
 <script lang="ts" setup>
 // Imports
 import { useModelWrapper } from '@/utils'
-
-// Types
-type NavbarItemData = {
-  icon: string
-  iconSelected: string
-  onClick: Function
-}
+import type { NavbarItemData } from '@/types';
 
 // Props
 const props = defineProps({
@@ -22,7 +16,7 @@ const selectedTab = useModelWrapper(props, emit)
 </script>
 
 <template>
-  <div class="tw-flex tw-items-center tw-fixed tw-w-full tw-bottom-0 tw-h-14 tw-border-t tw-border-solid tw-border-gray-300 tw-bg-white">
+  <div class="tw-z-10 tw-flex tw-items-center tw-fixed tw-w-full tw-bottom-0 tw-h-14 tw-border-t tw-border-solid tw-border-gray-300 tw-bg-white">
     <div v-for="item, i in props.tabs" :key="i" class="tw-flex-1 tw-text-center tw-h-full tw-grid tw-place-content-center" @click="selectedTab = i">
       <v-icon v-if="selectedTab === i" class="tw-text-gray-600">{{ item.iconSelected }}</v-icon>
       <v-icon v-else class="tw-text-gray-300">{{ item.icon }}</v-icon>

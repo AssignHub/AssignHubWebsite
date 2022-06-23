@@ -6,6 +6,7 @@ import Classes from '@/components/Classes.vue'
 import BottomNavbar from '@/components/BottomNavbar.vue'
 import Calendar from '@/components/Calendar.vue';
 import Todo from '@/components/Todo.vue';
+import type { NavbarItemData } from '@/types';
 
 const tabs = ref([
   {
@@ -26,8 +27,8 @@ const tabs = ref([
     iconSelected: 'mdi-clipboard-list',
     onClick: () => {},
   },
-])
-const tab = ref(0)
+] as NavbarItemData[])
+const tab = ref(1)
 </script>
 
 <template>

@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import ClassCard from './ClassCard.vue';
+import type { Class } from '@/types'
 
 const classes = ref([
   {
@@ -21,7 +22,7 @@ const classes = ref([
     name: 'Business Communications',
     color: '#22c55e',
   }
-])
+] as Class[])
 </script>
 
 <template>
