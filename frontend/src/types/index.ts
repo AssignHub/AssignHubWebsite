@@ -1,3 +1,10 @@
+export type NavbarItemData = {
+  name?: string
+  icon: string
+  iconSelected: string
+  onClick: Function
+}
+
 export type Class = {
   _id: string
   courseId: string
@@ -5,9 +12,9 @@ export type Class = {
   color: string
 }
 
-export type NavbarItemData = {
-  name?: string
-  icon: string
-  iconSelected: string
-  onClick: Function
+export type Assignment = {
+  _id: string
+  classId: string
+  title: string
+  dueDate: Date
 }
