@@ -17,4 +17,5 @@ export type Assignment = {
   classId: string
   title: string
   dueDate: Date
+  completed: boolean
 }
