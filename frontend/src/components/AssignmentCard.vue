@@ -23,7 +23,7 @@ const _class = computed((): Class => {
       class="tw-rounded-t tw-text-xs tw-font-light tw-w-full tw-bg-[#55555588]"
       :class="{ 'tw-p-1': !noPadding }"  
     >{{ _class.courseId }}</div>
-    <div :class="{ 'tw-p-1': !noPadding }">
+    <div :class="{ 'tw-p-1': !noPadding, 'tw-line-through': !assignment.done }">
       {{ props.assignment.title }}
     </div>
   </div>

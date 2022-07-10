@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import '@fullcalendar/core/vdom'
-import FullCalendar, { type CalendarOptions, type Calendar, type EventInput } from '@fullcalendar/vue3'
+import FullCalendar, { type CalendarOptions, type Calendar, type EventInput, type EventClickArg } from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin, { type DateClickArg } from '@fullcalendar/interaction'
 import { ref, computed, onMounted, watch, toRefs } from 'vue'
@@ -54,6 +54,7 @@ const calendarOptions = computed((): CalendarOptions => {
     },
     events: events.value,
     dateClick,
+    eventClick,
     eventStartEditable: true,
     eventClassNames: 'tw-border-none tw-bg-transparent',
     eventOrder: function(a: any, b: any): number {
@@ -71,6 +72,10 @@ function dateClick(arg: DateClickArg) {
   //   date: arg.date,
   //   allDay: true,
   // })
+}
+
+function eventClick(arg: EventClickArg) {
+  assignments.toggle(arg.event.extendedProps._id)
 }
 
 /* Week / Month view stuff */ 
