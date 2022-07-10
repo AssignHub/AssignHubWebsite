@@ -10,9 +10,15 @@
 </template>
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
+
 html {
   overscroll-behavior: none;
   overflow-y: auto !important;
+}
+
+* {
+  font-family: 'Inter';
 }
 
 .v-btn {
