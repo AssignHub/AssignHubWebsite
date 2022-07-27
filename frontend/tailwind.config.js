@@ -1,9 +1,44 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [],
+  important: true,
   theme: {
-    extend: {},
+    colors: {
+      transparent: 'transparent',
+      current: 'currentColor',
+      'light-gray': '#dfdfdf',
+      'gray': '#bdbdbd',
+      'dark-gray': '7e7e7e',
+      'white': '#fff',
+      'black': '#4f4f4f',
+      'pure-black': '#000',
+      'blue': '#2D9CDB',
+    },
+    extend: {
+      boxShadow: {
+        'inner-lg': 'inset 0px 0px 8px rgba(0, 0, 0, 0.25)',
+      },
+    },
   },
-  plugins: [],
+  plugins: [
+    function({ addBase, theme }) {
+      function extractColorVars(colorObj, colorGroup = '') {
+        return Object.keys(colorObj).reduce((vars, colorKey) => {
+          const value = colorObj[colorKey];
+
+          const newVars =
+            typeof value === 'string'
+              ? { [`--color${colorGroup}-${colorKey}`]: value }
+              : extractColorVars(value, `-${colorKey}`);
+
+          return { ...vars, ...newVars };
+        }, {});
+      }
+
+      addBase({
+        ':root': extractColorVars(theme('colors')),
+      });
+    },
+  ],
   prefix: 'tw-',
 }
