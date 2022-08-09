@@ -1,6 +1,12 @@
 <script setup lang="ts">
-  import { compareDateDay } from '~~/utils';
+  import { useAssignmentsStore } from '~~/stores/assignments';
+  import { Assignment } from '~~/types';
+  import { compareDateDay, getDayString } from '~~/utils';
 
+  // Stores
+  const assignments = useAssignmentsStore()
+  
+  // Constants
   const curDate: Date = new Date()
 
   // The current month / year of the currently selected week
@@ -34,6 +40,7 @@
     dateObject: Date,
     date: number,
     text: string,
+    assignments: Assignment[],
   }
   // `days` is an array of all the currently visible days based on the weekOffset
   const days = computed((): Day[] => {
@@ -46,6 +53,7 @@
         dateObject: day,
         date: day.getDate(),
         text: day.toLocaleString('default', { weekday: 'short' }),
+        assignments: assignments.byDay.get(getDayString(day)),
       })
     }
     
@@ -90,6 +98,7 @@
     <div class="tw-flex">
       <div 
         v-for="day in days" 
+        :key="day.dateObject.toISOString()"
         class="tw-flex-1 tw-flex tw-flex-col tw-items-center"
         :class="dayTextClass(day.dateObject)"
       >
@@ -98,6 +107,21 @@
       </div>
     </div>
 
-    <v-divider class="tw-my-4"/>
+    <v-divider class="tw-mt-4"/>
+
+    <div class="tw-flex">
+      <div 
+        v-for="day in days"
+        :key="day.dateObject.toISOString()"
+        class="tw-flex-1 tw-space-y-1 tw-py-3 tw-px-1"
+      >
+        <AssignmentCard 
+          v-for="assignment in day.assignments"
+          :key="assignment._id"
+          :assignment="assignment"
+        />
+        <v-btn variant="text" class="tw-p-2 tw-text-gray tw-font-medium tw-w-full" block>+ Add</v-btn>
+      </div>
+    </div>
   </div>
 </template>

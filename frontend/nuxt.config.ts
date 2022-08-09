@@ -2,7 +2,7 @@ import { defineNuxtConfig } from 'nuxt'
 
 // https://v3.nuxtjs.org/api/configuration/nuxt.config
 export default defineNuxtConfig({
-  modules: ['@nuxtjs/tailwindcss'],
+  modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt'],
   css: ['vuetify/lib/styles/main.sass', 'mdi/css/materialdesignicons.min.css'],
   build: {
     transpile: ['vuetify'],
@@ -15,4 +15,5 @@ export default defineNuxtConfig({
   typescript: {
     shim: false,
   },
+  ssr: false,
 })

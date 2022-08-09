@@ -13,3 +13,9 @@ export const compareDateDay = (a: Date, b: Date): number => {
     return a.getDate() - b.getDate()
   }
 }
+
+// Returns a string for the day that the given date represents
+// e.g. "08-09-2022"
+export const getDayString = (date: Date): String => {
+  return new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().substring(0, 10)
+}
