@@ -1,18 +1,32 @@
 <script setup lang="ts">
   import { Class } from '~~/types';
   import { useClassesStore } from '~~/stores/classes';
+  import { useAssignmentsStore } from '~~/stores/assignments';
 
   const props = defineProps({
-    date: { type: Date, default: new Date() },
+    dayString: { type: String, required: true },
   })
   const emit = defineEmits(['close'])
 
   // Stores
+  const assignments = useAssignmentsStore()
   const classes = useClassesStore()
 
   // Form variables
   const assignmentName = ref('')
   const classId = ref('') 
+  const submitEnabled = computed((): boolean => {
+    return assignmentName.value.length > 0 && classId.value.length > 0
+  })
+
+  async function submit() {
+    await assignments.add({
+      title: assignmentName.value,
+      classId: classId.value,
+      dueDate: props.dayString,
+    })
+    emit('close')
+  }
 </script>
 
 <template>
@@ -72,7 +86,7 @@
       </v-btn>
       <v-btn class="tw-flex-1 tw-bg-blue tw-text-white tw-rounded-l-none">Submit</v-btn> -->
 
-      <v-btn class="tw-flex-1 tw-bg-blue tw-text-white tw-rounded-r-none">Submit</v-btn>
+      <v-btn @click="submit" :disabled="!submitEnabled" class="tw-flex-1 tw-bg-blue tw-text-white tw-rounded-r-none">Submit</v-btn>
       <v-btn @click="emit('close')" flat class="tw-w-10 tw-rounded-l-none">
         <v-icon>mdi-close</v-icon>
       </v-btn>

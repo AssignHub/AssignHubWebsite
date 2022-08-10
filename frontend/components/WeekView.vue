@@ -10,7 +10,7 @@
   const curDate: Date = new Date()
 
   // Tracks the current day that the add assignment dialog is open for
-  // e.g. '08-09-2022'
+  // e.g. '2022-08-09'
   const addAssignmentDialogDay = ref('')
   function toggleAddAssignmentDialogDay(date: Date) {
     if (isAddAssignmentDialogActive(date)) {
@@ -52,8 +52,9 @@
 
   type Day = {
     dateObject: Date,
+    dayString: string,
     date: number,
-    text: string,
+    dayOfWeek: string,
     assignments: Assignment[],
   }
   // `days` is an array of all the currently visible days based on the weekOffset
@@ -65,8 +66,9 @@
       day.setDate(offsetDate.value.getDate() + i)
       days.push({
         dateObject: day,
+        dayString: getDayString(day),
         date: day.getDate(),
-        text: day.toLocaleString('default', { weekday: 'short' }),
+        dayOfWeek: day.toLocaleString('default', { weekday: 'short' }),
         assignments: assignments.byDay.get(getDayString(day)),
       })
     }
@@ -116,7 +118,7 @@
         class="tw-flex-1 tw-flex tw-flex-col tw-items-center"
         :class="dayTextClass(day.dateObject)"
       >
-        <div class="tw-font-semibold tw-text-lg">{{ day.text }}</div>
+        <div class="tw-font-semibold tw-text-lg">{{ day.dayOfWeek }}</div>
         <div class="tw-font-light">{{ day.date }}</div>
       </div>
     </div>
@@ -129,16 +131,23 @@
         :key="day.dateObject.toISOString()"
         class="tw-flex-1 tw-space-y-1 tw-py-3 tw-px-1"
       >
-        <AssignmentCard 
-          v-for="assignment in day.assignments"
-          :key="assignment._id"
-          :assignment="assignment"
-        />
+          <v-expand-transition 
+            v-for="assignment in day.assignments"
+            :key="assignment._id"
+            appear
+          >
+            <AssignmentCard 
+              :key="assignment._id"
+              :assignment="assignment"
+            />
+          </v-expand-transition>
+
         <v-expand-transition>
           <div v-if="isAddAssignmentDialogActive(day.dateObject)">
-            <AddAssignmentDialog @close="toggleAddAssignmentDialogDay(day.dateObject)"/>
+            <AddAssignmentDialog :dayString="day.dayString" @close="toggleAddAssignmentDialogDay(day.dateObject)"/>
           </div>
         </v-expand-transition>
+
         <v-expand-transition>
           <div v-if="!isAddAssignmentDialogActive(day.dateObject)">
             <v-btn

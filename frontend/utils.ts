@@ -14,8 +14,23 @@ export const compareDateDay = (a: Date, b: Date): number => {
   }
 }
 
+export const getDateWithDayOffset = (date: Date, offset: number): Date => {
+  return new Date(date.setDate(date.getDate() + offset))
+}
+
 // Returns a string for the day that the given date represents
-// e.g. "08-09-2022"
+// e.g. "2022-08-09"
 export const getDayString = (date: Date): string => {
   return new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().substring(0, 10)
+}
+
+// Returns a uuid
+export const createUUID = (): string => {
+  var dt = new Date().getTime();
+  var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = (dt + Math.random()*16)%16 | 0;
+      dt = Math.floor(dt/16);
+      return (c=='x' ? r :(r&0x3|0x8)).toString(16);
+  });
+  return uuid;
 }

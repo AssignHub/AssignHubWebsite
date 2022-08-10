@@ -9,6 +9,7 @@
   html {
     font-family: 'Roboto', sans-serif;
     color: var(--color-pure-black);
+    overflow-y: auto !important;
   }
 
   .v-btn {

@@ -9,6 +9,6 @@ export type Assignment = {
   _id: string
   classId: string
   title: string
-  dueDate: Date
+  dueDate: String // e.g. "2022-08-09"
   done: boolean
 }
