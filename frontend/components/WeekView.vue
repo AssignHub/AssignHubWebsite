@@ -9,6 +9,20 @@
   // Constants
   const curDate: Date = new Date()
 
+  // Tracks the current day that the add assignment dialog is open for
+  // e.g. '08-09-2022'
+  const addAssignmentDialogDay = ref('')
+  function toggleAddAssignmentDialogDay(date: Date) {
+    if (isAddAssignmentDialogActive(date)) {
+      addAssignmentDialogDay.value = ''
+    } else {
+      addAssignmentDialogDay.value = getDayString(date)
+    }
+  }
+  function isAddAssignmentDialogActive(date: Date): boolean {
+    return addAssignmentDialogDay.value === getDayString(date)
+  }
+
   // The current month / year of the currently selected week
   const month = computed((): string => {
     return offsetDate.value.toLocaleString('default', { month: 'long' })
@@ -120,7 +134,21 @@
           :key="assignment._id"
           :assignment="assignment"
         />
-        <v-btn variant="text" class="tw-p-2 tw-text-gray tw-font-medium tw-w-full" block>+ Add</v-btn>
+        <v-expand-transition>
+          <div v-if="isAddAssignmentDialogActive(day.dateObject)">
+            <AddAssignmentDialog @close="toggleAddAssignmentDialogDay(day.dateObject)"/>
+          </div>
+        </v-expand-transition>
+        <v-expand-transition>
+          <div v-if="!isAddAssignmentDialogActive(day.dateObject)">
+            <v-btn
+              @click="toggleAddAssignmentDialogDay(day.dateObject)" 
+              variant="text" 
+              class="tw-p-2 tw-text-gray tw-font-medium tw-w-full" 
+              block
+            >+ Add</v-btn>
+          </div>
+        </v-expand-transition>
       </div>
     </div>
   </div>
