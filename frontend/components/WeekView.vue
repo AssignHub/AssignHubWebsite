@@ -35,12 +35,15 @@
   const weekOffset = ref(0)
   function nextWeek(): void {
     weekOffset.value++
+    addAssignmentDialogDay.value = ''
   }
   function prevWeek(): void {
     weekOffset.value--
+    addAssignmentDialogDay.value = ''
   }
   function resetWeek(): void {
     weekOffset.value = 0
+    addAssignmentDialogDay.value = ''
   }
 
   // `offsetDate` is the date of the Sunday of the currently selected week
@@ -152,10 +155,11 @@
           <div v-if="!isAddAssignmentDialogActive(day.dateObject)">
             <v-btn
               @click="toggleAddAssignmentDialogDay(day.dateObject)" 
-              variant="text" 
-              class="tw-p-2 tw-text-gray tw-font-medium tw-w-full" 
+              variant="flat" 
+              class="tw-p-2 tw-text-dark-gray tw-font-normal tw-w-full " 
+              color="var(--color-off-white)"
               block
-            >+ Add</v-btn>
+            ><span class="tw-text-xl">+</span></v-btn>
           </div>
         </v-expand-transition>
       </div>
