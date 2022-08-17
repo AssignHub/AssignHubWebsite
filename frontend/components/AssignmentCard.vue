@@ -29,9 +29,13 @@
     class="tw-rounded-md tw-text-white tw-select-none tw-cursor-pointer" 
     :style="{ backgroundColor: _class.color, opacity: props.assignment.done ? 0.5 : 1 }"
   >
-    <div class="tw-rounded-t-md tw-text-xs tw-font-light tw-w-full tw-bg-[#E0E0E040] tw-p-1">
-      {{ _class.courseId }}
-    </div>
+    <v-expand-transition>
+      <div v-if="!props.assignment.done">
+        <div  class="tw-rounded-t-md tw-text-xs tw-font-light tw-w-full tw-bg-[#E0E0E040] tw-p-1">
+          {{ _class.courseId }}
+        </div>
+      </div>
+    </v-expand-transition>
     <div class="tw-p-2 tw-font-medium tw-text-sm" :class="{ 'tw-line-through': props.assignment.done }">
       {{ props.assignment.title }}
     </div>
