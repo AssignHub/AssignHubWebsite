@@ -1,6 +1,7 @@
 <template>
   <div class="tw-flex tw-justify-center">
-    <WeekView class="tw-flex-1"/>
+    <ClassList class="tw-absolute tw-left-0"/>
+    <WeekView class="tw-flex-1 tw-w-64"/>
   </div>
 </template>
 

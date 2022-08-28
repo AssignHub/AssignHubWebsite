@@ -139,7 +139,7 @@
             :key="assignment._id"
             appear
           >
-            <AssignmentCard 
+            <AssignmentCard
               :key="assignment._id"
               :assignment="assignment"
             />
