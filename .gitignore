@@ -25,3 +25,6 @@ pnpm-debug.log*
 # Server env files
 server/.env
 server/schools/waldorf/allowed_emails.json
+
+# Nuxt files
+.nuxt
