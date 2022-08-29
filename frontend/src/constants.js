@@ -63,6 +63,21 @@ export const BERKELEY_SEMESTERS = Object.freeze([
     term: '2225',
     text: 'Summer 2022',
     end: 'August 12, 2022'
+  },
+  {
+    term: '2228',
+    text: 'Fall 2022',
+    end: 'December 16, 2022'
+  },
+  {
+    term: '2232',
+    text: 'Spring 2023',
+    end: 'May 20, 2023'
+  },
+  {
+    term: '2235',
+    text: 'Summer 2023',
+    end: 'August 12, 2023'
   }
 ])
 
