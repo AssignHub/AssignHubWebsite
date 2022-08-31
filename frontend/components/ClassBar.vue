@@ -3,7 +3,7 @@ import { Class } from '~~/types';
 
 // Props
 const props = defineProps({
-    class: { type: Object as () => Class, required: true },
+    _class: { type: Object as () => Class, required: true },
 })
 
 const statusImages = new Map([
@@ -13,8 +13,8 @@ const statusImages = new Map([
 </script>
 
 <template>
-    <div class="tw-bg-blue tw-w-full tw-flex tw-justify-between tw-rounded-lg tw-text-white tw-p-2 tw-items-center">
-        <div class="tw-text-lg">COMPSCI 170</div>
+    <div class="tw-w-full tw-flex tw-justify-between tw-rounded-lg tw-p-2 tw-items-center tw-text-white" :style="{backgroundColor: props._class.color}">
+        <div class="tw-text-lg">{{props._class.courseId}}</div>
         <div>
             <v-btn @click="" icon variant="text" size="small">
                 <img src="~~/assets/upload.png" />
