@@ -47,6 +47,10 @@
     addAssignmentDialogDay.value = ''
   }
 
+  // An array containing all the assignments for the week
+  // NOTE: could this be a set?
+  const assignmentsForWeek = ref([] as Assignment[])
+
   // `offsetDate` is the date of the Sunday of the currently selected week
   const offsetDate = computed((): Date => {
     const offsetDate: Date = new Date(curDate)
@@ -65,15 +69,20 @@
   const days = computed((): Day[] => {
     const days: Day[] = []
 
+    assignmentsForWeek.value = []
     for (let i = 0; i < 7; ++i) {
       const day: Date = new Date(offsetDate.value)
       day.setDate(offsetDate.value.getDate() + i)
+
+      const assignmentsForDay = assignments.byDay.get(getDayString(day)) ?? []
+      assignmentsForWeek.value = assignmentsForWeek.value.concat(assignmentsForDay)
+
       days.push({
         dateObject: day,
         dayString: getDayString(day),
         date: day.getDate(),
         dayOfWeek: day.toLocaleString('default', { weekday: 'short' }),
-        assignments: assignments.byDay.get(getDayString(day)),
+        assignments: assignmentsForDay,
       })
     }
     
@@ -108,7 +117,7 @@
       <div class="tw-text-2xl tw-font-bold tw-mr-1">{{ month }}</div>
       <div class="tw-pt-1 tw-text-lg tw-text-gray tw-mr-4">{{ year }}</div>
       <div class="tw-flex-1 tw-mr-4">
-        <ProgressBar :assignmentsForWeek="[]"/>
+        <ProgressBar :assignmentsForWeek="assignmentsForWeek"/>
       </div>
       <v-btn variant="text" class="tw-p-2 tw-font-bold">Week</v-btn>
       <v-btn variant="text" class="tw-p-2 tw-text-gray">Month</v-btn>

@@ -26,12 +26,19 @@ export const useClassesStore = defineStore('classes', {
     ]) as Map<string, Class>,
   }),
   getters: {
-    array: (state): Class[] => {
+    array(state): Class[] {
       const arr: Class[] = []
       for (const [_, _class] of state.byId) {
         arr.push(_class)
       }
       return arr
+    },
+    byCourseId(state): Map<string, Class> {
+      const map: Map<string, Class> = new Map()
+      for (const [_, _class] of state.byId) {
+        map.set(_class.courseId, _class)
+      }
+      return map
     },
   },
 })

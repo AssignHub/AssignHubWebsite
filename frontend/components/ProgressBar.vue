@@ -1,7 +1,7 @@
 <!-- The progress bar showing assignment completion progress -->
 <template>
   <div class="tw-shadow-inner-lg progress-bar tw-bg-white">
-    <transition-group name="progress-blocks" tag="div" class="progress-blocks-container">
+    <TransitionGroup name="progress-blocks" tag="div" class="progress-blocks-container">
       <div
         v-for="block in progressBlocks"
         :key="block.courseId"
@@ -12,7 +12,7 @@
         }"
         class="tw-shadow-inner progress-block"
       ></div>
-    </transition-group>
+    </TransitionGroup>
   </div>
 </template>
 
@@ -37,21 +37,31 @@
   transition: all 0.2s ease-in-out;
 }
 
-.progress-blocks-enter, .progress-blocks-leave-to {
+.progress-blocks-enter-from, .progress-blocks-leave-to {
   max-width: 0%;
 }
 
-.progress-blocks-enter-to, .progress-blocks-leave {
+.progress-blocks-enter-to, .progress-blocks-leave-from {
   max-width: 100%;
 }
 </style>
 
-<script>
+<script lang="ts">
+import { useClassesStore } from '~~/stores/classes'
+import { Assignment, Class } from '~~/types'
+
 export default {
   name: 'ProgressBar',
 
   props: {
     assignmentsForWeek: { type: Array, required: true },
+  },
+
+  setup() {
+    const classes = useClassesStore()
+    return {
+      classes
+    }
   },
 
   watch: {
@@ -77,12 +87,13 @@ export default {
        *    '#cceedd': '10%'
        * }
        */
+      console.log('assignments for week: ', this.assignmentsForWeek)
 
       const assignments = this.assignmentsForWeek.flat()
 
       // Count the number of completed assignments per class
       const numCompletedAssignments = {}
-      assignments.filter(a => a.done).forEach(a => {
+      assignments.filter((a: Assignment) => a.done).forEach((a: Assignment) => {
         const courseId = a.class?.courseId ?? 'TASK'
         if (courseId in numCompletedAssignments) {
           numCompletedAssignments[courseId]++
@@ -118,9 +129,9 @@ export default {
   },
 
   methods: {
-    colorByCourseId(courseId) {
+    colorByCourseId(courseId: string) {
       /* Returns the color of the class based on courseId */
-      const _class = this.classes.find(c => c.courseId === courseId)
+      const _class = this.classes.byCourseId.get(courseId)
       if (!_class)
         return '#eee'
       return _class.color

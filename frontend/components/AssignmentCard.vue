@@ -15,7 +15,7 @@
 
   // The class this assignment is associated with
   const _class = computed((): Class => {
-    return classes.byId.get(props.assignment.classId)
+    return classes.byCourseId.get(props.assignment.class.courseId)
   })
 
   function toggle(): void {
