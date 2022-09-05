@@ -43,6 +43,7 @@
       variant="plain" 
       hide-details 
       density="compact" 
+      single-line
     />
     <v-select
       prepend-icon="mdi-school"
@@ -57,6 +58,7 @@
       variant="plain"
       hide-details
       density="compact"
+      single-line
     >
       <template v-slot:chip="{ props, item }: {props: any, item: any}">
         <v-chip
