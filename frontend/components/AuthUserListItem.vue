@@ -1,3 +1,4 @@
+<!-- Displays the authUser as a list item with a menu to sign out -->
 <script setup lang="ts">
   import { useAuthUserStore } from '~~/stores/authUser';
 

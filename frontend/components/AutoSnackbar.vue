@@ -1,3 +1,4 @@
+<!-- Snackbar that shows when the text changes -->
 <template>
   <v-snackbar
     v-model="show"

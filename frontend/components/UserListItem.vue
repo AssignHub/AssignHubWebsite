@@ -1,4 +1,4 @@
-<!-- Displays auth user's avatar, which displays a menu when clicked -->
+<!-- A list item that displays the user's profile picture, their name, and their email -->
 <script setup lang="ts">
   import { User } from '~~/types';
 

@@ -1,3 +1,4 @@
+<!-- Displays user's assignments for the week -->
 <script setup lang="ts">
   import { useAssignmentsStore } from '~~/stores/assignments';
   import { Assignment } from '~~/types';

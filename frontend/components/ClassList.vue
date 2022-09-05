@@ -1,3 +1,4 @@
+<!-- Displays the user's classes -->
 <script setup lang="ts">
 
 import { useClassesStore } from '~~/stores/classes'

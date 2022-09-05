@@ -1,3 +1,4 @@
+<!-- Displays the user's profile pic or the first letter of their name if the avatar doesn't exist -->
 <script setup lang="ts">
   import { User } from '~~/types';
 

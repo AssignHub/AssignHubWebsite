@@ -1,3 +1,4 @@
+<!-- Displays a singular assignment -->
 <script setup lang="ts">
   import { useAssignmentsStore } from '~~/stores/assignments';
   import { useClassesStore } from '~~/stores/classes';

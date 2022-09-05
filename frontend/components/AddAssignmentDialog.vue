@@ -1,3 +1,4 @@
+<!-- Dialog that appears when creating an assignment -->
 <script setup lang="ts">
   import { Class } from '~~/types';
   import { useClassesStore } from '~~/stores/classes';

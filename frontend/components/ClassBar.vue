@@ -1,3 +1,4 @@
+<!-- Displays a singular class -->
 <script setup lang="ts">
 import { Class } from '~~/types';
 
