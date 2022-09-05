@@ -1,9 +1,40 @@
+<script setup lang="ts">
+  import { useAuthUserStore } from '~~/stores/authUser'
+  import { get } from '~~/utils';
+  const authUser = useAuthUserStore()
+  const route = useRoute()
+  const router = useRouter()
+
+  onMounted(async () => {
+    await get(`/auth/profile`).then(user => {
+      authUser.user = user
+    }).catch(err => {
+      // Forbidden, user not signed in
+      authUser.user = null
+    })
+
+    redirectAuthUser()
+  })
+  watch(() => route.fullPath, redirectAuthUser)
+  watch(() => authUser.user, redirectAuthUser)
+
+  function redirectAuthUser() {
+    let authRoutes = ['index']
+    let noAuthRoutes = ['sign-in']
+
+    if (!authUser.user) {
+      if (authRoutes.includes(route.name.toString()))
+        router.replace({ name: 'sign-in' })
+    } else {
+      if (noAuthRoutes.includes(route.name.toString()))
+        router.replace({ name: 'index' })
+    }
+  }
+</script>
+
 <template>
-  <div class="tw-flex">
-    <ClassList class="" />
-    <div class="tw-flex tw-flex-1 tw-justify-center">
-      <WeekView class="tw-flex-1 tw-w-64" />
-    </div>
+  <div class="tw-h-screen">
+    <NuxtPage />
   </div>
 </template>
 

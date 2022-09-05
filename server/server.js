@@ -4,6 +4,7 @@ const session = require('express-session')
 const cookieParser = require('cookie-parser')
 const mongoose = require('mongoose')
 const cors = require('cors')
+const fileUpload = require('express-fileupload')
 require('dotenv').config()
 
 // Log timestamps
@@ -29,6 +30,7 @@ db.on('open', () => console.log(`Successfully connected to db: ${process.env.DAT
 // Middleware
 app.use(cookieParser())
 app.use(express.json())
+app.use(fileUpload())
 
 // Configure session
 const sessionMiddleware = session({
@@ -47,7 +49,8 @@ app.use(sessionMiddleware)
 // Cors
 app.use(cors({
   origin: [
-    'http://localhost:8080'
+    'http://localhost:8080',
+    'http://localhost:3001'
   ],
   credentials: true,
   exposedHeaders: ['set-cookie'],
@@ -68,6 +71,9 @@ app.use('/assignments', assignmentsRouter)
 
 const friendsRouter = require('./routes/friends')
 app.use('/friends', friendsRouter)
+
+const syllabiRouter = require('./routes/syllabi')
+app.use('/syllabi', syllabiRouter)
 
 // Server
 const server = app.listen(3000, () => console.log('Server listening on port 3000'))

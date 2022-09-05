@@ -11,8 +11,8 @@ A live demo of the website can be found here: [DEMO](https://assignhub.github.io
 2. `npm install`
 3. `npm run serve`
 ### Backend
-1. Install redis-server. https://redis.io/topics/quickstart
-2. Start the redis-server service: `sudo service redis-server restart`
+1. Install redis-server. [Linux](https://redis.io/topics/quickstart) [Mac](https://redis.io/docs/getting-started/installation/install-redis-on-mac-os/)
+2. Start the redis-server service: Linux: `sudo service redis-server restart` Mac: `redis-server`
 3. Install mongodb 
 4. Start mongodb service
 5. `cd server`

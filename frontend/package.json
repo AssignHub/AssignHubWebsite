@@ -12,6 +12,9 @@
   },
   "dependencies": {
     "@pinia/nuxt": "^0.3.1",
+    "@types/google-one-tap": "^1.2.1",
+    "@types/google.accounts": "^0.0.2",
+    "@types/node": "^18.7.14",
     "mdi": "^2.2.43",
     "pinia": "^2.0.17",
     "sass": "^1.53.0",

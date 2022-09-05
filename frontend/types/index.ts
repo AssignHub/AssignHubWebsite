@@ -1,3 +1,5 @@
+declare var google 
+
 export type Class = {
   _id: string
   courseId: string
@@ -11,4 +13,13 @@ export type Assignment = {
   title: string
   dueDate: String // e.g. "2022-08-09"
   done: boolean
+}
+
+export type User = {
+  _id: string
+  firstName: string
+  lastName: string
+  email: string
+  pic: string
+  school: string
 }
