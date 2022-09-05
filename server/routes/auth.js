@@ -50,6 +50,7 @@ router.post('/sign-in', async (req, res) => {
     }
 
     if (process.env.NODE_ENV !== 'development' && !emailAllowed) {
+    // if (!emailAllowed) {
       res.status(403).json({ error: 'email-not-allowed' })
       return
     }

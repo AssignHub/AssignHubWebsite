@@ -2,15 +2,15 @@
 <template>
   <v-snackbar
     v-model="show"
-    top
+    location="top"
     :color="color"
   >
     <span class="tw-text-sm tw-mr-2">{{ text }}</span>
 
-    <template v-slot:action="{ attrs }">
+    <template v-slot:actions>
       <v-btn
-        v-bind="attrs"
         icon
+        variant="text"
         @click="show = false"
       >
         <v-icon>mdi-close</v-icon>

@@ -1,9 +1,11 @@
 <script setup lang="ts">
   import { useAuthUserStore } from '~~/stores/authUser'
   import { get } from '~~/utils';
+  import { usePageStateStore } from '~~/stores/pageState';
   const authUser = useAuthUserStore()
   const route = useRoute()
   const router = useRouter()
+  const pageState = usePageStateStore()
 
   onMounted(async () => {
     await get(`/auth/profile`).then(user => {
@@ -33,6 +35,8 @@
 </script>
 
 <template>
+  <AutoSnackbar color="error" :text="pageState.error"/>
+  <AutoSnackbar color="info" :text="pageState.info"/>
   <div class="tw-h-screen">
     <NuxtPage />
   </div>
