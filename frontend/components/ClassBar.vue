@@ -7,19 +7,13 @@ const props = defineProps({
     _class: { type: Object as () => Class, required: true },
 })
 
-const statusImages = new Map([
-    [1, '~~/assets/upload.png'], [2, '~~/assets/upload.png'], [3, '~~/assets/upload.png'],],
-) as Map<number, string>
-
 </script>
 
 <template>
     <div class="tw-w-full tw-flex tw-justify-between tw-rounded-lg tw-p-2 tw-items-center tw-text-white" :style="{backgroundColor: props._class.color}">
         <div class="tw-text-lg">{{props._class.courseId}}</div>
         <div>
-            <v-btn @click="" icon variant="text" size="small">
-                <img src="~~/assets/upload.png" />
-            </v-btn>
+            <ParseSyllabusDialog :_class="_class"></ParseSyllabusDialog>
             <v-btn flat icon variant="text" size="medium">
                 <v-icon>mdi-dots-vertical</v-icon>
 

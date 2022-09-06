@@ -16,4 +16,9 @@ export default defineNuxtConfig({
     shim: false,
   },
   ssr: false,
+  components: {
+    dirs: [
+      '~/components',
+    ]
+  }
 })
