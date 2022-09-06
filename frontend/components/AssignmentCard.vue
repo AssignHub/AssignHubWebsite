@@ -8,6 +8,9 @@
   const props = defineProps({
     assignment: { type: Object as () => Assignment, required: true },
   })
+  const emit = defineEmits([
+    'contextmenu',
+  ])
 
   // Stores
   const assignments = useAssignmentsStore()
@@ -26,6 +29,7 @@
 <template>
   <div
     @click="toggle" 
+    @contextmenu="e => emit('contextmenu', e)"
     v-ripple 
     class="tw-rounded-md tw-text-white tw-select-none tw-cursor-pointer" 
     :style="{ backgroundColor: _class.color, opacity: props.assignment.done ? 0.5 : 1 }"

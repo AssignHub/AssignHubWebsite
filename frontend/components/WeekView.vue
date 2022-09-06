@@ -1,11 +1,13 @@
 <!-- Displays user's assignments for the week -->
 <script setup lang="ts">
   import { useAssignmentsStore } from '~~/stores/assignments';
-  import { Assignment } from '~~/types';
+  import { usePageStateStore } from '~~/stores/pageState';
+  import { Assignment, ContextMenuType } from '~~/types';
   import { compareDateDay, getDayString } from '~~/utils';
 
   // Stores
   const assignments = useAssignmentsStore()
+  const pageState = usePageStateStore()
   
   // Constants
   const curDate: Date = new Date()
@@ -101,6 +103,11 @@
       return 'tw-text-blue'
     }
   }
+
+  function showAssignmentMenu(e: MouseEvent, assignmentId: string) {
+    e.preventDefault()
+    pageState.showContextMenu(ContextMenuType.Assignment, { assignmentId }, e)
+  }
 </script>
 
 <template>
@@ -152,6 +159,8 @@
             <AssignmentCard
               :key="assignment._id"
               :assignment="assignment"
+              @mousedown="e => { if (e.button === 2) pageState.hideContextMenu() }"
+              @contextmenu="e => showAssignmentMenu(e, assignment._id)"
             />
           </v-expand-transition>
 

@@ -1,4 +1,6 @@
 <template>
+  <ContextMenu />
+
   <div class="tw-flex">
     <ClassList class="" />
     <div class="tw-flex tw-flex-1 tw-justify-center">

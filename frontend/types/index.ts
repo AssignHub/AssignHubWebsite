@@ -1,5 +1,3 @@
-declare var google 
-
 export type Class = {
   _id?: string
   courseId: string
@@ -11,7 +9,7 @@ export type Assignment = {
   _id: string
   class: Class
   title: string
-  dueDate: String // e.g. "2022-08-09"
+  dueDate: string // e.g. "2022-08-09"
   done: boolean
 }
 
@@ -22,4 +20,16 @@ export type User = {
   email: string
   pic: string
   school: string
+}
+
+export type ContextMenu = {
+  show: boolean
+  type?: ContextMenuType
+  data: any
+  x: number
+  y: number
+}
+
+export enum ContextMenuType {
+  Assignment,
 }

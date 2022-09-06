@@ -87,7 +87,6 @@ export default {
        *    '#cceedd': '10%'
        * }
        */
-      console.log('assignments for week: ', this.assignmentsForWeek)
 
       const assignments = this.assignmentsForWeek.flat()
 

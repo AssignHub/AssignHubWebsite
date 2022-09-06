@@ -1,6 +1,7 @@
 import type { Assignment } from "@/types"
 import { defineStore } from "pinia"
 import { createUUID, getDateWithDayOffset, getDayString } from "~~/utils"
+import { useClassesStore } from "./classes"
 
 export const useAssignmentsStore = defineStore('assignments', {
   state: () => ({
@@ -68,19 +69,30 @@ export const useAssignmentsStore = defineStore('assignments', {
   },
   actions: {
     async add({title, classId, dueDate}: {title: string, classId: string, dueDate: String}) {
+      const classes = useClassesStore()
+
       const id = createUUID()
       this.byId.set(id, {
         _id: id,
-        classId,
+        class: { courseId: classes.byId.get(classId).courseId },
         title,
         dueDate,
         done: false,
-      })
+      } as Assignment)
+
+      // TODO: implement API stuff
     },
     toggle(id: string) {
       if (this.byId.has(id)) {
         this.byId.get(id)!.done = !this.byId.get(id)!.done
       }
+
+      // TODO: implement API stuff
+    },
+    async remove(assignmentId: string) {
+      this.byId.delete(assignmentId)
+
+      // TODO: implement API stuff
     }
   }
 })
