@@ -2,6 +2,7 @@
   import { useAuthUserStore } from '~~/stores/authUser'
   import { get } from '~~/utils';
   import { usePageStateStore } from '~~/stores/pageState';
+  import { initSocket } from './stores/socket';
   const authUser = useAuthUserStore()
   const route = useRoute()
   const router = useRouter()
@@ -16,6 +17,9 @@
     })
 
     redirectAuthUser()
+
+    // Set up sockets
+    initSocket()
   })
   watch(() => route.fullPath, redirectAuthUser)
   watch(() => authUser.user, redirectAuthUser)
