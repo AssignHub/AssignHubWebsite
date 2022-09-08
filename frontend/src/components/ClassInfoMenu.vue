@@ -44,7 +44,7 @@
                 Edit
               </v-btn>
 
-              <span v-if="shareLink">
+              <!-- <span v-if="shareLink">
                 <input id="linkToCopy" class="mx-2 my-0" v-model="link" />
                 <br />
               </span>
@@ -67,7 +67,7 @@
                 v-if="shareLink && copyingLink"
               >
                 Copy <v-icon>mdi-link</v-icon>
-              </v-btn>
+              </v-btn> -->
 
               <v-dialog v-model="removeDialog" width="400" persistent>
                 <template v-slot:activator="{ on, attrs }">
@@ -102,7 +102,7 @@
                 Section {{ _class.sectionId }}
               </div>
             </v-col>
-            <v-col align-self="center" cols="auto">
+            <!-- <v-col align-self="center" cols="auto">
               <v-menu
                 transition="slide-x-transition"
                 right
@@ -132,7 +132,7 @@
                   </v-card-text>
                 </div>
               </v-menu>
-            </v-col>
+            </v-col> -->
           </v-row>
         </v-card-title>
         <v-card-text>

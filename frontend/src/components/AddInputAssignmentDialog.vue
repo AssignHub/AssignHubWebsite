@@ -42,7 +42,7 @@
                     id="tut-crowdsource-btn"
                     v-if="showInput" 
                     key="plus-box-multiple" 
-                  >mdi-plus-box-multiple</v-icon>
+                  >mdi-file-search</v-icon>
                   <v-icon v-else key="clipboard-plus">mdi-clipboard-plus</v-icon>
                 </v-scale-transition>
               </v-btn>
@@ -50,7 +50,7 @@
           </div>
           <v-expand-transition>
             <InputAssignment v-if="showInput" :width="400" />
-            <AddAssignment v-else :width="400" />
+            <ParseSyllabus v-else :width="400" />
           </v-expand-transition>
         </div>
       </v-card>
@@ -101,6 +101,7 @@ import { mapState, mapActions } from 'vuex'
 
 import InputAssignment from '@/components/InputAssignment'
 import AddAssignment from '@/components/AddAssignment'
+import ParseSyllabus from '@/components/ParseSyllabus.vue'
 
 export default {
   name: 'AddInputAssignmentDialog',
@@ -114,7 +115,8 @@ export default {
   components: {
     AddAssignment,
     InputAssignment,
-  },
+    ParseSyllabus,
+},
 
   mounted() {
     this.$root.$on('addAssignmentOnDate', (data) => {
