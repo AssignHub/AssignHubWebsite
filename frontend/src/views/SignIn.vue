@@ -1,5 +1,6 @@
 <template>
-  <v-container fluid class="px-0 px-sm-4 fill-height gradient-background">
+  <PhoneWarning v-if="isPhone() && !dismissed" @dismiss="dismiss" />
+  <v-container v-else fluid class="px-0 px-sm-4 fill-height gradient-background">
     <v-row justify="center" class="fill-height">
       <v-col cols="12" sm="auto" class="top-center">
         <v-card color="" class="px-16 pb-4 pt-10">
@@ -29,30 +30,49 @@
 <script>
 import ButtonWithImage from '@/components/ButtonWithImage'
 import { mapActions } from 'vuex'
+import { isPhone } from '@/utils'
+import PhoneWarning from '../components/PhoneWarning.vue'
 
 export default {
   name: 'SignIn',
 
   components: {
-    ButtonWithImage
+    ButtonWithImage,
+    PhoneWarning
+  },
+
+  data() {
+    return {
+      dismissed: false,
+    }
   },
 
   mounted() {
-    // Create the google sign in button
-    google.accounts.id.renderButton(
-      document.getElementById('sign-in-btn'),
-      {
-        type: 'standard',
-        theme: 'filled_blue',
-        size: 'large',
-        text: 'continue_with',
-        shape: 'pill',
-      }
-    )
+    this.loadSignInBtn()
   },
 
   methods: {
     ...mapActions([ 'signInGoogle' ]),
+    isPhone() {
+      return isPhone(this.$vuetify)
+    },
+    loadSignInBtn() {
+      // Create the google sign in button
+      google.accounts.id.renderButton(
+        document.getElementById('sign-in-btn'),
+        {
+          type: 'standard',
+          theme: 'filled_blue',
+          size: 'large',
+          text: 'continue_with',
+          shape: 'pill',
+        }
+      )
+    },
+    dismiss() {
+      this.dismissed = true
+      this.$nextTick(() => this.loadSignInBtn())
+    },
   }
 }
 </script>

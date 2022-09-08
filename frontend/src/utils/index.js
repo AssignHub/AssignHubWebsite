@@ -281,3 +281,11 @@ export const getDateInfo = (date) => {
     UTCYear: d.getUTCFullYear(),
   }
 }
+
+export const isPhone = (vuetify) => {
+  return vuetify.breakpoint.name === 'xs'
+}
+
+export const br = (vuetify, breakpoint) => {
+  return vuetify.breakpoint.name === breakpoint
+}
