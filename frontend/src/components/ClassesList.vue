@@ -2,19 +2,14 @@
   <v-card>
     <div class="outer-container">
       <v-container style="flex: 0 0 auto;" class="pa-0">
-        <v-row align="center">
-          <v-col cols="auto" class="pr-0">
-            <v-card-title class="text-subtitle-2">My Classes</v-card-title>
-          </v-col>
-          <v-spacer />
-          <v-col cols="auto" class="pl-0 pr-7">
-            <img
-              height="20"
-              :src="schoolLogo"
-              style="vertical-align: middle;"
-            />
-          </v-col>
-        </v-row>
+        <div class="tw-flex tw-items-center">
+          <v-card-title class="text-subtitle-2">My Classes</v-card-title>
+          <v-spacer/>
+          <img 
+            class="tw-h-5 tw-mr-5"
+            :src="schoolLogo"
+          >
+        </div>
       </v-container>
       <div class="grey lighten-5 inner-shadow py-4 inner-container" style="flex: 1 1 auto; min-height: 0;">
         <div style="flex: 0 0 auto; display: flex; justify-content: center; align-items: center;">

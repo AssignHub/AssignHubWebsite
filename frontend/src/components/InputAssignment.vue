@@ -32,7 +32,7 @@
         class="mb-4"
         dense
       />
-      <v-checkbox
+      <!-- <v-checkbox
         v-if="!editing"
         v-model="doPublish"
         label="Publish"
@@ -41,7 +41,7 @@
         persistent-hint
         :disabled="loading || curClass === 'no-class'"
       >
-      </v-checkbox>
+      </v-checkbox> -->
       <v-card-actions class="pa-0">
         <v-spacer></v-spacer>
         <v-btn
