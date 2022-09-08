@@ -20,33 +20,19 @@
           style="position: relative;" 
         >
           <div class="add-btn-container">
-            <v-badge
-              bordered
-              style="z-index: 51;"
-              :content="_numPendingAssignments"
-              :value="showInput && numPendingAssignments > 0"
-              color="primary"
-              overlap
-              absolute
+            <v-btn
+              icon
+              @click="showInput = !showInput"
             >
-              <v-btn
-                icon
-                style="z-index: 50;"
-                @click="
-                  showInput = !showInput
-                  getPublicAssignments()
-                "
-              >
-                <v-scale-transition leave-absolute origin="center">
-                  <v-icon 
-                    id="tut-crowdsource-btn"
-                    v-if="showInput" 
-                    key="plus-box-multiple" 
-                  >mdi-file-search</v-icon>
-                  <v-icon v-else key="clipboard-plus">mdi-clipboard-plus</v-icon>
-                </v-scale-transition>
-              </v-btn>
-            </v-badge>
+              <v-scale-transition leave-absolute origin="center">
+                <v-icon 
+                  id="tut-crowdsource-btn"
+                  v-if="showInput" 
+                  key="plus-box-multiple" 
+                >mdi-file-search</v-icon>
+                <v-icon v-else key="clipboard-plus">mdi-clipboard-plus</v-icon>
+              </v-scale-transition>
+            </v-btn>
           </div>
           <v-expand-transition>
             <InputAssignment v-if="showInput" :width="400" />
