@@ -23,6 +23,7 @@
             <v-btn
               icon
               @click="showInput = !showInput"
+              style="z-index: 50;"
             >
               <v-scale-transition leave-absolute origin="center">
                 <v-icon 

@@ -92,23 +92,24 @@ export const TUTORIAL_STEPS = Object.freeze([
   {
     element: '#tut-classes',
     title: 'Classes 👩‍🏫',
-    intro: 'Add and view your classes here',
+    // intro: 'Add and view your classes here',
+    intro: 'Add your classes here by entering the course code and selecting your sections.',
     position: 'right',
-    schoolSpecific: {
-      usc: {
-        intro: 'Add your classes here by entering the course code and selecting your sections. This info can be found at <a href=\'https://my.usc.edu\' target=\'_blank\'>my.usc.edu</a>.',
-      },
-      berkeley: {
-        intro: 'Add your classes here by entering the course code and selecting your sections. This info can be found at <a href=\'https://classes.berkeley.edu/\' target=\'_blank\'>classes.berkeley.edu</a>.',
-      }
-    },
+    // schoolSpecific: {
+    //   usc: {
+    //     intro: 'Add your classes here by entering the course code and selecting your sections. This info can be found at <a href=\'https://my.usc.edu\' target=\'_blank\'>my.usc.edu</a>.',
+    //   },
+    //   berkeley: {
+    //     intro: 'Add your classes here by entering the course code and selecting your sections. This info can be found at <a href=\'https://classes.berkeley.edu/\' target=\'_blank\'>classes.berkeley.edu</a>.',
+    //   }
+    // },
   },
-  {
-    element: '#tut-friends',
-    title: 'Friends 🤝',
-    intro: 'View all your friends and their schedules here',
-    position: 'right',
-  },
+  // {
+  //   element: '#tut-friends',
+  //   title: 'Friends 🤝',
+  //   intro: 'View all your friends and their schedules here',
+  //   position: 'right',
+  // },
   {
     element: '#tut-add-assignment-btn',
     title: 'Add assignments ✔️',
@@ -121,8 +122,8 @@ export const TUTORIAL_STEPS = Object.freeze([
   },
   {
     element: '#tut-crowdsource-btn',
-    title: 'Add assignments ✔️',
-    intro: 'Click here to add crowdsourced assignments that your classmates have created',
+    title: 'Parse syllabus 📑️',
+    intro: 'Click here to upload a syllabus to parse assignment deadlines (coming soon)',
   },
   {
     element: '#tut-calendar',
@@ -132,7 +133,7 @@ export const TUTORIAL_STEPS = Object.freeze([
   {
     element: '#tut-help',
     title: 'Help ❓',
-    intro: 'Click here to view this tutorial again'
+    intro: 'Click here to view this tutorial again',
   },
   {
     element: '#tut-add-class',
