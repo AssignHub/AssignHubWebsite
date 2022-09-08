@@ -37,7 +37,7 @@
         </template>
         <span>Classes</span>
       </v-tooltip>
-      <v-tooltip right>
+      <!-- <v-tooltip right>
         <template v-slot:activator="{ on, attrs }">
           <v-btn
             id="tut-friends"
@@ -60,7 +60,7 @@
           </v-btn>
         </template>
         <span>Friends</span>
-      </v-tooltip>
+      </v-tooltip> -->
 
       <v-spacer />
 
@@ -88,11 +88,11 @@
       </div>
     </v-expand-x-transition>
 
-    <v-expand-x-transition>
+    <!-- <v-expand-x-transition>
       <div v-if="page == 2">
         <FriendsList class="display-item" />
       </div>
-    </v-expand-x-transition>
+    </v-expand-x-transition> -->
   </div>
 </template>
 

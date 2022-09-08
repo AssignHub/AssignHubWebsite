@@ -5,12 +5,15 @@
     :color="color"
   >
     {{ text }}
-    <v-btn
-      text
-      @click="show = false"
-    >
-      Close
-    </v-btn>
+    <template v-slot:action="{ attrs }">
+      <v-btn
+        v-bind="attrs"
+        icon
+        @click="show = false"
+      >
+        <v-icon>mdi-close</v-icon>
+      </v-btn>
+    </template>
   </v-snackbar>
 </template>
 
