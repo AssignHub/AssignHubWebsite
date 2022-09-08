@@ -310,12 +310,12 @@ export default {
     daysOfWeek() {
       /* Returns an array containing information for the days of the current week */
       let curDayNum = this.curDate.getDay()
-      if (curDayNum === 0) curDayNum = 7  // Make sunday the last day instead of the first day
+      // if (curDayNum === 0) curDayNum = 7  // Make sunday the last day instead of the first day
 
-      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']//, 'Sun']
       const daysOfWeek = []
 
-      for (let i = 1; i < days.length; i++) {
+      for (let i = 0 /*1*/; i < days.length; i++) {
         const curDayOffset = this.weekOffset * 7 + i - curDayNum
         daysOfWeek.push({
           name: days[i],
