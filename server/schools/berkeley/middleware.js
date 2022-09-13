@@ -69,6 +69,8 @@ exports.getSections = async (req, res, next) => {
       // Format sections to format described in general README.
       data.forEach(section => {
 
+        if (typeMap['Lecture'] != 'Lecture') return // For Berkeley, we only want lectures for now.
+
         let blocksData = []
         let instructorData = []
         
