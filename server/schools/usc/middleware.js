@@ -88,13 +88,15 @@ exports.getSections = async (req, res, next) => {
 
       const { blocks, type } = section
       const instructors = getInstructors(section)
+      const mappedType = typeMap[type]
+      if (mappedType !== 'Lecture') return null
 
       return {
         term: res.locals.term,
         courseId: courseIdFormatted, 
         sectionId, 
         blocks, 
-        type: typeMap[type], 
+        type: mappedType, 
         instructors
       }
     })

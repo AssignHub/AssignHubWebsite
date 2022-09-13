@@ -62,12 +62,14 @@ exports.getSections = async (req, res, next) => {
         'Discussion': 'Discussion',
         'Laboratory': 'Lab',
       }
-
+      
       // Fetch all sections.
       const data = await axios.get(`https://berkeleytime.com/api/catalog/catalog_json/course_box/?course_id=${classes.get(courseId)}`).then(response => response.data.sections)
       
       // Format sections to format described in general README.
       data.forEach(section => {
+
+        if (typeMap[section.kind] != 'Lecture') return // For Berkeley, we only want lectures for now.
 
         let blocksData = []
         let instructorData = []
