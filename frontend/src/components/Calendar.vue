@@ -231,6 +231,15 @@ export default {
     })*/
   },
 
+  mounted() {
+    this.setDayBoundaries()
+    window.addEventListener('resize', this.setDayBoundaries)
+  },
+
+  beforeDestroy() {
+    window.removeEventListener('resize', this.setDayBoundaries)
+  },
+
   data() {
     return {
       months: [
@@ -257,11 +266,13 @@ export default {
       dragThreshold: 20, // Amount of distance we must drag assignment before actually drags (instead of toggling)
       dragTimeout: null, // Timeout for when assignment dragged to the edge of the screen (to switch weeks)
       dragInterval: 1000, // Interval to wait between calls of dragTimeout
+
+      dayBoundaries: [], // x value boundaries of calendar columns
     }
   },
 
   computed: {
-    ...mapState(['assignments', 'curDate', 'numPendingAssignments', 'mouseButtons']),
+    ...mapState(['assignments', 'numPendingAssignments', 'mouseButtons']),
     ...mapGetters({ classes: 'termClasses', assignmentById: 'assignmentById'  }),
     curMonthYear() {
       /*
@@ -309,7 +320,7 @@ export default {
     },
     daysOfWeek() {
       /* Returns an array containing information for the days of the current week */
-      let curDayNum = this.curDate.getDay()
+      let curDayNum = new Date().getDay()
       // if (curDayNum === 0) curDayNum = 7  // Make sunday the last day instead of the first day
 
       const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']//, 'Sun']
@@ -338,8 +349,14 @@ export default {
       /* returns array containing the assignments for the week by day */
       return this.assignmentsByDaySeparated.map((a) => [...a.done, ...a.todo])
     },
-    dayBoundaries() {
-      /* returns array containing the x value boundaries of calendar columns */
+  },
+
+  methods: {
+    ...mapMutations(['hideContextMenu', 'showContextMenu']),
+    ...mapMutations({ updateAssignmentFrontend: 'updateAssignment' }),
+    ...mapActions(['toggleAssignment', 'updateAssignment']),
+    setDayBoundaries() {
+      /* Sets array containing the x value boundaries of calendar columns */
       const boundaries = []
       const headers = document.getElementsByClassName('day-header')
       for (const header of headers) {
@@ -347,14 +364,8 @@ export default {
         boundaries.push(left)
       }
       boundaries.sort((a, b) => a-b).splice(0, 1)
-      return boundaries
+      this.dayBoundaries = boundaries
     },
-  },
-
-  methods: {
-    ...mapMutations(['hideContextMenu', 'showContextMenu']),
-    ...mapMutations({ updateAssignmentFrontend: 'updateAssignment' }),
-    ...mapActions(['toggleAssignment', 'updateAssignment']),
     drag({ el, deltaX, deltaY, clientX, clientY, offsetX, offsetY, first, last }, assignmentId) {
       /* Drag event for when assignment is dragged */
 
@@ -465,7 +476,7 @@ export default {
       return this.dayBoundaries.length
     },
     getDateWithOffset(offset) {
-      return new Date(this.curDate.getTime() + offset * this.dayLength)
+      return new Date(new Date().getTime() + offset * this.dayLength)
     },
     getAssignmentsForDate(date) {
       // TODO: make this more efficient instead of iterating through all the assignments for every day

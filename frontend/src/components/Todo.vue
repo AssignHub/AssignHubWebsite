@@ -68,7 +68,6 @@ export default {
   data() {
     return {
       dayLength: 24 * 60 * 60 * 1000,
-      curDate: new Date(),
       console,
     }
   },
@@ -77,11 +76,11 @@ export default {
     ...mapState([ 'assignments' ]),
     ...mapGetters({ classes: 'termClasses' }),
     overdue() {
-      let arr = this.assignments.filter(a => daysBetween(a.dueDate, this.curDate) < 0 && !a.done)
+      let arr = this.assignments.filter(a => daysBetween(a.dueDate, new Date()) < 0 && !a.done)
       return arr.sort(sortAssignments)
     },
     dueToday() {
-      let arr = this.assignments.filter(a => daysBetween(a.dueDate, this.curDate) === 0)
+      let arr = this.assignments.filter(a => daysBetween(a.dueDate, new Date()) === 0)
       return arr.sort(sortAssignments)
     },
     dueTomorrow() {
@@ -94,21 +93,21 @@ export default {
       let categories = []
       let header
       while (true) {
-        arr = this.assignments.filter(a => daysBetween(a.dueDate, this.curDate) >= 7 * week + (week == 0 ? 2 : 0)).sort(sortAssignments)
+        arr = this.assignments.filter(a => daysBetween(a.dueDate, new Date()) >= 7 * week + (week == 0 ? 2 : 0)).sort(sortAssignments)
         if (arr.length == 0) break
         if (week == 0) header = 'Due this week'
         else if (week == 1) header = 'Due next week'
         else header = `Due in ${week} weeks`
         categories.push({
           header: header,
-          assignments: arr.filter(a => daysBetween(a.dueDate, this.curDate) < 7 * week + 7)
+          assignments: arr.filter(a => daysBetween(a.dueDate, new Date()) < 7 * week + 7)
         })
         week++
       }
       return categories
     },
     tomorrowDate() {
-      return new Date(this.curDate.getTime() + this.dayLength)
+      return new Date(new Date().getTime() + this.dayLength)
     },
     dueCategories() {
       return [

@@ -32,7 +32,6 @@ const getDefaultState = () => {
     classes: [],
     nonLectureSections: [],
     isNewUser: false,
-    curDate: new Date(),
 
     // Friends
     friends: [],
@@ -169,9 +168,6 @@ export default new Vuex.Store({
     },
 
     // Other
-    setCurDate(state, date) {
-      state.curDate = date
-    },
     setMouseButtons(state, mouseButtons) {
       state.mouseButtons = mouseButtons
     },
@@ -404,11 +400,6 @@ export default new Vuex.Store({
         dispatch('showError', 'There was a problem fetching your friend requests!')
       })
     }, 
-
-    // Other
-    updateCurDate({ commit }) {
-      commit('setCurDate', new Date())
-    },
   },
   modules: {
   }
