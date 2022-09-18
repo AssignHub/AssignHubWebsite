@@ -115,6 +115,7 @@ export default {
       // Forbidden, user not signed in
       this.setAuthUser(null)
     })
+    this.redirectAuthUser()
     
     // Events
     window.addEventListener('mousedown', (e) => {
@@ -130,13 +131,13 @@ export default {
 
   watch: {
     authUser: {
-      immediate: true,
+      // immediate: true,
       handler() {
         this.redirectAuthUser()
       }
     },
     $route: {
-      immediate: true,
+      // immediate: true,
       handler() {
         this.redirectAuthUser()
       }
@@ -156,19 +157,21 @@ export default {
   methods: {
     ...mapMutations([ 'setAuthUser', 'setMouseButtons' ]),
     redirectAuthUser() {
-      let authRoutes = ['Home']
+      let authRoutes = ['Home', 'SyllabusParsing']
       let noAuthRoutes = ['SignIn']
 
       if (!this.authUser) {
         if (this.$route.name == 'Join') {
           this.$router.replace({ name: 'SignIn', query: { join: this.$route.params.id } })
-        } else if (authRoutes.includes(this.$route.name))
-            this.$router.replace({ name: 'SignIn' })
+        } else if (authRoutes.includes(this.$route.name)) {
+          this.$router.replace({ name: 'SignIn' })
+        }
       } else {
         if (this.$route.query.join) {
           this.$router.replace({ path: `join/${this.$route.query.join}` })
-        } else if (noAuthRoutes.includes(this.$route.name))
+        } else if (noAuthRoutes.includes(this.$route.name)) {
           this.$router.replace({ name: 'Home' })
+        }
       }
     },
   },

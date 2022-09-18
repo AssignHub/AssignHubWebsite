@@ -77,7 +77,8 @@ export default {
       return this.dueDate.toLocaleTimeString([], {timeStyle: 'short'})
     },
     creatorString() {
-      return 'Created by ' + this.assignment.creator.firstName + ' ' + this.assignment.creator.lastName
+      const { firstName, lastName, email } = this.assignment.creator
+      return `Created by ${firstName} ${lastName} (${email})`
     },
     courseId() {
       return this.assignment.class?.courseId ?? 'TASK'
