@@ -32,6 +32,12 @@
           :assignment="a"
           show-date
           show-creator
+          @mousedown="
+            (e) => {
+              if (e.which === 3) hideContextMenu()
+            }
+          "
+          @contextmenu="(e) => showAssignmentMenu(e, a._id)"
         />
       </div>
     </v-card-text>
@@ -39,8 +45,9 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapMutations, mapActions } from 'vuex'
 import AssignmentCard from '@/components/AssignmentCard'
+import { CONTEXT_MENU_TYPES } from '@/constants'
 
 export default {
   name: 'SP_PublicAssignments',
@@ -78,9 +85,18 @@ export default {
   },
 
   methods: {
+    ...mapMutations([ 'hideContextMenu', 'showContextMenu' ]),
     ...mapActions([ 'populateData' ]),
     submit() {
       // Search for all the public assignments for the given class
+    },
+    showAssignmentMenu(e, id) {
+      e.preventDefault()
+      this.showContextMenu({
+        type: CONTEXT_MENU_TYPES.SP_assignment,
+        data: { assignmentId: id },
+        mouseEvent: e,
+      })
     },
   },
 }

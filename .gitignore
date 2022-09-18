@@ -28,3 +28,4 @@ server/schools/waldorf/allowed_emails.json
 
 # Nuxt files
 .nuxt
+*.rdb

@@ -38,7 +38,7 @@
             :disabled="!enableSubmit"
             :loading="loading"
             color="primary"
-          >Submit</v-btn>
+        >{{ editing ? 'Update' : 'Submit'}}</v-btn>
         </v-card-actions>
       </v-card-text>
     </v-card>
@@ -51,6 +51,11 @@ import { getDateString } from '@/utils';
 
 export default {
   name: 'SP_InputAssignment',
+
+  props: {
+    editing: { type: Boolean, default: false },
+    assignment: { type: Object, default: null },
+  },
 
   components: {
     DateTimePicker,
@@ -73,6 +78,11 @@ export default {
   methods: {
     submit() {
       // Add a public assignment to the given class
+      if (this.editing) {
+        this.$emit('doneEditing')
+      } else {
+
+      }
     },
   },
 }
