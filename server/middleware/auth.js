@@ -1,5 +1,4 @@
 const User = require('../models/user')
-const { getAccessToken, getExpireDate } = require('../utils/utils')
 require('dotenv').config()
 
 exports.getUser = async (req, res, next) => {
