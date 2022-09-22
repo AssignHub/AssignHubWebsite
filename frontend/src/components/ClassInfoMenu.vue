@@ -209,7 +209,6 @@ export default {
     ...mapActions([
       'showError',
       'getAssignments',
-      'getPublicAssignments',
       'showInfo',
     ]),
     edit() {
@@ -227,7 +226,6 @@ export default {
       _delete(`/classes/${classId}?term=${this.term}`)
         .then(() => {
           this.getAssignments()
-          this.getPublicAssignments()
         })
         .catch((err) => {
           this.showError(

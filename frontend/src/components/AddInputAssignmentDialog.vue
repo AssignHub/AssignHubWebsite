@@ -141,7 +141,6 @@ export default {
   },
 
   methods: {
-    ...mapActions(['getPublicAssignments']),
     drag({ deltaX, deltaY }) {
       /* Move dialog box when dragged */
       const { clientHeight, clientWidth } = this.$refs.card.$el
@@ -185,7 +184,7 @@ export default {
         // setTimeout is needed so the slide transition plays
         setTimeout(() => this.$emit('input', true))
         // Get public assignments so the numPendingAssignments number is correct
-        this.getPublicAssignments()
+        // this.getPublicAssignments()
       }
     },
     hide() {
