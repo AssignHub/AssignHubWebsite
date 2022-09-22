@@ -10,7 +10,8 @@ router.post('/upload', getUser, async (req, res) => {
   const { classId, comment } = req.body
 
   try {
-    await uploadSyllabus(res.locals.user, classId, req.files.file, comment)
+    const files = req.files.file
+    await uploadSyllabus(res.locals.user, classId, files, comment)
     res.end()
   } catch (err) {
     console.error(err)

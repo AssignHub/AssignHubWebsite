@@ -6,7 +6,7 @@ const { SyllabusStatus } = reqlib('constants')
 const Class = reqlib('models/class')
 require('dotenv').config()
 
-exports.uploadSyllabus = async (user, classId, file, comment) => {
+exports.uploadSyllabus = async (user, classId, files, comment) => {
   const client = google.auth.fromJSON({
     type: 'authorized_user',
     client_id: process.env.DRIVE_UPLOADER_CLIENT_ID,
@@ -19,10 +19,14 @@ exports.uploadSyllabus = async (user, classId, file, comment) => {
   try {
     const classFolderId = await createFolderIfNotExist(drive, process.env.DRIVE_UPLOADER_ASSIGNHUB_FOLDER_ID, classId)
     const userFolderId = await createFolderIfNotExist(drive, classFolderId, user.email)
-    await uploadFile(drive, userFolderId, file)
-    sendMessage(`${user.firstName} ${user.lastName} (${user.email}) has uploaded a syllabus!\`\`\`Class ID: ${classId}\nName: "${file.name}"\nComment: "${comment}"\`\`\``)
+    let names = ''
+    for (const file of files) {
+      await uploadFile(drive, userFolderId, file)
+      names += `\n"${file.name}"`
+    }
+    sendMessage(`${user.firstName} ${user.lastName} (${user.email}) has uploaded a syllabus!\`\`\`Class ID: ${classId}\n\nName(s): ${names}\n\nComment: "${comment}"\`\`\``)
 
-    setSyllabusStatus(classId, SyllabusStatus.UPLOADED);
+    this.setSyllabusStatus(classId, SyllabusStatus.UPLOADED);
   } catch (err) {
     throw err
   }

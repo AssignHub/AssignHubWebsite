@@ -42,6 +42,7 @@
         </div>
         <v-textarea 
           v-model="comment"
+          :disabled="loading"
           outlined 
           hide-details 
           placeholder="Tell us anything special about your syllabus..."
@@ -49,7 +50,11 @@
         ></v-textarea>
         <div class="tw-flex">
           <v-spacer></v-spacer>
-          <v-btn class="tw-text-white tw-bg-blue-400" @click="uploadFiles">Submit</v-btn>
+          <v-btn 
+            class="tw-text-white tw-bg-blue-400" 
+            @click="uploadFiles"
+            :loading="loading"
+          >Submit</v-btn>
         </div>
       </v-card-text>
     </v-card>
@@ -57,6 +62,9 @@
 </template>
 
 <script>
+import { serverURL } from '@/utils'
+import { mapActions } from 'vuex' 
+
 export default {
   name: 'ParseSyllabusDialog',
 
@@ -70,6 +78,7 @@ export default {
       comment: '',
       files: [],
       status: 'missing',
+      loading: false,
     }
   },
 
@@ -84,25 +93,50 @@ export default {
   },
 
   methods: {
+    ...mapActions([ 'showInfo', 'showError' ]),
     setFiles(event) {
+      /* Update the files array for the UI */
       for (let i = 0; i < event.target.files.length; i++) {
         this.files.push(event.target.files[i])
       }
     },
     uploadFiles() {
-      this.dialog = false
+      /* Upload syllabus to server */
+      const data = new FormData()
+      for (const file of this.files) {
+        data.append('file', file)
+      }
+      data.append('classId', this._class._id)
+      data.append('comment', this.comment)
+
+      // Need to fetch manually because post function only accepts json
+      this.loading = true
+      fetch(`${serverURL}/syllabi/upload`, {
+        method: 'POST',
+        credentials: 'include',
+        body: data,
+      }).then(() => {
+        this.loading = false
+        this.showInfo('Syllabus uploaded for parsing!')
+        this.dialog = false
+      }).catch(err => {
+        this.loading = false
+        this.showError('There was a problem uploading your syllabus, please try again later.')
+      })
     },
-    clearFiles() {
+    clear() {
+      /* Clears the files for the file input and the comment */
       const fileInput = document.getElementById('syllabus-upload')
       fileInput.value = ''
       this.files = []
+      this.comment = ''
     },
   },
 
   watch: {
     dialog() {
       if (!this.dialog) {
-        this.clearFiles()
+        this.clear()
       }
     },
   },
