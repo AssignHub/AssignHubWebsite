@@ -48,9 +48,14 @@
 import { mapState, mapMutations, mapActions } from 'vuex'
 import AssignmentCard from '@/components/AssignmentCard'
 import { CONTEXT_MENU_TYPES } from '@/constants'
+import { get } from '@/utils'
 
 export default {
   name: 'SP_PublicAssignments',
+
+  props: {
+    assignments: { type: Array, default: () => [] },
+  },
 
   components: {
     AssignmentCard,
@@ -67,7 +72,6 @@ export default {
   }),
 
   computed: {
-    ...mapState([ 'assignments' ]),
     enableSubmit() {
       return Boolean(this.classId)
     },
@@ -86,9 +90,18 @@ export default {
 
   methods: {
     ...mapMutations([ 'hideContextMenu', 'showContextMenu' ]),
-    ...mapActions([ 'populateData' ]),
-    submit() {
+    ...mapActions([ 'populateData', 'showError', 'showInfo' ]),
+    async submit() {
       // Search for all the public assignments for the given class
+      this.loading = true
+
+      try {
+        const publicAssignments = await get(`/assignments/dev/public?classId=${this.classId}`)
+        this.$emit('update:assignments', publicAssignments)
+      } catch (err) {
+        this.showError(`Error: ${err}`)
+      }
+      this.loading = false
     },
     showAssignmentMenu(e, id) {
       e.preventDefault()

@@ -46,8 +46,9 @@
 </template>
 
 <script>
-import DateTimePicker from '@/components/DateTimePicker.vue';
-import { getDateString } from '@/utils';
+import DateTimePicker from '@/components/DateTimePicker.vue'
+import { getDateString, getTimeString, post, patch } from '@/utils'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'SP_InputAssignment',
@@ -76,13 +77,61 @@ export default {
   },
 
   methods: {
+    ...mapActions([ 'showError' ]),
     submit() {
       // Add a public assignment to the given class
-      if (this.editing) {
-        this.$emit('doneEditing')
-      } else {
+      let dueDate = Date.parse(this.date + 'T' + this.time)
 
+      const assignmentData = {
+        classId: this.classId,
+        name: this.assignmentName,
+        dueDate,
       }
+
+      if (this.editing) {
+        this.loading = true
+        patch(`/assignments/dev/${this.assignment._id}`, assignmentData).then(() => {
+          this.loading = false
+
+          // Emit doneEditing event + assignment data 
+          this.$emit('doneEditing', { 
+            assignmentId: this.assignment._id,
+            data: assignmentData,
+          })
+        }).catch(err => {
+          this.showError(`Error: ${err}`)
+          this.loading = false
+        })
+      } else {
+        this.loading = true
+
+        post('/assignments/dev/create', assignmentData).then(() => {
+          this.resetForm()
+          this.loading = false
+        }).catch(err => {
+          this.showError(`Error: ${err}`)
+          this.loading = false
+        })
+      }
+    },
+    resetForm() {
+      this.assignmentName = ''
+    },
+  },
+
+  watch: {
+    assignment: {
+      immediate: true,
+      handler() {
+        if (this.editing && this.assignment) {
+          this.assignmentName = this.assignment.name
+          this.classId = this.assignment.class._id
+
+          const date = new Date(this.assignment.dueDate)
+          this.date = getDateString(date)
+          this.time = getTimeString(date)
+        }
+      },
     },
   },
 }

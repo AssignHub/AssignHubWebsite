@@ -2,7 +2,7 @@
 <template>
   <div class="tw-h-full tw-flex tw-flex-col tw-items-center">
     <InputAssignment class="tw-mb-4" />
-    <PublicAssignments class="tw-w-full tw-flex-1" />
+    <PublicAssignments class="tw-w-full tw-flex-1" :assignments.sync="assignments" />
 
     <v-menu
       v-model="contextMenu.show"
@@ -28,7 +28,7 @@
     >
       <InputAssignment 
         :assignment="assignmentById(contextMenu.data.assignmentId)"
-        @doneEditing="editDialog = false"
+        @doneEditing="doneEditing"
         editing
       />
     </v-dialog>
@@ -39,8 +39,9 @@
 import InputAssignment from '@/components/internal/syllabus_parsing/SP_InputAssignment'
 import PublicAssignments from '@/components/internal/syllabus_parsing/SP_PublicAssignments'
 
-import { mapState, mapGetters, mapMutations } from 'vuex'
+import { mapState, mapMutations, mapActions } from 'vuex'
 import { CONTEXT_MENU_TYPES } from '@/constants'
+import { _delete } from '@/utils'
 
 export default {
   name: 'SyllabusParsing',
@@ -52,6 +53,7 @@ export default {
 
   data: () => ({
     editDialog: false,
+    assignments: [],
 
     CONTEXT_MENU_TYPES,
   }),
@@ -62,16 +64,25 @@ export default {
 
   methods: {
     ...mapMutations([ 'hideContextMenu' ]),
+    ...mapActions([ 'showError' ]),
     removeAssignment(assignmentId) {
-      // TODO: remove public assignment
-
-      // _delete(`/assignments/${assignmentId}`).catch(err => {
-      //   this.showError('There was a problem removing that assignment! Please try again later.')
-      // })
+      _delete(`/assignments/dev/${assignmentId}`).then(() => {
+        const index = this.assignments.findIndex(a => a._id === assignmentId)
+        this.assignments.splice(index, 1)
+      }).catch(err => {
+        this.showError(`Error: ${err}`)
+      })
     },
     assignmentById(id) {
-      // TODO: get assignment data from public assignment results
+      const a = this.assignments.find(a => a._id === id)
+      return a
     },
+    doneEditing({ assignmentId, data }) {
+      const index = this.assignments.findIndex(a => a._id === assignmentId)
+      const assignment = this.assignments[index]
+      this.assignments.splice(index, 1, { ...assignment, ...data })
+      this.editDialog = false
+    }
   },
 }
 </script>
