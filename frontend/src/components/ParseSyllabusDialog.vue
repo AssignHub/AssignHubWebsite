@@ -13,35 +13,45 @@
     </template>
 
     <v-card>
-      <v-card-title class="tw-text-white tw-font-light" :style="{backgroundColor: _class.color}">
+      <v-card-title class="tw-text-white tw-font-medium" :style="{backgroundColor: _class.color}">
         {{_class.courseId}}</v-card-title>
 
       <v-card-text class="tw-text-black">
-        <div class="tw-text-3xl tw-font-bold tw-mb-2 tw-mt-2">Parse syllabus</div>
-        <div class="tw-mb-2">Upload any and all documents that contain assignment deadlines and exam dates.
-        </div>
+        <div class="tw-text-3xl tw-font-medium tw-mb-2 tw-mt-4">Upload syllabus</div>
+        <div class="tw-mb-2">Upload any and all documents that contain assignment deadlines and exam dates, and we will automatically add those assignments to your calendar.</div>
         <div
-          class="tw-h-64 tw-overflow-hidden tw-bg-very-light-blue tw-border-2 tw-border-blue tw-rounded-lg tw-border-dashed tw-flex tw-justify-center tw-text-blue tw-mb-2 tw-relative tw-cursor-pointer">
+          class="tw-h-64 tw-overflow-hidden tw-bg-sky-100 tw-border-2 tw-border-sky-600 tw-rounded-lg tw-border-dashed tw-flex tw-justify-center tw-text-sky-600 tw-mb-2 tw-relative">
           <div v-if="files.length == 0" class="tw-m-auto tw-flex tw-flex-col tw-items-center">
-            <v-icon class="tw-text-5xl">mdi-cloud-upload</v-icon>
+            <v-icon class="tw-text-5xl tw-text-sky-600">mdi-cloud-upload</v-icon>
             <div>Upload your syllabus
             </div>
             <div>(.pdf, screenshots, etc.)</div>
           </div>
-          <div v-else class="tw-m-auto tw-flex tw-flex-col tw-items-center">
+          <div v-else class="tw-m-auto tw-flex tw-flex-col tw-items-center tw-text-gray-500">
             <div v-for="(file, i) in files" :key="i">
               <v-icon class="tw-mb-1">mdi-file</v-icon>{{file.name}}
             </div>
           </div>
-          <input type="file" multiple @change="setFiles"
-            class="tw-opacity-0 tw-absolute tw-top-0 tw-right-0 tw-w-full tw-h-full" />
+          <input 
+            id="syllabus-upload"
+            type="file" 
+            multiple 
+            @change="setFiles"
+            class="tw-opacity-0 tw-absolute tw-top-0 tw-right-0 tw-w-full tw-h-full tw-cursor-pointer" 
+          />
         </div>
-        <v-textarea outlined placeholder="Tell us anything special about your syllabus..."></v-textarea>
+        <v-textarea 
+          v-model="comment"
+          outlined 
+          hide-details 
+          placeholder="Tell us anything special about your syllabus..."
+          class="tw-mb-2"
+        ></v-textarea>
+        <div class="tw-flex">
+          <v-spacer></v-spacer>
+          <v-btn class="tw-text-white tw-bg-blue-400" @click="uploadFiles">Submit</v-btn>
+        </div>
       </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn class="tw-text-white tw-bg-blue-400" @click="uploadFiles">Submit</v-btn>
-      </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
@@ -57,19 +67,9 @@ export default {
   data() {
     return {
       dialog: false,
+      comment: '',
       files: [],
-      status: "uploaded",
-    }
-  },
-
-  methods: {
-    setFiles(event) {
-      for (let i = 0; i < event.target.files.length; i++) {
-        this.files.push(event.target.files[i])
-      }
-    },
-    uploadFiles() {
-      this.dialog = false
+      status: 'missing',
     }
   },
 
@@ -81,6 +81,30 @@ export default {
       map.set('missing', 'mdi-file-upload')
       return map.get(this.status)
     }
+  },
+
+  methods: {
+    setFiles(event) {
+      for (let i = 0; i < event.target.files.length; i++) {
+        this.files.push(event.target.files[i])
+      }
+    },
+    uploadFiles() {
+      this.dialog = false
+    },
+    clearFiles() {
+      const fileInput = document.getElementById('syllabus-upload')
+      fileInput.value = ''
+      this.files = []
+    },
+  },
+
+  watch: {
+    dialog() {
+      if (!this.dialog) {
+        this.clearFiles()
+      }
+    },
   },
 }
 </script>
