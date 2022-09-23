@@ -143,3 +143,9 @@ export const TUTORIAL_STEPS = Object.freeze([
     onlyNewUser: true
   }
 ])
+
+export const SYLLABUS_STATUS = Object.freeze({
+  NONE: undefined,
+  UPLOADED: 'uploaded',
+  PARSED: 'parsed',
+})

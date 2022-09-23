@@ -2,7 +2,7 @@
 <template>
   <v-dialog v-model="dialog" width="500">
     <template v-slot:activator="{ on, attrs }">
-      <v-btn @click="" icon variant="text" v-bind="attrs" v-on="on" :disabled="status != 'missing'">
+      <v-btn @click="" icon variant="text" v-bind="attrs" v-on="on" :disabled="!enableUpload">
         <v-tooltip right>
           <template v-slot:activator="{ on, attrs }"> 
             <v-icon class="tw-text-3xl" v-bind="attrs" v-on="on">{{statusIcon}}</v-icon>
@@ -14,17 +14,18 @@
 
     <v-card>
       <v-card-title class="tw-text-white tw-font-medium" :style="{backgroundColor: _class.color}">
-        {{_class.courseId}}</v-card-title>
+        {{_class.courseId}}
+      </v-card-title>
 
       <v-card-text class="tw-text-black">
-        <div class="tw-text-3xl tw-font-medium tw-mb-2 tw-mt-4">Upload syllabus</div>
-        <div class="tw-mb-2">Upload any and all documents that contain assignment deadlines and exam dates, and we will automatically add those assignments to your calendar.</div>
+        <div class="tw-text-3xl tw-font-medium tw-mt-4">{{ title }}</div>
+        <div class="tw-mb-2 tw-mt-1 tw-text-xs tw-text-gray-500" v-if="extraSubtitle.length > 0">{{ extraSubtitle }}</div>
+        <div class="tw-my-2">Upload any and all documents that contain assignment deadlines and exam dates, and we will automatically add those assignments to your calendar.</div>
         <div
           class="tw-h-64 tw-overflow-hidden tw-bg-sky-100 tw-border-2 tw-border-sky-600 tw-rounded-lg tw-border-dashed tw-flex tw-justify-center tw-text-sky-600 tw-mb-2 tw-relative">
           <div v-if="files.length == 0" class="tw-m-auto tw-flex tw-flex-col tw-items-center">
             <v-icon class="tw-text-5xl tw-text-sky-600">mdi-cloud-upload</v-icon>
-            <div>Upload your syllabus
-            </div>
+            <div>Upload your syllabus</div>
             <div>(.pdf, screenshots, etc.)</div>
           </div>
           <div v-else class="tw-m-auto tw-flex tw-flex-col tw-items-center tw-text-gray-500">
@@ -64,6 +65,7 @@
 <script>
 import { serverURL } from '@/utils'
 import { mapActions } from 'vuex' 
+import { SYLLABUS_STATUS } from '@/constants'
 
 export default {
   name: 'ParseSyllabusDialog',
@@ -77,19 +79,37 @@ export default {
       dialog: false,
       comment: '',
       files: [],
-      status: 'missing',
+      status: this._class.syllabusStatus,
       loading: false,
+
+      statusIconMap: {
+        [SYLLABUS_STATUS.NONE] : 'mdi-file-upload',
+        [SYLLABUS_STATUS.UPLOADED]: 'mdi-file-sync',
+        [SYLLABUS_STATUS.PARSED]: 'mdi-file-check',
+      },
+
+      SYLLABUS_STATUS,
     }
   },
 
   computed: {
     statusIcon() {
-      const map = new Map();
-      map.set('uploaded', 'mdi-file-check')
-      map.set('parsing', 'mdi-file-sync')
-      map.set('missing', 'mdi-file-upload')
-      return map.get(this.status)
-    }
+      return this.statusIconMap[this.status]
+    },
+    enableUpload() {
+      return this.status === SYLLABUS_STATUS.NONE || this.status === SYLLABUS_STATUS.PARSED
+    },
+    title() {
+      // if (this.status === SYLLABUS_STATUS.PARSED) {
+      //   return 'Upload another syllabus'
+      // }
+      return 'Upload syllabus'
+    },
+    extraSubtitle() {
+      if (this.status === SYLLABUS_STATUS.PARSED)
+        return 'Note: A syllabus has already been parsed for this class, but you may upload another one that has more assignments.'
+      return ''
+    },
   },
 
   methods: {
@@ -118,6 +138,7 @@ export default {
       }).then(() => {
         this.loading = false
         this.showInfo('Syllabus uploaded for parsing!')
+        this.status = SYLLABUS_STATUS.UPLOADED
         this.dialog = false
       }).catch(err => {
         this.loading = false
