@@ -5,7 +5,14 @@
       <v-col cols="12" sm="auto" class="top-center">
         <v-card color="" class="px-16 pb-4 pt-10">
           <v-card-text class="text-center">
-            <v-img src="@/assets/logo.png" width="300px" transition="scale-transition" contain class="mx-auto mb-10"></v-img>
+            <div class="tw-relative">
+              <v-img src="@/assets/logo.png" width="300px" transition="scale-transition" contain class="mx-auto mb-10"></v-img>
+              <v-chip 
+                class="tw-absolute tw-bottom-4 -tw-right-4 tw-font-semibold"
+                label
+                color="primary"
+              >BETA</v-chip>
+            </div>
             <div id="sign-in-btn" style="display: inline-block;"></div>
             <div class="text-caption">
               Make sure to use your school email address to sign in!
