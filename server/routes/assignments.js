@@ -126,7 +126,13 @@ router.post('/dev/create', getUser, checkIsDev, async (req, res) => {
       return
     }
 
-    await new Assignment(assignmentData).save()
+    // Create assignment and add it to all members' assignment lists 
+    const assignment = await new Assignment(assignmentData).save()
+    const users = await _class.findMembers()
+    for (const user of users) {
+      user.assignments.push({assignment: assignment._id})
+      await user.save()
+    }
 
     res.status(201).end()
   } catch (err) {
