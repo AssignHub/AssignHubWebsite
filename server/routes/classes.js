@@ -86,6 +86,8 @@ router.get('/sections', getUser, getTerm, getSchoolMiddleware('getSections'), as
 })
 
 router.post('/add', getUser, getTerm, getSchoolMiddleware('addClass'), async (req, res) => {
+  /* Note: DEPRECATED in favor of add-sections */
+
   // Requires authentication
 
   /* Query params:
@@ -183,13 +185,30 @@ router.post('/add-sections', getUser, async (req, res) => {
         emitToUser(res.locals.user._id, 'addNonLectureSection', { ..._class.toJSON() })
       }
     }
-    await res.locals.user.save()
     
-    // If lecture section was added, emit add class socket event
     if (lectureSection) {
+      // If lecture section was added, emit add class socket event
       const numMembers = await lectureSection.findMembers().lean().countDocuments()
       emitToUser(res.locals.user._id, 'addClass', { ...lectureSection.toJSON(), color: color, numMembers })
+
+      // Add all public assignments for the class after the current date
+      const publicAssignments = await Assignment.find({
+        public: true,
+        class: lectureSection._id,
+        dueDate: { $gte: new Date() },
+      })
+      for (const assignment of publicAssignments) {
+        res.locals.user.assignments.push({assignment: assignment._id})
+
+        const assignmentPopulated = await assignment.populate({
+          path: 'class',
+          select: 'courseId',
+        }).execPopulate()
+        emitToUser(res.locals.user._id, 'addAssignment', { ...assignmentPopulated.toJSON(), done: false })
+      }
     }
+
+    await res.locals.user.save()
 
     res.end()
   } catch (err) {
