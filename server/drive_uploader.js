@@ -19,11 +19,18 @@ exports.uploadSyllabus = async (user, classId, files, comment) => {
   try {
     const classFolderId = await createFolderIfNotExist(drive, process.env.DRIVE_UPLOADER_ASSIGNHUB_FOLDER_ID, classId)
     const userFolderId = await createFolderIfNotExist(drive, classFolderId, user.email)
+
     let names = ''
-    for (const file of files) {
-      await uploadFile(drive, userFolderId, file)
-      names += `\n"${file.name}"`
+    if (Array.isArray(files)) {
+      for (const file of files) {
+        await uploadFile(drive, userFolderId, file)
+        names += `\n"${file.name}"`
+      }
+    } else {
+      await uploadFile(drive, userFolderId, files)
+      names += `\n"${files.name}"`
     }
+
     sendMessage(`${user.firstName} ${user.lastName} (${user.email}) has uploaded a syllabus!\`\`\`Class ID: ${classId}\n\nName(s): ${names}\n\nComment: "${comment}"\`\`\``)
 
     this.setSyllabusStatus(classId, SyllabusStatus.UPLOADED);

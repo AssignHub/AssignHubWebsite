@@ -137,7 +137,7 @@ export default {
         body: data,
       }).then(() => {
         this.loading = false
-        this.showInfo('Syllabus uploaded for parsing!')
+        this.showInfo('Syllabus uploaded for parsing! Your assignments will be automatically inputted within 24 hours.')
         this.status = SYLLABUS_STATUS.UPLOADED
         this.dialog = false
       }).catch(err => {
