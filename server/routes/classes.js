@@ -4,7 +4,7 @@ const reqlib = require('app-root-path').require
 const Class = reqlib('/models/class')
 const Assignment = reqlib('/models/assignment')
 const { getTerm } = reqlib('/middleware/general')
-const { getUser } = reqlib('/middleware/auth')
+const { getUser, checkIsDev } = reqlib('/middleware/auth')
 const { emitToUser } = reqlib('/websockets')
 const { getSchoolMiddleware, getSchoolUtilFunction } = reqlib('/schools/dispatcher')
 
@@ -334,16 +334,16 @@ router.get('/mine', getUser, async (req, res) => {
   }
 })
 
-router.get('/get/:courseId', getUser, getTerm, async (req, res) => {
+router.get('/:classId', getUser, async (req, res) => {
   // Requires authentication
-  const { courseId } = req.params
+  const { classId } = req.params
 
   try {
 
     let chosenClass = null;
 
-    if (courseId.length == 24) {
-      chosenClass = await Class.findById(courseId)
+    if (classId.length == 24) {
+      chosenClass = await Class.findById(classId)
     }
 
     if (!chosenClass) {
@@ -439,6 +439,20 @@ router.get('/:classId/members', async (req, res) => {
       .sort({ lastName: 1, firstName: 1, email: 1 })
 
     res.json(members)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: err })
+  }
+})
+
+router.patch('/dev/:classId', getUser, checkIsDev, async (req, res) => {
+  /* Updates the specified class */
+
+  const { classId } = req.params
+  try {
+    await Class.findByIdAndUpdate(classId, req.body)
+
+    res.end()
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: err })

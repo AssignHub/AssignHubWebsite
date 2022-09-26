@@ -1,3 +1,4 @@
+<!-- Allows user to enter a class ID and return all the public assignments -->
 <template>
   <v-card class="tw-flex tw-flex-col">
     <v-card-title>Public Assignments</v-card-title>

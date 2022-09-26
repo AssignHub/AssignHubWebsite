@@ -1,7 +1,10 @@
 <!-- Internal page used for manual syllabus parsing -->
 <template>
   <div class="tw-h-full tw-flex tw-flex-col tw-items-center">
-    <InputAssignment class="tw-mb-4" />
+    <div class="tw-flex tw-mb-4 tw-gap-4">
+      <InputAssignment />
+      <SyllabusStatus />
+    </div>
     <PublicAssignments class="tw-w-full tw-flex-1" :assignments.sync="assignments" />
 
     <v-menu
@@ -38,6 +41,7 @@
 <script>
 import InputAssignment from '@/components/internal/syllabus_parsing/SP_InputAssignment'
 import PublicAssignments from '@/components/internal/syllabus_parsing/SP_PublicAssignments'
+import SyllabusStatus from '@/components/internal/syllabus_parsing/SP_SyllabusStatus'
 
 import { mapState, mapMutations, mapActions } from 'vuex'
 import { CONTEXT_MENU_TYPES } from '@/constants'
@@ -48,6 +52,7 @@ export default {
 
   components: {
     InputAssignment,
+    SyllabusStatus,
     PublicAssignments,
   },
 

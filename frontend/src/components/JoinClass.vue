@@ -61,7 +61,7 @@ export default {
         handler() { this.color = this.colors[Math.floor(Math.random() * this.colors.length)] },
     },
     term() {
-      get(`/classes/get/${this.classId}?term=${this.term}`).then(data => {
+      get(`/classes/${this.classId}?term=${this.term}`).then(data => {
           this.course = data
           this.loading = false;
       }).catch(err => {
