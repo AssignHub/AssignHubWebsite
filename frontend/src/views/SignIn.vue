@@ -8,8 +8,9 @@
             <div class="tw-relative">
               <v-img src="@/assets/logo.png" width="300px" transition="scale-transition" contain class="mx-auto mb-10"></v-img>
               <v-chip 
-                class="tw-absolute tw-bottom-4 -tw-right-4 tw-font-semibold"
+                small
                 label
+                class="tw-absolute -tw-top-6 -tw-right-4 tw-px-2"
                 color="primary"
               >BETA</v-chip>
             </div>
