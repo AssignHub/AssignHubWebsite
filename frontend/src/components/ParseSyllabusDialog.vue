@@ -79,7 +79,6 @@ export default {
       dialog: false,
       comment: '',
       files: [],
-      status: this._class.syllabusStatus,
       loading: false,
 
       statusIconMap: {
@@ -93,6 +92,9 @@ export default {
   },
 
   computed: {
+    status() {
+      return this._class.syllabusStatus
+    },
     statusIcon() {
       return this.statusIconMap[this.status]
     },

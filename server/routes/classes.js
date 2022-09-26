@@ -469,7 +469,12 @@ router.patch('/dev/:classId', getUser, checkIsDev, async (req, res) => {
 
   const { classId } = req.params
   try {
-    await Class.findByIdAndUpdate(classId, req.body)
+    const _class = await Class.findByIdAndUpdate(classId, req.body)
+
+    const users = await _class.findMembers()
+    for (const user of users) {
+      emitToUser(user._id, 'updateClass', { classId: classId, updatedData: req.body })
+    }
 
     res.end()
   } catch (err) {

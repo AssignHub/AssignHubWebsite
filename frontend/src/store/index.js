@@ -182,6 +182,15 @@ export default new Vuex.Store({
     SOCKET_addClass(state, _class) {
       state.classes.push(_class)
     }, 
+    SOCKET_updateClass(state, payload) {
+      const { classId, updatedData } = payload
+      const index = state.classes.findIndex(c => c._id === classId)
+      const oldData = state.classes[index]
+      Vue.set(state.classes, index, {
+        ...oldData,
+        ...updatedData,
+      })
+    },
     SOCKET_removeClass(state, id) {
       const indexToRemove = state.classes.findIndex(c => c._id === id)
       const { term, courseId } = state.classes[indexToRemove]
