@@ -132,6 +132,13 @@ router.post('/dev/create', getUser, checkIsDev, async (req, res) => {
     for (const user of users) {
       user.assignments.push({assignment: assignment._id})
       await user.save()
+
+      // Socket communication
+      const assignmentPopulated = await assignment.populate({
+        path: 'class',
+        select: 'courseId',
+      }).execPopulate()
+      emitToUser(user._id, 'addAssignment', { ...assignmentPopulated.toJSON(), done: false })
     }
 
     res.status(201).end()
@@ -327,7 +334,14 @@ router.delete('/dev/:assignmentId', getUser, checkIsDev, async (req, res) => {
 
   const { assignmentId } = req.params
   try {
-    await Assignment.findByIdAndDelete(assignmentId)
+    const assignment = await Assignment.findByIdAndDelete(assignmentId)
+    const _class = await Class.findById(assignment.class)
+
+    // Send socket message
+    const users = await _class.findMembers()
+    for (const user of users) {
+      emitToUser(user._id, 'removeAssignment', assignment._id)
+    }
 
     res.end()
   } catch (err) {
