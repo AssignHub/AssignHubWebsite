@@ -182,6 +182,15 @@ export default new Vuex.Store({
     SOCKET_addClass(state, _class) {
       state.classes.push(_class)
     }, 
+    SOCKET_updateClass(state, payload) {
+      const { classId, updatedData } = payload
+      const index = state.classes.findIndex(c => c._id === classId)
+      const oldData = state.classes[index]
+      Vue.set(state.classes, index, {
+        ...oldData,
+        ...updatedData,
+      })
+    },
     SOCKET_removeClass(state, id) {
       const indexToRemove = state.classes.findIndex(c => c._id === id)
       const { term, courseId } = state.classes[indexToRemove]
@@ -278,7 +287,7 @@ export default new Vuex.Store({
     // Terms
     async changeTerm({ commit, dispatch }, term) {
       commit('setTerm', term)
-      await Promise.all([ dispatch('getAssignments'), dispatch('getPublicAssignments') ])
+      await Promise.all([ dispatch('getAssignments') ])
     }, 
     getTerms({ commit, dispatch }) {
       return get('/classes/terms').then(terms => {
@@ -313,15 +322,15 @@ export default new Vuex.Store({
       })
     },
     getPublicAssignments({ state, commit, dispatch }) {
-      commit('setPublicAssignments', [])
-      commit('setLoading', { key: 'publicAssignments', value: true })
-      return get(`/assignments/public?term=${state.term}`).then(publicAssignments => {
-        commit('setLoading', { key: 'publicAssignments', value: false })
-        commit('setPublicAssignments', publicAssignments)
-        commit('setNumPendingAssignments', publicAssignments.length)
-      }).catch(err => {
-        dispatch('showError', 'There was an problem fetching public assignments!')
-      })
+      // commit('setPublicAssignments', [])
+      // commit('setLoading', { key: 'publicAssignments', value: true })
+      // return get(`/assignments/public?term=${state.term}`).then(publicAssignments => {
+      //   commit('setLoading', { key: 'publicAssignments', value: false })
+      //   commit('setPublicAssignments', publicAssignments)
+      //   commit('setNumPendingAssignments', publicAssignments.length)
+      // }).catch(err => {
+      //   dispatch('showError', 'There was an problem fetching public assignments!')
+      // })
     },
     toggleAssignment({ commit, dispatch }, assignmentId) {
       commit('toggleAssignment', assignmentId)

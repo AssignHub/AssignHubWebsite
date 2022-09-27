@@ -102,6 +102,9 @@
                 Section {{ _class.sectionId }}
               </div>
             </v-col>
+            <v-col align-self="center" cols="auto">
+              <ParseSyllabusDialog :_class="_class"></ParseSyllabusDialog>
+            </v-col>
             <!-- <v-col align-self="center" cols="auto">
               <v-menu
                 transition="slide-x-transition"
@@ -150,6 +153,7 @@
 
 <script>
 import UserListItem from '@/components/UserListItem'
+import ParseSyllabusDialog from '@/components/ParseSyllabusDialog'
 import { mapState, mapActions } from 'vuex'
 import { get, _delete, blocksString, instructorNames } from '@/utils'
 
@@ -162,6 +166,7 @@ export default {
 
   components: {
     UserListItem,
+    ParseSyllabusDialog,
   },
 
   watch: {
@@ -204,7 +209,6 @@ export default {
     ...mapActions([
       'showError',
       'getAssignments',
-      'getPublicAssignments',
       'showInfo',
     ]),
     edit() {
@@ -222,7 +226,6 @@ export default {
       _delete(`/classes/${classId}?term=${this.term}`)
         .then(() => {
           this.getAssignments()
-          this.getPublicAssignments()
         })
         .catch((err) => {
           this.showError(

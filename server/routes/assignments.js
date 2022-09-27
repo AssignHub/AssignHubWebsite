@@ -5,7 +5,7 @@ const router = express.Router()
 const { emitToUser } = require('../websockets')
 const Assignment = require('../models/assignment')
 const Class = require('../models/class')
-const { getUser } = require('../middleware/auth')
+const { getUser, checkIsDev } = require('../middleware/auth')
 
 const { getTerm } = require('../middleware/general')
 
@@ -27,7 +27,7 @@ router.get('/mine', getUser, getTerm, async (req, res) => {
       },
     }).execPopulate()
     const assignments = res.locals.user.assignments
-      .filter(a => Boolean(a.assignment.class) || a.assignment.noClass)
+      .filter(a => a.assignment && (a.assignment.class || a.assignment.noClass))
       .map(a => {
         a = a.toJSON()
         const { _id, assignment, ...rest } = a
@@ -35,6 +35,29 @@ router.get('/mine', getUser, getTerm, async (req, res) => {
       })
 
     res.json(assignments)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: err })
+  }
+})
+
+router.get('/dev/public', getUser, checkIsDev, async (req, res) => {
+  /* Get all public assignments for the given class */
+
+  const { classId } = req.query
+  try {
+    const publicAssignments = await Assignment.find({
+      public: true,
+      class: classId,
+    }).populate({
+      path: 'class',
+      select: 'courseId sectionId',
+    }).populate({
+      path: 'creator',
+      select: 'firstName lastName email',
+    }).lean()
+
+    res.json(publicAssignments)
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: err })
@@ -76,6 +99,49 @@ router.get('/public', getUser, getTerm, async (req, res) => {
     })
 
     res.json(publicAssignments)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: err })
+  }
+})
+
+router.post('/dev/create', getUser, checkIsDev, async (req, res) => {
+  /* Creates a new public assignment for the given classId but doesn't add it to the user's assignments array */
+
+  const {classId, name, dueDate } = req.body
+
+  try {
+    const assignmentData = {
+      creator: res.locals.user._id, 
+      class: classId, 
+      name, 
+      dueDate, 
+      public: true,
+    }
+
+    const _class = await Class.findById(classId)
+
+    if (!_class) {
+      res.status(400).json({ error: 'invalid-class' })
+      return
+    }
+
+    // Create assignment and add it to all members' assignment lists 
+    const assignment = await new Assignment(assignmentData).save()
+    const users = await _class.findMembers()
+    for (const user of users) {
+      user.assignments.push({assignment: assignment._id})
+      await user.save()
+
+      // Socket communication
+      const assignmentPopulated = await assignment.populate({
+        path: 'class',
+        select: 'courseId',
+      }).execPopulate()
+      emitToUser(user._id, 'addAssignment', { ...assignmentPopulated.toJSON(), done: false })
+    }
+
+    res.status(201).end()
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: err })
@@ -194,6 +260,25 @@ router.post('/:assignmentId/toggle', getUser, async (req, res) => {
   }
 })
 
+router.patch('/dev/:assignmentId', getUser, checkIsDev, async (req, res) => {
+  /* 
+    Updates the assignment, even if it's a public assignment, and even if the user does not have the assignment
+    in their assignments array. 
+  */
+
+  const { assignmentId } = req.params
+  try {
+    const assignmentData = req.body
+
+    await Assignment.findByIdAndUpdate(assignmentId, assignmentData)
+
+    res.status(200).end()
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: err })
+  }
+})
+
 router.patch('/:assignmentId', getUser, async (req, res) => {
   // Updates the assignment, creating a new private assignment if assignment was previously public
   // Requires authentication
@@ -235,6 +320,30 @@ router.patch('/:assignmentId', getUser, async (req, res) => {
     }
 
     res.json({ _id: res.locals.user.assignments[index].assignment })    
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: err })
+  }
+})
+
+router.delete('/dev/:assignmentId', getUser, checkIsDev, async (req, res) => {
+  /* 
+    Deletes assignment, even if it's public, even if the user doesn't have the assignment 
+    in their assignments array
+  */
+
+  const { assignmentId } = req.params
+  try {
+    const assignment = await Assignment.findByIdAndDelete(assignmentId)
+    const _class = await Class.findById(assignment.class)
+
+    // Send socket message
+    const users = await _class.findMembers()
+    for (const user of users) {
+      emitToUser(user._id, 'removeAssignment', assignment._id)
+    }
+
+    res.end()
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: err })

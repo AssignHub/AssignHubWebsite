@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '@/views/Home'
 import SignIn from '@/views/SignIn'
+import SyllabusParsing from '@/views/internal/SyllabusParsing'
 
 Vue.use(VueRouter)
 
@@ -21,6 +22,11 @@ const routes = [
     name: 'Join',
     component: Home,
     props: true
+  },
+  {
+    path: '/internal/syllabus-parsing',
+    name: 'SyllabusParsing',
+    component: SyllabusParsing,
   },
 ]
 

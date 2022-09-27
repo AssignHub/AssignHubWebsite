@@ -27,6 +27,7 @@ export const CONTEXT_MENU_TYPES = Object.freeze({
   assignment: 0,
   class: 1,
   removeFriend: 2,
+  SP_assignment: 3,
 })
 
 // Object that maps a mood to the corresponding emoji name on the server
@@ -142,3 +143,9 @@ export const TUTORIAL_STEPS = Object.freeze([
     onlyNewUser: true
   }
 ])
+
+export const SYLLABUS_STATUS = Object.freeze({
+  NONE: undefined,
+  UPLOADED: 'uploaded',
+  PARSED: 'parsed',
+})

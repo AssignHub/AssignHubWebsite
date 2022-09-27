@@ -7,10 +7,13 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
+    "autoprefixer": "^10.4.12",
     "canvas-confetti": "^1.4.0",
     "core-js": "^3.6.5",
     "intro.js": "^4.3.0",
+    "postcss": "^8.4.16",
     "socket.io-client": "^4.4.0",
+    "tailwindcss": "^3.1.8",
     "trojan-course-api": "^2.2.2",
     "v-dragged": "0.0.5",
     "vue": "^2.6.11",
@@ -20,16 +23,14 @@
     "vuex": "^3.4.0"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "~4.5.0",
-    "@vue/cli-plugin-router": "~4.5.0",
-    "@vue/cli-plugin-vuex": "~4.5.0",
-    "@vue/cli-service": "~4.5.0",
-    "autoprefixer": "^9.8.8",
-    "postcss": "^7.0.39",
+    "@vue/cli-plugin-babel": "~5.0.8",
+    "@vue/cli-plugin-router": "~5.0.8",
+    "@vue/cli-plugin-vuex": "~5.0.8",
+    "@vue/cli-service": "~5.0.8",
     "sass": "~1.32.6",
     "sass-loader": "^8.0.0",
-    "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.17",
-    "vue-cli-plugin-vuetify": "~2.0.7",
+    "vue-cli-plugin-tailwind": "~3.0.0",
+    "vue-cli-plugin-vuetify": "~2.5.8",
     "vue-template-compiler": "^2.6.11",
     "vuetify-loader": "^1.3.0"
   },

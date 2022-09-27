@@ -53,7 +53,7 @@ userSchema.virtual('basicInfo').get(function() {
     email: this.email,
     pic: this.pic,
     school: this.school,
-    mood: this.mood,
+    // mood: this.mood,
   }
 })
 

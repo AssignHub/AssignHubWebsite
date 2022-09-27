@@ -4,7 +4,7 @@ const reqlib = require('app-root-path').require
 const Class = reqlib('/models/class')
 const Assignment = reqlib('/models/assignment')
 const { getTerm } = reqlib('/middleware/general')
-const { getUser } = reqlib('/middleware/auth')
+const { getUser, checkIsDev } = reqlib('/middleware/auth')
 const { emitToUser } = reqlib('/websockets')
 const { getSchoolMiddleware, getSchoolUtilFunction } = reqlib('/schools/dispatcher')
 
@@ -86,6 +86,8 @@ router.get('/sections', getUser, getTerm, getSchoolMiddleware('getSections'), as
 })
 
 router.post('/add', getUser, getTerm, getSchoolMiddleware('addClass'), async (req, res) => {
+  /* Note: DEPRECATED in favor of add-sections */
+
   // Requires authentication
 
   /* Query params:
@@ -183,13 +185,30 @@ router.post('/add-sections', getUser, async (req, res) => {
         emitToUser(res.locals.user._id, 'addNonLectureSection', { ..._class.toJSON() })
       }
     }
-    await res.locals.user.save()
     
-    // If lecture section was added, emit add class socket event
     if (lectureSection) {
+      // If lecture section was added, emit add class socket event
       const numMembers = await lectureSection.findMembers().lean().countDocuments()
       emitToUser(res.locals.user._id, 'addClass', { ...lectureSection.toJSON(), color: color, numMembers })
+
+      // Add all public assignments for the class after the current date
+      const publicAssignments = await Assignment.find({
+        public: true,
+        class: lectureSection._id,
+        dueDate: { $gte: new Date() },
+      })
+      for (const assignment of publicAssignments) {
+        res.locals.user.assignments.push({assignment: assignment._id})
+
+        const assignmentPopulated = await assignment.populate({
+          path: 'class',
+          select: 'courseId',
+        }).execPopulate()
+        emitToUser(res.locals.user._id, 'addAssignment', { ...assignmentPopulated.toJSON(), done: false })
+      }
     }
+
+    await res.locals.user.save()
 
     res.end()
   } catch (err) {
@@ -334,16 +353,16 @@ router.get('/mine', getUser, async (req, res) => {
   }
 })
 
-router.get('/get/:courseId', getUser, getTerm, async (req, res) => {
+router.get('/:classId', getUser, async (req, res) => {
   // Requires authentication
-  const { courseId } = req.params
+  const { classId } = req.params
 
   try {
 
     let chosenClass = null;
 
-    if (courseId.length == 24) {
-      chosenClass = await Class.findById(courseId)
+    if (classId.length == 24) {
+      chosenClass = await Class.findById(classId)
     }
 
     if (!chosenClass) {
@@ -439,6 +458,25 @@ router.get('/:classId/members', async (req, res) => {
       .sort({ lastName: 1, firstName: 1, email: 1 })
 
     res.json(members)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: err })
+  }
+})
+
+router.patch('/dev/:classId', getUser, checkIsDev, async (req, res) => {
+  /* Updates the specified class */
+
+  const { classId } = req.params
+  try {
+    const _class = await Class.findByIdAndUpdate(classId, req.body)
+
+    const users = await _class.findMembers()
+    for (const user of users) {
+      emitToUser(user._id, 'updateClass', { classId: classId, updatedData: req.body })
+    }
+
+    res.end()
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: err })

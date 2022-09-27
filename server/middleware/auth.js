@@ -1,5 +1,4 @@
 const User = require('../models/user')
-const { getAccessToken, getExpireDate } = require('../utils/utils')
 require('dotenv').config()
 
 exports.getUser = async (req, res, next) => {
@@ -31,5 +30,15 @@ exports.getUser = async (req, res, next) => {
     next()
   } else {
     res.status(401).json({ error: 'no-session' })
+  }
+}
+
+exports.checkIsDev = async (req, res, next) => {
+  devEmails = process.env.DEV_EMAILS.split(',')
+
+  if (devEmails.includes(res.locals.user.email)) {
+    next()
+  } else {
+    res.status(403).json({ error: 'user-not-dev' })
   }
 }

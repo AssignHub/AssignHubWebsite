@@ -114,7 +114,6 @@ export default {
     // Fetch public assignments on window focus if min amount of time has passed
     window.addEventListener('focus', () => {
       if (this.timeHasPassed(this.MIN_FETCH_INTERVAL, this.lastFetched)) {
-        this.getPublicAssignments()
         setActive()
 
         this.lastFetched = new Date()
@@ -152,7 +151,7 @@ export default {
 
   methods: {
     ...mapMutations([ 'hideContextMenu' ]),
-    ...mapActions([ 'populateData', 'getPublicAssignments', 'showError' ]),
+    ...mapActions([ 'populateData', 'showError' ]),
     removeAssignment(assignmentId) {
       _delete(`/assignments/${assignmentId}`).catch(err => {
         this.showError('There was a problem removing that assignment! Please try again later.')
