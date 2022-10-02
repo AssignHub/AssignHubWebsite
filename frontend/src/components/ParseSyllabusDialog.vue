@@ -46,7 +46,7 @@
           :disabled="loading"
           outlined 
           hide-details 
-          placeholder="Tell us anything special about your syllabus..."
+          placeholder="Or any URL or comments..."
           class="tw-mb-2"
         ></v-textarea>
         <div class="tw-flex">
