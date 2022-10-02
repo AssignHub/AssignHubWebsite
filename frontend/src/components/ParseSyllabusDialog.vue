@@ -64,7 +64,7 @@
 
 <script>
 import { serverURL } from '@/utils'
-import { mapActions } from 'vuex' 
+import { mapActions, mapMutations } from 'vuex' 
 import { SYLLABUS_STATUS } from '@/constants'
 
 export default {
@@ -137,10 +137,14 @@ export default {
         method: 'POST',
         credentials: 'include',
         body: data,
+      }).then(async res => {
+        if (!res.ok) {
+          const err = await res.json()
+          throw err
+        }
       }).then(() => {
         this.loading = false
         this.showInfo('Syllabus uploaded for parsing! Your assignments will be automatically inputted within 24 hours.')
-        this.status = SYLLABUS_STATUS.UPLOADED
         this.dialog = false
       }).catch(err => {
         this.loading = false
