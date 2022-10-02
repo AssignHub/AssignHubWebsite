@@ -46,7 +46,7 @@
           :disabled="loading"
           outlined 
           hide-details 
-          placeholder="Or any URL or comments..."
+          placeholder="Or any URL or additional comments..."
           class="tw-mb-2"
         ></v-textarea>
         <div class="tw-flex">
