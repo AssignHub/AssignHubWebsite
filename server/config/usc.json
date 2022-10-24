@@ -1,16 +1,16 @@
 {
   "terms": [
     {
+      "term": "20231",
+      "text": "Spring 2023"
+    },
+    {
       "term": "20223",
       "text": "Fall 2022"
     },
     {
       "term": "20222",
       "text": "Summer 2022"
-    },
-    {
-      "term": "20221",
-      "text": "Spring 2022"
     }
   ]
 }
