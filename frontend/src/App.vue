@@ -3,6 +3,11 @@
     <AutoSnackbar color="error" :text="error" />
     <AutoSnackbar color="info" :text="info" />
 
+    <UpdateDialog 
+      v-model="showUpdateUI"
+      @accept="acceptUpdate"
+    />
+
     <!--<v-app-bar
       v-if="authUser"
       app
@@ -98,15 +103,23 @@ import { get, } from '@/utils'
 import { mapState, mapMutations } from 'vuex'
 
 import AutoSnackbar from '@/components/AutoSnackbar'
+import UpdateDialog from '@/components/UpdateDialog'
 
 export default {
   name: 'App',
 
   components: {
     AutoSnackbar,
+    UpdateDialog,
   },
 
   async created() {
+    // PWA
+    if (this.$workbox) {
+      this.$workbox.addEventListener("waiting", () => {
+        this.showUpdateUI = true;
+      });
+    }
 
     // TODO: move this to vuex
     await get(`/auth/profile`).then(authUser => {
@@ -147,6 +160,7 @@ export default {
   data() {
     return {
       loaded: false,
+      showUpdateUI: false,
     }
   },
 
@@ -156,6 +170,10 @@ export default {
 
   methods: {
     ...mapMutations([ 'setAuthUser', 'setMouseButtons' ]),
+    async acceptUpdate() {
+      this.showUpdateUI = false;
+      await this.$workbox.messageSW({ type: "SKIP_WAITING" }); 
+    },
     redirectAuthUser() {
       let authRoutes = ['Home', 'SyllabusParsing']
       let noAuthRoutes = ['SignIn']

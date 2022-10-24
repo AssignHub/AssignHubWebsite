@@ -12,6 +12,7 @@
     "core-js": "^3.6.5",
     "intro.js": "^4.3.0",
     "postcss": "^8.4.16",
+    "register-service-worker": "^1.7.2",
     "socket.io-client": "^4.4.0",
     "tailwindcss": "^3.1.8",
     "trojan-course-api": "^2.2.2",
@@ -24,6 +25,7 @@
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~5.0.8",
+    "@vue/cli-plugin-pwa": "~5.0.0",
     "@vue/cli-plugin-router": "~5.0.8",
     "@vue/cli-plugin-vuex": "~5.0.8",
     "@vue/cli-service": "~5.0.8",

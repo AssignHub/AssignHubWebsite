@@ -9,6 +9,8 @@ import { socketURL, handleCredentialResponse } from '@/utils'
 import VDragged from 'v-dragged'
 import 'intro.js/introjs.css';
 import './assets/tailwind.css'
+import wb from "./registerServiceWorker";
+Vue.prototype.$workbox = wb;
 
 Vue.config.productionTip = false
 
