@@ -7,10 +7,11 @@ import VueSocketIO from 'vue-socket.io'
 import SocketIO from 'socket.io-client'
 import { socketURL, handleCredentialResponse } from '@/utils'
 import VDragged from 'v-dragged'
-import 'intro.js/introjs.css';
+import 'intro.js/introjs.css'
 import './assets/tailwind.css'
-import wb from "./registerServiceWorker";
-Vue.prototype.$workbox = wb;
+import './registerServiceWorker'
+// import wb from "./registerServiceWorker";
+// Vue.prototype.$workbox = wb;
 
 Vue.config.productionTip = false
 
